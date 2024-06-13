@@ -3,6 +3,7 @@ from typing import Union
 import sys
 import math
 
+# TODO: Add Docstrings and add class Galaxy.
 
 class Planets():
     def __init__(self, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
