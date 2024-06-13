@@ -120,3 +120,39 @@ class Stars():
     def density(self):
         return self._mass/self.volume
     
+
+
+class Galaxy():
+    def __init__(self, mass:float, radius:float, star_spread:float, black_hole_mass:float, star_number:int,
+                 init_position:list, init_velocity:list):
+        try:
+            assert isinstance(mass, float), "Galaxy Property 'mass' needs to be of type float"
+            assert isinstance(radius, float), "Galaxy Property 'radius' needs to be of type float"
+            assert isinstance(star_spread, float), "Galaxy Property 'spread' needs to be of type float"
+            assert isinstance(black_hole_mass, float), "Galaxy Property 'black_hole_mass' needs to be of type float"
+            assert isinstance(star_number, int), "Galaxy Property 'star_number' needs to be of type int"
+            assert isinstance(init_position, list), "Galaxy Property 'init_position' must be a list"
+            assert isinstance(init_velocity, list), "Galaxy Property 'init_velocity' must be a list"
+        except AssertionError:
+            print("Galaxy Initialization failed")
+            sys.exit()
+        try:
+            assert mass>0, "Mass must be a positive value"
+            assert radius>0, "Radius needs to be a positive value"
+            # TODO: Check the range for the Star Spread and update assert
+            assert star_spread>0, "Star Spread needs to be a positive value"
+            assert (black_hole_mass>0 and black_hole_mass<mass), "Black Hole Mass needs to be a positive value less than the Galaxy mass"
+            assert star_number>0, "Number of Stars need to be a positive integer"
+        except AssertionError:
+            print("Galaxy Initialization failed")
+            sys.exit()
+        self.mass = mass
+        self.radius = radius
+        self.star_spread = star_spread
+        self.black_hole_mass = black_hole_mass
+        self.star_number = star_number
+        self.init_position = init_position
+        self.init_velocity = init_velocity
+    
+    # TODO: Complete method to create the galaxy
+    def create_galaxy(self):
