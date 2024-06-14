@@ -6,16 +6,35 @@ import Constants as const
 
 class Planets():
     """Class that initializes the object Planet for the N-Body Simulation and Visualization
-    __________________
+    
     This is the class that creates a template for Planets that will be used in the N-Body Simulation. The initialized planets are assumed
     to be perfectly spherical for ease of volume/density analysis as well as collisions. The class contains information regarding the planet 
     for simulation, such as the mass and orbital properties, as well as, for visualizations to load the contours of the planets in the animation 
     renders.
+
+    Attributes:
+        mass (float/int): Mass of the Planet in kilograms
+        radius (float/int): Radius of the Planet in meters
+        volume (float): Volume of the Planet in meter^3
+        density (float): Density of the Planet in kilograms/meter^3
+        planet_type (str): Type of Planet. Accepted values are "Rocky" or "Gaseous"
+        planet_contour (str): Planet contour type ("Earth-like"/"Mars-like" for Rocky Planets and "Jupiter-like"/"Neptune-like" for
+                                Gaseous Planets)
+        init_position (list): Initial position of the Planet in space as a list of coordinates in meters
+        init_velocity (list): Initial orbital velocity of the Planet as a list of directional velocities in meter/second.
+
+    Methods:
+        radius(): Gets the value of the radius
+        radius(value): Sets the value of the radius
+        mass(): Gets the value of the mass
+        mass(value): Sets the value of the mass
+        volume(): Calculates and updates the volume of the planet
+        density(): Calculates and updates the density of the planet
     """
 
     def __init__(self, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
                  planet_contour:str, init_position:list, init_velocity:list):
-        """Constructor for the class Planet
+        """Initializes the Planet object.
 
         Args:
             mass (float/int): Mass of the Planet in kilograms (Use Converter class to convert from accepted units to kg)
@@ -53,7 +72,7 @@ class Planets():
     
     @property
     def radius(self):
-        """Initializes the radius of the planet as a class property
+        """Gets the radius of the planet as a class property
 
         Returns:
             float: radius of the planet
@@ -71,7 +90,7 @@ class Planets():
     
     @property
     def mass(self):
-        """Initializes the mass of the planet as a class property
+        """Gets the mass of the planet as a class property
 
         Returns:
             float: mass of the planet
@@ -121,16 +140,36 @@ class Planets():
 
 class Stars():
     """Class that initializes the object Star for the N-Body Simulation and Visualization
-    __________________
+    
     This is the class that creates a template for Stars that will be used in the N-Body Simulation. The initialized Stars are assumed to be
     perfectly spherical for simplified density/volume analysis and collision cases. The class contains information regarding the star for 
     simulation, such as the mass and orbital properties, as well as, for visualizations to load the color, size and other relevent visual 
-    properties of the stars in the animation renders.
+    properties of the stars in the animation renders. The class requires either the radius or the density as input (if not both).
+
+    Attributes:
+        mass (float/int): Mass of the Star in kilograms
+        temperature (float/int): Temperature of the Star in kelvin
+        init_position (list): Initial position of the star in space as a list of coordinates in meters
+        init_velocity (list): Initial orbital velocity of the star as a list of directional velocities in meter/second
+        radius (float/int, optional): Radius of the Star in meters
+        density (float, optional): Density of the Star in kilograms/meter^3
+        star_type (str): Type of Star based on density
+        star_class (str): Star Classification based on temperature
+
+    Methods:
+        radius(): Gets the radius of the star
+        radius(value): Sets the radius of the star
+        mass(): Gets the mass of the star
+        mass(value): Sets the mass of the star
+        volume(): Calculates and updates the volume of the star
+        density(): Calculates and updates the volume of the star
+        star_type(): Determines and updates the type of the star
+        star_class(): Determines and updates the class of the star
     """
 
     def __init__(self, mass:Union[float, int], temperature:Union[float,int], init_position:list, init_velocity:list,
                  radius:Union[float,int]=None, density:float=None):
-        """Constructor for the Class Stars that initializes the star object
+        """Initializes the Star Object
 
         The class requires either radius or density to be provided. The radius is calculated from the density and mass but for dynamic 
         modifications to the star properties only radius updates are accepted.
@@ -191,7 +230,7 @@ class Stars():
         
     @property
     def radius(self):
-        """Initializes the radius as a dynamic property of the class
+        """Gets the radius as a dynamic property of the class
 
         Returns:
             float: Radius of the Star
@@ -200,7 +239,7 @@ class Stars():
     
     @property
     def mass(self):
-        """Initializes the mass as a dynamic property of the class
+        """Gets the mass as a dynamic property of the class
 
         Returns:
             float: Mass of the Star
@@ -350,11 +389,25 @@ class Galaxy():
         spread evenly across the radius of the galaxy with gaussian distribution with a distribution within 90% of the galaxy radius. The mass of
         the stars in the galaxy are also even distributed with a gaussian variation of the +/- 40% of the mean of the left-over mass with the gaussian
         having a zero mean.
+
+    Attributes:
+        mass (float): Mass of the Galaxy in kilograms
+        radius (float): Radius of the Galaxy in meters
+        black_hole_mass (float): Mass of the Supermassive Black Hole at the center of the Galaxy in kilograms
+        star_number (int): Total number of stars in the Galaxy
+        init_position (list): Initial position of the center of the Galaxy in space as a list of coordinates in meters
+        init_velocity (list): Initial orbital velocity of the Galaxy as list of directional velocities in meter/second
+        star_mass_list (np.array): Array containing the mass of the stars in the Galaxy in kilograms
+        star_positions (np.array): Array containing the initial positions of the stars within the galaxy
+        star_velocity (np.array): Array containing the orbital velocities of the stars within the galaxy
+
+    Methods:
+        create_galaxy(): Generates the galaxy with stars
     """
     
     def __init__(self, mass:float, radius:float, black_hole_mass:float, star_number:int,
                  init_position:list, init_velocity:list):
-        """Constructor for the Galaxy class. 
+        """Initializes the Galaxy object. 
 
         Args:
             mass (float): Total Mass of the Galaxy in kilograms
@@ -416,13 +469,24 @@ class Galaxy():
 class BlackHole():
     """Class that initializes a Black Hole.
 
-        The characteristics of the black hole is calculated within the class dynamically.   
+        The characteristics of the black hole is calculated within the class dynamically. If the angular momentum of the black
+        hole is not specified, it is assumed that the black is a non-rotating black hole.
+
+    Attributes:
+        mass (float/int): Mass of the Black Hole in kilograms
+        init_position (list): Initial position of the Black Hole in space as a list of coordinates in meters
+        init_velocity (list): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
+        angular_momentum (list, optional): Angular momentum of a rotating Black Hole as list. Ignore for non-rotating Black Holes.
+        radius (float): Schwarzchild radius of the Black Hole
+    
+    Methods:
+        mass(): Gets the mass of the Black Hole
+        mass(value): Sets the mass of the Black Hole
+        radius(): Calculates and updates the Schwarzchild radius of the Black Hole
     """
 
     def __init__(self, mass:Union[float,int], init_position:list, init_velocity:list, angular_momentum:list=None):
-        """Constructor for Class Black Hole
-
-
+        """Initializes the Black Hole object.
 
         Args:
             mass (float/int): Mass of the Black Hole in kilograms (Use conversion tool to convert from accepted units).
@@ -488,6 +552,6 @@ class BlackHole():
         Returns:
             float: Schwarzchild radius of the Black Hole.
         """
-        radius = 2 * const.G * self._mass / (const.c * const.c)
+        radius = 2 * const.G * self._mass / (const.C * const.C)
         return radius
 
