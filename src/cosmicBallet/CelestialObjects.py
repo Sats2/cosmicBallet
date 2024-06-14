@@ -1,10 +1,8 @@
 import numpy as np
 from typing import Union
-import sys
 import math
 import Constants as const
 
-# TODO: Add Docstrings.
 
 class Planets():
     """Class that initializes the object Planet for the N-Body Simulation and Visualization
