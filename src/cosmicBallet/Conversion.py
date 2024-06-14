@@ -32,11 +32,11 @@ def mass_conversion(mass_list:list, unit:str)->list:
     except AssertionError:
         raise TypeError
     if unit == "lbs":
-        conversion_factor = const.lbs_to_kg
+        conversion_factor = const.LBS_TO_KG
     elif unit == "Me":
-        conversion_factor = const.Me
+        conversion_factor = const.ME
     elif unit == "Ms":
-        conversion_factor = const.Ms
+        conversion_factor = const.MS
     else:
         raise ValueError("Unit not recognized. Select from 'lbs', 'Me' or 'Ms'.")
     for item in mass_list:
@@ -74,11 +74,11 @@ def velocity_conversion(velocity_list:list, unit:str)->list:
     except AssertionError:
         raise TypeError
     if unit == "ftps":
-        conversion_factor = const.ftps_to_mtps
+        conversion_factor = const.FTPS_TO_MTPS
     elif unit == "mph":
-        conversion_factor = const.mph_to_mtps
+        conversion_factor = const.MPH_TP_MTPS
     elif unit == "kmph":
-        conversion_factor = const.kmph_to_mtps
+        conversion_factor = const.KMPH_TO_MTPS
     else:
         raise ValueError("Unit not recognized. Select from 'ftps', 'mph', or 'kmph'.")
     for item in velocity_list:
@@ -118,11 +118,11 @@ def distance_conversion(distance_list:list, unit:str)->list:
     if unit == "AU":
         conversion_factor = const.AU
     elif unit == "ly":
-        conversion_factor = const.ly
+        conversion_factor = const.LY
     elif unit == "mi":
-        conversion_factor = const.mile_to_mt
+        conversion_factor = const.MILE_TO_MT
     elif unit == "km":
-        conversion_factor = const.km_to_mt
+        conversion_factor = const.KM_TO_MT
     else:
         raise ValueError("Unit not recognized. Select from 'AU', 'ly', 'mi' or 'km'.")
     for item in distance_list:
