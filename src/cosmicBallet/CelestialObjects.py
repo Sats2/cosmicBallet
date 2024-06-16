@@ -13,6 +13,7 @@ class Planets():
     renders.
 
     Attributes:
+        name (str): Name of the Planet
         mass (float/int): Mass of the Planet in kilograms
         radius (float/int): Radius of the Planet in meters
         volume (float): Volume of the Planet in meter^3
@@ -32,11 +33,12 @@ class Planets():
         density(): Calculates and updates the density of the planet
     """
 
-    def __init__(self, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
+    def __init__(self, name:str, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
                  planet_contour:str, init_position:list, init_velocity:list):
         """Initializes the Planet object.
 
         Args:
+            name (str): Name of the Planet
             mass (float/int): Mass of the Planet in kilograms (Use Converter class to convert from accepted units to kg)
             radius (float/int): Radius of the Planet in meters (Use Converter class to convert from accepted units to m)
             planet_type (str): Type of Planet as string, accepted values are Rocky/Gaseous, case independent
@@ -50,6 +52,7 @@ class Planets():
             ValueError: Incase the input values are out of bounds (mass or radius are zero or negative)
         """
         try:
+            assert isinstance(name, str), "Planet Property 'name' can only be of type string"
             assert isinstance(mass, (float, int)), "Planet Property 'mass' can only be of type float/int"
             assert isinstance(radius, (float, int)), "Planet Property 'radius' can only be of type float/int"
             assert isinstance(planet_type, str), "Planet Property 'planet_type' can only be of type string"
@@ -61,8 +64,10 @@ class Planets():
         try:
             assert mass>0, "Planet Property 'mass' can not be zero or non-negative"
             assert radius>0, "Planet Property 'radius' can not be zero or non-negative"
+            assert (name is not None), "Planet Property 'name' cannot be None"
         except AssertionError:
             raise ValueError
+        self.name = name
         self.mass = mass
         self.radius = radius
         self.planet_type = planet_type
@@ -147,6 +152,7 @@ class Stars():
     properties of the stars in the animation renders. The class requires either the radius or the density as input (if not both).
 
     Attributes:
+        name (str): Name of the Star
         mass (float/int): Mass of the Star in kilograms
         temperature (float/int): Temperature of the Star in kelvin
         init_position (list): Initial position of the star in space as a list of coordinates in meters
@@ -167,7 +173,7 @@ class Stars():
         star_class(): Determines and updates the class of the star
     """
 
-    def __init__(self, mass:Union[float, int], temperature:Union[float,int], init_position:list, init_velocity:list,
+    def __init__(self, name:str, mass:Union[float, int], temperature:Union[float,int], init_position:list, init_velocity:list,
                  radius:Union[float,int]=None, density:float=None):
         """Initializes the Star Object
 
@@ -179,6 +185,7 @@ class Stars():
             radius = (3 * volume / (4 * pi))**(1/3)
 
         Args:
+            name (str): Name of the Star
             mass (float/int): Mass of the Star in SI Units (Use the Conversion class to convert from accepted units)
             temperature (float/int): Surface temperature of the Star in SI Units
             init_position (list): Initial Position of the Star as a list of coordinates [x, y, z]
@@ -193,6 +200,7 @@ class Stars():
                         provided density are not within a tolerable error range.
         """
         try:
+            assert isinstance(name, str), "Star Property 'name' can only be of type string"
             assert isinstance(mass, (float, int)), "Star Property 'mass' can only be of type float/int"
             assert isinstance(temperature, (float, int)), "Star Property 'temperature' can only be of type float/int"
             assert isinstance(init_position, list), "Star Property 'init_position' can only be of type list"
@@ -206,6 +214,7 @@ class Stars():
         try:
             assert mass>0, "Star Property 'mass' must be a positive value"
             assert temperature>0, "Star Property 'temperature' must be a positive value"
+            assert (name is not None), "Star Property 'name' cannot be None"
             assert (radius is not None and density is not None), "Star Properties 'radius' and 'density' cannot be None"
             if radius is not None:
                 assert radius>0, "Star Property 'radius' must be a positive value"
@@ -217,6 +226,7 @@ class Stars():
                 assert math.isclose(calc_density, density, abs_tol=1e-8), "Provided Density of Star and Calculated Density of Star do not match"
         except AssertionError:
             raise ValueError
+        self.name = name
         self.mass = mass
         self.temperature = temperature
         self.init_position = np.array(init_position)
@@ -391,6 +401,7 @@ class Galaxy():
         having a zero mean.
 
     Attributes:
+        name (str): Name of the Galaxy
         mass (float): Mass of the Galaxy in kilograms
         radius (float): Radius of the Galaxy in meters
         black_hole_mass (float): Mass of the Supermassive Black Hole at the center of the Galaxy in kilograms
@@ -405,11 +416,12 @@ class Galaxy():
         create_galaxy(): Generates the galaxy with stars
     """
     
-    def __init__(self, mass:float, radius:float, black_hole_mass:float, star_number:int,
+    def __init__(self, name:str, mass:float, radius:float, black_hole_mass:float, star_number:int,
                  init_position:list, init_velocity:list):
         """Initializes the Galaxy object. 
 
         Args:
+            name (str): Name of the Galaxy
             mass (float): Total Mass of the Galaxy in kilograms
             radius (float): Radius of the Galaxy in meters
             black_hole_mass (float): Mass of the Supermassive Black Hole at the center of the Galaxy in kilograms
@@ -423,6 +435,7 @@ class Galaxy():
                         zero or a negative value.
         """
         try:
+            assert isinstance(name, str), "Galaxy Property 'name' needs to be of type string"
             assert isinstance(mass, float), "Galaxy Property 'mass' needs to be of type float"
             assert isinstance(radius, float), "Galaxy Property 'radius' needs to be of type float"
             assert isinstance(black_hole_mass, float), "Galaxy Property 'black_hole_mass' needs to be of type float"
@@ -436,8 +449,10 @@ class Galaxy():
             assert radius>0, "Radius needs to be a positive value"
             assert (black_hole_mass>0 and black_hole_mass<mass), "Black Hole Mass needs to be a positive value less than the Galaxy mass"
             assert star_number>0, "Number of Stars need to be a positive integer"
+            assert (name is not None), "Galaxy Name cannot be None"
         except AssertionError:
             raise ValueError
+        self.name = name
         self.mass = mass
         self.radius = radius
         self.black_hole_mass = black_hole_mass
@@ -473,6 +488,7 @@ class BlackHole():
         hole is not specified, it is assumed that the black is a non-rotating black hole.
 
     Attributes:
+        name (str): Name of the Black Hole
         mass (float/int): Mass of the Black Hole in kilograms
         init_position (list): Initial position of the Black Hole in space as a list of coordinates in meters
         init_velocity (list): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
@@ -485,10 +501,11 @@ class BlackHole():
         radius(): Calculates and updates the Schwarzchild radius of the Black Hole
     """
 
-    def __init__(self, mass:Union[float,int], init_position:list, init_velocity:list, angular_momentum:list=None):
+    def __init__(self, name:str, mass:Union[float,int], init_position:list, init_velocity:list, angular_momentum:list=None):
         """Initializes the Black Hole object.
 
         Args:
+            name (str): Name of the Black Hole
             mass (float/int): Mass of the Black Hole in kilograms (Use conversion tool to convert from accepted units).
             init_position (list): Initial Position of the Black Hole as a list of coordinates [x, y, z] in meters.
             init_velocity (list): Initial Velocity of the Black Hole as a list of directional velocities [vx, vy, vz] in meters/second.
@@ -499,6 +516,7 @@ class BlackHole():
             ValueError: If the input arguements (mass) are negative or zero
         """
         try:
+            assert isinstance(name, str), "Black Hole property 'name' must be of type string"
             assert isinstance(mass, (float, int)), "Black Hole property 'mass' must be of type float/int"
             assert(init_position, list), "Black Hole property 'init_position' must be of type list"
             assert(init_velocity, list), "Black Hole property 'init_velocity' must be of type list"
@@ -508,8 +526,10 @@ class BlackHole():
             raise TypeError
         try:
             assert mass>0, "Black Hole property 'mass' needs to be a positive value"
+            assert (name is not None), "Black Hole property 'name' cannot be None"
         except AssertionError:
             raise ValueError
+        self.name = name
         self.mass = mass
         self.init_position = np.array(init_position)
         self.init_velocity = np.array(init_velocity)
