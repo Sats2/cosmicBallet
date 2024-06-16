@@ -17,3 +17,7 @@ MPH_TP_MTPS = 0.44704       # Conversion from miles/second (mile/s) to meter/sec
 KMPH_TO_MTPS = 0.2777778    # Conversion from kilometers/hour (km/hr) to meter/second (m/s)
 MILE_TO_MT = 1609.344       # Conversion from miles (mi) to meters (m)
 KM_TO_MT = 1000.0           # Conversion from kilometer (km) to meters (m) 
+HOUR_TO_SEC = 3600          # Conversion from hours to seconds (s)
+DAY_TO_SEC = 24*HOUR_TO_SEC # Conversion from days to seconds (s)
+MON_TO_SEC = 30*DAY_TO_SEC  # Conversion from months to seconds (s)
+YEAR_TO_sEC = 12*MON_TO_SEC # Conversion from years to seconds (s)
