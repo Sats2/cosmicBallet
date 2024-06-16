@@ -23,6 +23,10 @@ class Planets():
                                 Gaseous Planets)
         init_position (list): Initial position of the Planet in space as a list of coordinates in meters
         init_velocity (list): Initial orbital velocity of the Planet as a list of directional velocities in meter/second.
+        position (array): Time series of the position of the planet.
+        velocity (array): Time series of the position of the planet.
+        object_type (str): Identifier for type of Celestial Object.
+        force (float): Total Force acting on the Planet in a given time slice.
 
     Methods:
         radius(): Gets the value of the radius
@@ -46,7 +50,11 @@ class Planets():
                                     and "Jupiter-like/Neptune-like" for Gaseous Planets
             init_position (list): Initial Position of the Planet in motion as a list of coordinates [x, y, z] in meters from origin
             init_velocity (list): Initial Velocity of the Planet in motion as a list of directional velocities [vx, vy, vz] in meter/second
-
+            position (array): Time series of the position of the planet.
+            velocity (array): Time series of the position of the planet.
+            force (float): Total Force acting on the Planet in a given time slice.
+            object_type (str): Identifier for type of Celestial Object.
+            
         Raises:
             TypeError: Incase the input values do not match the expected data type
             ValueError: Incase the input values are out of bounds (mass or radius are zero or negative)
@@ -74,6 +82,10 @@ class Planets():
         self.planet_contour = planet_contour
         self.init_position = np.array(init_position)
         self.init_velocity = np.array(init_velocity)
+        self.position = None
+        self.velocity = None
+        self.force = None
+        self.object_type = "planet"
     
     @property
     def radius(self):
@@ -142,7 +154,6 @@ class Planets():
         return self._mass/self.volume
     
 
-
 class Stars():
     """Class that initializes the object Star for the N-Body Simulation and Visualization
     
@@ -159,6 +170,10 @@ class Stars():
         init_velocity (list): Initial orbital velocity of the star as a list of directional velocities in meter/second
         radius (float/int, optional): Radius of the Star in meters
         density (float, optional): Density of the Star in kilograms/meter^3
+        position (array): Time series of the position of the planet.
+        velocity (array): Time series of the position of the planet.
+        force (float): Total Force acting on the Planet in a given time slice.
+        object_type (str): Identifier for type of Celestial Object.
         star_type (str): Type of Star based on density
         star_class (str): Star Classification based on temperature
 
@@ -192,6 +207,10 @@ class Stars():
             init_velocity (list): Initial Velocity of the Star as a list of directional velocities [vx, vy, vz]
             radius (float/int, optional): Radius of the Star in meters. Defaults to None.
             density (float, optional): Density of the Star in meters. Defaults to None.
+            position (array): Time series of the position of the planet.
+            velocity (array): Time series of the position of the planet.
+            force (float): Total Force acting on the Planet in a given time slice.
+            object_type (str): Identifier for type of Celestial Object.
 
         Raises:
             TypeError: If datatype of the input arguements are not fulfilled.
@@ -237,6 +256,10 @@ class Stars():
             self.density = density
             vol = self.mass/self.density
             self.radius = np.cbrt((3/4) * vol / np.pi)
+        self.position = None
+        self.velocity = None
+        self.force = None
+        self.object_type = "star"
         
     @property
     def radius(self):
@@ -384,8 +407,6 @@ class Stars():
                 raise ValueError("Temperature of Star Too Low and uncharacteristic of Giants. Modification to Temperature needed")
         
     
-
-
 class Galaxy():
     """Class that Initializes a Galaxy
 
