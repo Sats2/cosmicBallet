@@ -84,7 +84,7 @@ class Planets():
         self.init_velocity = np.array(init_velocity)
         self.position = None
         self.velocity = None
-        self.force = np.zeros(3, dtype="float64")
+        self.force = np.zeros(3)
         self.object_type = "planet"
     
     @property
@@ -258,7 +258,7 @@ class Stars():
             self.radius = np.cbrt((3/4) * vol / np.pi)
         self.position = None
         self.velocity = None
-        self.force = np.zeros(3, dtype="float64")
+        self.force = np.zeros(3)
         self.object_type = "star"
         
     @property
@@ -539,10 +539,10 @@ class BlackHole():
         try:
             assert isinstance(name, str), "Black Hole property 'name' must be of type string"
             assert isinstance(mass, (float, int)), "Black Hole property 'mass' must be of type float/int"
-            assert(init_position, list), "Black Hole property 'init_position' must be of type list"
-            assert(init_velocity, list), "Black Hole property 'init_velocity' must be of type list"
+            assert isinstance(init_position, list), "Black Hole property 'init_position' must be of type list"
+            assert isinstance(init_velocity, list), "Black Hole property 'init_velocity' must be of type list"
             if angular_momentum is not None:
-                assert(angular_momentum, list), "Black Hole property 'angular_momentum' must be of type list"
+                assert isinstance(angular_momentum, list), "Black Hole property 'angular_momentum' must be of type list"
         except AssertionError:
             raise TypeError
         try:

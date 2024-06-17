@@ -1,23 +1,9 @@
 import Constants as const
 import numpy as np
 from typing import Union
-from .CelestialObjects import *
-
-#TODO: Complete the implementation for Runge-Kutta 4th Order
-def runge_kutta4():
-    pass
-
-#TODO: Complete the implementation for the Leapfrog method
-def leapfrog():
-    pass
-
-#TODO: Complete the implementation for the Forward Euler method
-def forward_euler():
-    pass
-
-#TODO: Complete the implementation for the Simplectic Euler method
-def simplectic_euler():
-    pass
+import warnings
+from numba import njit
+from CelestialObjects import *
 
 
 class Simulator():
@@ -45,6 +31,7 @@ class Simulator():
         time_unit_correction(): Performs the conversion of values of the attributes 'simulation_time' and 'time_step' from
                                 the entered unit to seconds that is later used for simulation.
         solve(): Performs the N-Body Simulation based on the input parameters and attributes of the class
+
     """
     def __init__(self, celestial_bodies:list, method:str, solver:str, time_step:Union[float,int], 
                  simulation_time:Union[float,int], time_unit:str="seconds") -> None:
@@ -113,22 +100,119 @@ class Simulator():
                 self.time_unit *= const.YEAR_TO_sEC
             else:
                 raise ValueError("Time Unit Unrecognized. Select from 'hours/days/months/years'")
+            
+    def __collision_check(self):
+        pass
     
+    def __calculate_forces(self):
+        """A private method within the Simulator Class that calculates the total acceleration acting on a celestial body in an N-Body Simulation. Collision checks are also
+        performed to prevent numerical singularities in the force calculations.
+        """
+        for body in self.celestial_bodies:
+            body.force[:] = 0.0
+        for i, body1 in enumerate(self.celestial_bodies):
+            for j, body2 in enumerate(self.celestial_bodies):
+                if i != j:
+                    r = body2.position - body1.position
+                    distance = np.linalg.norm(r)
+                    if distance <= (body1.radius + body2.radius):
+                        self.__collision_check()
+                    else:
+                        force_magnitude = const.G * body1.mass * body2.mass / np.power(distance, 2)
+                        force_direction = r  / distance
+                        body1.force += force_magnitude * force_direction
+                        
+    
+    def __forward_euler_update(self):
+        """Private method within the Simulator Class that updates the trajectory of the celestial objects calculated with the forward euler solver.
+        """
+        for body in self.celestial_bodies:
+            body.velocity += (body.force * float(self.time_step / body.mass)) 
+            body.position += body.velocity * self.time_step
+    
+    def __forward_euler(self):
+        """Private method within the Simulator Class that implements the ODE Solver with Forward Euler method.
+        """
+        self.positions = [[] for _ in self.celestial_bodies]
+        num_steps = math.ceil(self.simulation_time / self.time_step)
+        for step in range(num_steps):
+            if step == 0:
+                for body in self.celestial_bodies:
+                    body.position = body.init_position.astype(np.float64)
+                    body.velocity = body.init_velocity.astype(np.float64)
+            self.__calculate_forces()
+            self.__forward_euler_update()
+            for i, body in enumerate(self.celestial_bodies):
+                self.positions[i].append(body.position.copy())
+    
+    def __rk4_step(self):
+        original_position = np.array([body.position for body in self.celestial_bodies])
+        original_velocity = np.array([body.velocity for body in self.celestial_bodies])
+        # Compute k1
+        self.__calculate_forces()
+        k1_r = self.time_step * original_velocity
+        k1_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
+        # Compute k2
+        for i,body in enumerate(self.celestial_bodies):
+            body.position = original_position[i] + 0.5*k1_r[i]
+            body.velocity = original_velocity[i] + 0.5*k1_v[i]
+        self.__calculate_forces()
+        k2_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
+        k2_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
+        # Compute k3
+        for i,body in enumerate(self.celestial_bodies):
+            body.position = original_position[i] + 0.5*k2_r[i]
+            body.velocity = original_velocity[i] + 0.5*k2_v[i]
+        self.__calculate_forces()
+        k3_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
+        k3_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
+        # Compute k4
+        for i,body in enumerate(self.celestial_bodies):
+            body.position = original_position[i] + k3_r[i]
+            body.velocity = original_velocity[i] + k3_v[i]
+        self.__calculate_forces()
+        k4_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
+        k4_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
+        # Position and Velocity Update
+        for i,body in enumerate(self.celestial_bodies):
+            body.position = original_position[i] + (k1_r[i] + 2*k2_r[i] + 2*k3_r[i] + k4_r[i])/6
+            body.velocity = original_velocity[i] + (k1_v[i] + 2*k2_v[i] + 2*k3_v[i] + k4_v[i])/6
+
+    def __runge_kutta4(self):
+        num_steps = math.ceil(self.simulation_time / self.time_step)
+        self.positions = [[] for _ in self.celestial_bodies]
+        for step in range(num_steps):
+            if step == 0:
+                for body in self.celestial_bodies:
+                    body.position = body.init_position.astype(np.float64)
+                    body.velocity = body.init_velocity.astype(np.float64)
+            self.__rk4_step()
+            for i,body in enumerate(self.celestial_bodies):
+                self.positions[i].append(body.position.copy())
+    
+    def __leapfrog(self):
+        pass
+
+    def __simplectic_euler(self):
+        pass
+
     #TODO: Complete the function calls to simulate the trajectories
     def solve(self)->None:
-        if self.simulation_method.lower() == "langrangian":
+        if self.simulation_method.lower() == "lagrangian":
             if self.solver.lower() == "euler":
-                forward_euler()
+                if math.ceil(self.simulation_time / self.time_step) > 1e6:
+                    warnings.warn("Number of Time Steps Too Large. Error accumulation may impact accuracy of results. Consider rk4 or Hamiltonian Mechanics to solve!")
+                self.__forward_euler()
             elif self.solver.lower() == "rk4":
-                runge_kutta4()
+                self.__runge_kutta4()
             else:
                 raise ValueError("Unidentified Solver. Select either Euler or RK4 (Runge-Kutta 4th Order)")
         elif self.simulation_method.lower() == "hamiltonian":
             if self.solver.lower() == "leapfrog":
-                leapfrog()
+                self.__leapfrog()
             elif self.solver.lower() == "simp_euler":
-                simplectic_euler()
+                self.__simplectic_euler()
             else:
                 raise ValueError("Unidentified Solver. Select either Leapfrog or Simp_Euler (Simplectic Euler)")
         else:
-            raise ValueError("Unidentified Simulation Method. Select either Langrangian or Hamiltonian")
+            raise ValueError("Unidentified Simulation Method. Select either Lagrangian or Hamiltonian")
