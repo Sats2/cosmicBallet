@@ -26,7 +26,7 @@ class Planets():
         position (array): Time series of the position of the planet.
         velocity (array): Time series of the position of the planet.
         object_type (str): Identifier for type of Celestial Object.
-        force (float): Total Force acting on the Planet in a given time slice.
+        force (array): Total Force acting on the Planet in a given time slice.
 
     Methods:
         radius(): Gets the value of the radius
@@ -52,7 +52,7 @@ class Planets():
             init_velocity (list): Initial Velocity of the Planet in motion as a list of directional velocities [vx, vy, vz] in meter/second
             position (array): Time series of the position of the planet.
             velocity (array): Time series of the position of the planet.
-            force (float): Total Force acting on the Planet in a given time slice.
+            force (array): Total Force acting on the Planet in a given time slice.
             object_type (str): Identifier for type of Celestial Object.
             
         Raises:
@@ -84,7 +84,7 @@ class Planets():
         self.init_velocity = np.array(init_velocity)
         self.position = None
         self.velocity = None
-        self.force = None
+        self.force = np.zeros(3, dtype="float64")
         self.object_type = "planet"
     
     @property
@@ -172,7 +172,7 @@ class Stars():
         density (float, optional): Density of the Star in kilograms/meter^3
         position (array): Time series of the position of the planet.
         velocity (array): Time series of the position of the planet.
-        force (float): Total Force acting on the Planet in a given time slice.
+        force (array): Total Force acting on the Planet in a given time slice.
         object_type (str): Identifier for type of Celestial Object.
         star_type (str): Type of Star based on density
         star_class (str): Star Classification based on temperature
@@ -209,7 +209,7 @@ class Stars():
             density (float, optional): Density of the Star in meters. Defaults to None.
             position (array): Time series of the position of the planet.
             velocity (array): Time series of the position of the planet.
-            force (float): Total Force acting on the Planet in a given time slice.
+            force (array): Total Force acting on the Planet in a given time slice.
             object_type (str): Identifier for type of Celestial Object.
 
         Raises:
@@ -258,7 +258,7 @@ class Stars():
             self.radius = np.cbrt((3/4) * vol / np.pi)
         self.position = None
         self.velocity = None
-        self.force = None
+        self.force = np.zeros(3, dtype="float64")
         self.object_type = "star"
         
     @property
