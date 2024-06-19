@@ -2,7 +2,7 @@ import Constants as const
 import numpy as np
 from typing import Union
 import warnings
-from numba import njit
+import math
 from CelestialObjects import *
 
 
@@ -20,9 +20,6 @@ class Simulator():
     Attributes:
         celestial_bodies (list): A list of all celestial bodies used for N-Body Simulation, each item in list being an object
                                 available in the CelestialObjects module.
-        simulation_method (str): A string indicating user choise between Langrangian and Hamiltonian Mechanics for simulation
-        sovler (str): The type of solver to be used for solving the system of Ordinary Differential Equations in the N-Body
-                     Simulations.
         time_step (float/int): Discretization interval for the time used for simulation
         simulation_time (flaot/int): Total time for which simulation is needed.
         time_unit (str, optional): Unit of both the time values in the class. Defaults to seconds
@@ -30,17 +27,16 @@ class Simulator():
     Methods:
         time_unit_correction(): Performs the conversion of values of the attributes 'simulation_time' and 'time_step' from
                                 the entered unit to seconds that is later used for simulation.
-        solve(): Performs the N-Body Simulation based on the input parameters and attributes of the class
+        solve(simulation_method, solver): Performs the N-Body Simulation based on the input parameters and attributes of 
+                                            the class and the user input choice of formulation and solver.
 
     """
-    def __init__(self, celestial_bodies:list, method:str, solver:str, time_step:Union[float,int], 
+    def __init__(self, celestial_bodies:list, time_step:Union[float,int], 
                  simulation_time:Union[float,int], time_unit:str="seconds") -> None:
         """Initializes the Simulator class.
 
         Args:
             celestial_bodies (list): A list of objects from the CelestialObjects module for which the simulation is needed.
-            method (str): Selection between Langranian and Hamiltonian Mechanics
-            solver (str): Choice of solver for simulation
             time_step (float,int): Time discretization value for the simulation
             simulation_time (float,int): Total time for simulation (same as end time)
             time_unit (str, optional): Unit of the arguements 'time_step' and 'simulation_time'. Defaults to seconds.
@@ -50,8 +46,6 @@ class Simulator():
             ValueError: Raised when parameter values are out-of-bounds.
         """
         try:
-            assert isinstance(method, str), "Simulator attribute 'method' can only be of type string"
-            assert isinstance(solver, str), "Simulator attribute 'solver' can only be of type string"
             assert isinstance(time_step, (float,int)), "Simulator attribute 'time_step' can only be of type float"
             assert isinstance(simulation_time, (float,int)), "Simulator attribute 'simulation time' can only be of type float/int"
             if time_unit is not None:
@@ -72,10 +66,8 @@ class Simulator():
         except AssertionError:
             raise ValueError
         self.celestial_bodies = celestial_bodies
-        self.simulation_method = method
         self.time_step = time_step
-        self.simulation_time = simulation_time 
-        self.solver = solver
+        self.simulation_time = simulation_time
         self.time_unit = time_unit
 
     @property
@@ -137,15 +129,18 @@ class Simulator():
         num_steps = math.ceil(self.simulation_time / self.time_step)
         for step in range(num_steps):
             if step == 0:
-                for body in self.celestial_bodies:
+                for i,body in enumerate(self.celestial_bodies):
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
+                    self.positions[i].append(body.position.copy())
             self.__calculate_forces()
             self.__forward_euler_update()
             for i, body in enumerate(self.celestial_bodies):
                 self.positions[i].append(body.position.copy())
     
     def __rk4_step(self):
+        """Private Method within the Simulator Class that performs the time update according to the Runge-Kutta method.
+        """
         original_position = np.array([body.position for body in self.celestial_bodies])
         original_velocity = np.array([body.velocity for body in self.celestial_bodies])
         # Compute k1
@@ -179,40 +174,132 @@ class Simulator():
             body.velocity = original_velocity[i] + (k1_v[i] + 2*k2_v[i] + 2*k3_v[i] + k4_v[i])/6
 
     def __runge_kutta4(self):
+        """Private method of the Simulator Class that implements the 4th Order Runge-Kutta solver to solve the ODE System.
+        """
         num_steps = math.ceil(self.simulation_time / self.time_step)
         self.positions = [[] for _ in self.celestial_bodies]
         for step in range(num_steps):
             if step == 0:
-                for body in self.celestial_bodies:
+                for i,body in enumerate(self.celestial_bodies):
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
+                    self.positions[i].append(body.position.copy())
             self.__rk4_step()
             for i,body in enumerate(self.celestial_bodies):
                 self.positions[i].append(body.position.copy())
     
+    def __calculate_potential_gradient(self):
+        """Private function of the Simulator Class that generates the gradient of the potential energy for each object
+        in a time slice that is used to solve the ODE System generated with Hamiltonian Dynamics.
+        """
+        num_body = len(self.celestial_bodies)
+        self.potential_gradient = np.zeros((num_body,3))
+        for i in range(num_body):
+            for j in range(i+1,num_body):
+                r = self.celestial_bodies[j].position - self.celestial_bodies[i].position
+                distance = np.linalg.norm(r)
+                if distance <= (self.celestial_bodies[j].radius + self.celestial_bodies[i].radius):
+                    self.__collision_check()
+                else:
+                    force_magnitude = const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass / distance**2
+                    force = force_magnitude * r / distance
+                    self.potential_gradient[i] += force
+                    self.potential_gradient[j] -= force
+
+    def __leapfrog_step(self):
+        """Private method of the Simulator class that updates the momentum and position of all bodies being simulated 
+        in a time slice for the Leapfrog Integrator.
+        """
+        self.__calculate_potential_gradient()
+        for i,body in enumerate(self.celestial_bodies):
+            body.momentum += 0.5 * self.time_step * self.potential_gradient[i]
+        for body in self.celestial_bodies:
+            body.position += self.time_step * body.momentum / body.mass
+        self.__calculate_potential_gradient()
+        for i,body in enumerate(self.celestial_bodies):
+            body.momentum += 0.5 * self.time_step * self.potential_gradient[i]
+
+
     def __leapfrog(self):
-        pass
+        """Private method of the Simulator class that implements the Leapfrog Integrator to solve the ODE System that
+        is generated from Hamiltonian Dynamics for the N-Body Problem using the Leapfrog Integrator scheme.
+        """
+        self.positions = [[] for _ in self.celestial_bodies]
+        num_steps = math.ceil(self.simulation_time / self.time_step)
+        for step in range(num_steps):
+            if step == 0:
+                for i,body in enumerate(self.celestial_bodies):
+                    body.position = body.init_position.astype(np.float64)
+                    body.momentum = body.init_velocity.astype(np.float64) * body.mass
+                    self.positions[i].append(body.position.copy())
+            self.__leapfrog_step()
+            for i,body in enumerate(self.celestial_bodies):
+                self.positions[i].append(body.position.copy())
 
-    def __simplectic_euler(self):
-        pass
+    def __forest_ruth_step(self):
+        """Private method of the Simulator class that updates the momentum and position of all bodies being simulated
+        in a time slice for the Forest-Ruth Integrator.
+        """
+        gamma = 1 / (2 - np.cbrt(2))
+        w1 = gamma / 2
+        w2 = (1 - gamma) / 2
+        w3 = w2
+        w4 = w1
+        steps = [w1, w2, w3, w4]
+        for w in steps:
+            for body in self.celestial_bodies:
+                body.position += (w * self.time_step * body.momentum /body.mass)
+            self.__calculate_potential_gradient()
+            for i,body in enumerate(self.celestial_bodies):
+                body.momentum += (w * self.time_step * self.potential_gradient[i])
 
-    #TODO: Complete the function calls to simulate the trajectories
-    def solve(self)->None:
-        if self.simulation_method.lower() == "lagrangian":
-            if self.solver.lower() == "euler":
+    def __forest_ruth(self):
+        """Private method of the Simulator class that implements the Forest-Ruth Integrator to solve the ODE System that
+        is generated from Hamiltonian Dynamics for the N-Body Problem using the Forest-Ruth Integrator scheme.
+        """
+        self.positions = [[] for _ in self.celestial_bodies]
+        num_steps =math.ceil(self.simulation_time / self.time_step)
+        for stps in range(num_steps):
+            if stps == 0:
+                for i,body in enumerate(self.celestial_bodies):
+                    body.position = body.init_position.astype(np.float64)
+                    body.momentum = body.init_velocity.astype(np.float64) * body.mass
+                    self.positions[i].append(body.position.copy())
+            self.__forest_ruth_step()
+            for i,body in enumerate(self.celestial_bodies):
+                self.positions[i].append(body.position.copy())
+
+    def solve(self, simulation_method:str="Lagrangian", solver:str="RK4")->None:
+        """Method of the Simulator class that solves the ODE System of the N-Body Problem to generate results for the 
+        N-Body Problem Simulation.
+
+        The method contains two solvers for Lagrangian and Hamiltonian Mechanics each. The Forward Euler and 4th Order 
+        Runge-Kutta method for Lagrangian Mechanics, and, the Leapfrog and Forest-Ruth methods for the Hamiltonian Mechanics
+        formulation.
+
+        Args:
+            simulation_method (str, optional): The formulation of the N-Body Problem the method must follow to perform the
+                                                simulation. Defaults to "Lagrangian".
+            solver (str, optional): The integration scheme the method needs to use to perform the simulation. Defaults to "RK4".
+
+        Raises:
+            ValueError: Raised when an unrecognized solver or simulation scheme is entered.
+        """ 
+        if simulation_method.lower() == "lagrangian":
+            if solver.lower() == "euler":
                 if math.ceil(self.simulation_time / self.time_step) > 1e6:
                     warnings.warn("Number of Time Steps Too Large. Error accumulation may impact accuracy of results. Consider rk4 or Hamiltonian Mechanics to solve!")
                 self.__forward_euler()
-            elif self.solver.lower() == "rk4":
+            elif solver.lower() == "rk4":
                 self.__runge_kutta4()
             else:
                 raise ValueError("Unidentified Solver. Select either Euler or RK4 (Runge-Kutta 4th Order)")
-        elif self.simulation_method.lower() == "hamiltonian":
-            if self.solver.lower() == "leapfrog":
+        elif simulation_method.lower() == "hamiltonian":
+            if solver.lower() == "leapfrog":
                 self.__leapfrog()
-            elif self.solver.lower() == "simp_euler":
-                self.__simplectic_euler()
+            elif solver.lower() == "forest_ruth":
+                self.__forest_ruth()
             else:
-                raise ValueError("Unidentified Solver. Select either Leapfrog or Simp_Euler (Simplectic Euler)")
+                raise ValueError("Unidentified Solver. Select either Leapfrog or Forest_Ruth")
         else:
             raise ValueError("Unidentified Simulation Method. Select either Lagrangian or Hamiltonian")

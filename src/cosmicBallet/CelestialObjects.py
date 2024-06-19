@@ -23,10 +23,11 @@ class Planets():
                                 Gaseous Planets)
         init_position (list): Initial position of the Planet in space as a list of coordinates in meters
         init_velocity (list): Initial orbital velocity of the Planet as a list of directional velocities in meter/second.
-        position (array): Time series of the position of the planet.
-        velocity (array): Time series of the position of the planet.
+        position (array): Position of the planet in a given time slice.
+        velocity (array): Velocity of the planet in a given time slice.
         object_type (str): Identifier for type of Celestial Object.
         force (array): Total Force acting on the Planet in a given time slice.
+        momentum (array): Momentum of the Planet in a given time slice.
 
     Methods:
         radius(): Gets the value of the radius
@@ -49,10 +50,8 @@ class Planets():
             planet_contour (str): Contour of the Planet solely for visualization, excepted "Earth-like/Mars-like" for Rocky Planets
                                     and "Jupiter-like/Neptune-like" for Gaseous Planets
             init_position (list): Initial Position of the Planet in motion as a list of coordinates [x, y, z] in meters from origin
-            init_velocity (list): Initial Velocity of the Planet in motion as a list of directional velocities [vx, vy, vz] in meter/second
-            position (array): Time series of the position of the planet.
-            velocity (array): Time series of the position of the planet.
-            force (array): Total Force acting on the Planet in a given time slice.
+            init_velocity (list): Initial Velocity of the Planet in motion as a list of directional velocities [vx, vy, vz] in 
+                                    meter/second
             object_type (str): Identifier for type of Celestial Object.
             
         Raises:
@@ -84,6 +83,7 @@ class Planets():
         self.init_velocity = np.array(init_velocity)
         self.position = None
         self.velocity = None
+        self.momentum = None
         self.force = np.zeros(3)
         self.object_type = "planet"
     
@@ -170,9 +170,10 @@ class Stars():
         init_velocity (list): Initial orbital velocity of the star as a list of directional velocities in meter/second
         radius (float/int, optional): Radius of the Star in meters
         density (float, optional): Density of the Star in kilograms/meter^3
-        position (array): Time series of the position of the planet.
-        velocity (array): Time series of the position of the planet.
+        position (array): Position of the star in a given time slice.
+        velocity (array): Velocity of the star in a given time slice.
         force (array): Total Force acting on the Planet in a given time slice.
+        momentum (array): Momentum of the star in a given time slice.
         object_type (str): Identifier for type of Celestial Object.
         star_type (str): Type of Star based on density
         star_class (str): Star Classification based on temperature
@@ -207,10 +208,6 @@ class Stars():
             init_velocity (list): Initial Velocity of the Star as a list of directional velocities [vx, vy, vz]
             radius (float/int, optional): Radius of the Star in meters. Defaults to None.
             density (float, optional): Density of the Star in meters. Defaults to None.
-            position (array): Time series of the position of the planet.
-            velocity (array): Time series of the position of the planet.
-            force (array): Total Force acting on the Planet in a given time slice.
-            object_type (str): Identifier for type of Celestial Object.
 
         Raises:
             TypeError: If datatype of the input arguements are not fulfilled.
@@ -258,6 +255,7 @@ class Stars():
             self.radius = np.cbrt((3/4) * vol / np.pi)
         self.position = None
         self.velocity = None
+        self.momentum = None
         self.force = np.zeros(3)
         self.object_type = "star"
         
