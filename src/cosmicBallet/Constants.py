@@ -8,7 +8,6 @@ LY = 9.4607e15              # Light Year (Distance Travelled by Light in 1 year)
 C = 2.99792458e8            # Speed of Light
 
 
-
 # Conversion Factors
 
 LBS_TO_KG = 0.4535924       # Conversion from pounds (lbs) to kilograms (kg)
@@ -21,3 +20,38 @@ HOUR_TO_SEC = 3600          # Conversion from hours to seconds (s)
 DAY_TO_SEC = 24*HOUR_TO_SEC # Conversion from days to seconds (s)
 MON_TO_SEC = 30*DAY_TO_SEC  # Conversion from months to seconds (s)
 YEAR_TO_sEC = 12*MON_TO_SEC # Conversion from years to seconds (s)
+
+
+# Materials Dictionaries with material properties, all values in pascals (Pa)
+
+silicates = {
+            "name":"silicates",
+            "poisson_ratio":0.25,
+            "youngs_modulus":70e9,
+            "yield_strength":150e6
+            }
+iron_nickel = {
+            "name":"iron_nickel",
+            "poisson_ratio":0.3,
+            "youngs_modulus":150e9,
+            "yield_strength":300e6
+            }
+water_ice = {
+            "name":"water_ice",
+            "poisson_ratio":0.33,
+            "youngs_modulus":9.3e9,
+            "yield_strength":5e6
+            }
+ammonia_ice = {
+            "name":"ammonia_ice",
+            "poisson_ratio":0.33,
+            "youngs_modulus":7e9,
+            "yield_strength":5e6
+            }
+methane_ice = {
+            "name":"methane_ice",
+            "poisson_ratio":0.33,
+            "youngs_modulus":4.5e9,
+            "yield_strength":5e6
+}
+material_property_list = [silicates, iron_nickel, water_ice, ammonia_ice, methane_ice]
