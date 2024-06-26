@@ -21,10 +21,10 @@ def mass_conversion(mass_list:list, unit:str)->list:
         list: Mass list in SI Units.
 
     Example:
-        test_mass = [1,2]
-        test_mass_si = mass_conversion(mass_list=test_mass, unit="Ms")
-        print(test_mass_si)
-        >> [1.9884e30, 3.9768e30]
+        >>> test_mass = [1,2]
+        >>> test_mass_si = mass_conversion(mass_list=test_mass, unit="Ms")
+        >>> print(test_mass_si)
+        [1.9884e30, 3.9768e30]
     """
     try:
         assert isinstance(mass_list, list), "Arguement mass_list must be of type list"
@@ -63,10 +63,10 @@ def velocity_conversion(velocity_list:list, unit:str)->list:
         list: Velocity list in SI Units.
 
     Example:
-        test_velocity = [100,200]
-        test_velocity_si = velocity_conversion(velocity_list=test_velocity, unit="Ms")
-        print(test_velocity_si)
-        >> [44.704, 89.408]
+        >>> test_velocity = [100,200]
+        >>> test_velocity_si = velocity_conversion(velocity_list=test_velocity, unit="Ms")
+        >>> print(test_velocity_si)
+        [44.704, 89.408]
     """
     try:
         assert isinstance(velocity_list, list), "Arguement speed_list must be of type list"
@@ -105,10 +105,10 @@ def distance_conversion(distance_list:list, unit:str)->list:
         list: Distance list in SI Units.
 
     Example:
-        test_distance = [1,2]
-        test_distance_si = distance_conversion(distance_list=test_distance, unit="ly")
-        print(test_distance_si)
-        >> [9.4607e15, 1.89214e16]
+        >>> test_distance = [1,2]
+        >>> test_distance_si = distance_conversion(distance_list=test_distance, unit="ly")
+        >>> print(test_distance_si)
+        [9.4607e15, 1.89214e16]
     """
     try:
         assert isinstance(distance_list, list), "Arguement distance_list must be of type list"
@@ -150,10 +150,10 @@ def temperature_conversion(temperature:Union[float,int], unit:str)->float:
         float: Temperature value in SI Units
 
     Example:
-        test_temp = 212
-        test_temp_si = temperature_conversion(temperature=test_temp, unit="F")
-        print(test_temp_si)
-        >> 373.15
+        >>> test_temp = 212
+        >>> test_temp_si = temperature_conversion(temperature=test_temp, unit="F")
+        >>> print(test_temp_si)
+        373.15
     """
     try:
         assert isinstance(temperature, (float,int)), "Arguement temperature must be of type float/int"

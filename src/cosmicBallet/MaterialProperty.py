@@ -28,8 +28,8 @@ class MaterialProperty():
             ValueError: Raised when there is value mismatch or iinconsistency in the number of materials.
         """
         try:
-            assert isinstance(material_list, str), "Material List must be a list of material names"
-            assert isinstance(material_fraction, str), "Material Fraction must be a list of material fractions"
+            assert isinstance(material_list, list), "Material List must be a list of material names"
+            assert isinstance(material_fraction, list), "Material Fraction must be a list of material fractions"
             for item in material_list:
                 assert isinstance(item, str), "Each item in material_list must be of type string"
             sum_fraction = 0
@@ -46,14 +46,14 @@ class MaterialProperty():
         self.material_list = material_list
         self.material_fraction = material_fraction
     
-    def planet_material_property(self)->list:
+    def planet_material_property(self)->dict:
         """Method that determines the material properties of the planet using weighted aggregates technique.
 
         Raises:
             ValueError: When the material in the input material list is not available in the material library.
 
         Returns:
-            list: A list containing the Poisson Ratio, Young's Modulus and Yield Strength of the planet in the same order.
+            dict: A list containing the Poisson Ratio, Young's Modulus and Yield Strength of the planet in the same order.
         """
         material_name_list = ["silicates", "iron_nickel", "methane_ice", "water_ice", "ammonia_ice"]
         try:
@@ -70,5 +70,9 @@ class MaterialProperty():
             planet_poisson += self.material_fraction[i] * material["poisson_ratio"]
             planet_yield_strength += self.material_fraction[i] * material["yield_strength"]
             planet_youngs_modulus += self.material_fraction[i] * material["youngs_modulus"]
-        planet_property_list = [planet_poisson, planet_youngs_modulus, planet_yield_strength]
+        planet_property_list = {
+                            "poisson_ratio":planet_poisson,
+                            "youngs_modulus":planet_youngs_modulus,
+                            "yield_strength":planet_yield_strength
+                            }
         return planet_property_list

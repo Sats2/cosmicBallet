@@ -28,6 +28,8 @@ class Planets():
         object_type (str): Identifier for type of Celestial Object.
         force (array): Total Force acting on the Planet in a given time slice.
         momentum (array): Momentum of the Planet in a given time slice.
+        deformation (float): Deformation of the planet on collision.
+        material_property (dict): Aggregate Material properties of the planet based on abundant materials.
 
     Methods:
         radius(): Gets the value of the radius
@@ -36,10 +38,11 @@ class Planets():
         mass(value): Sets the value of the mass
         volume(): Calculates and updates the volume of the planet
         density(): Calculates and updates the density of the planet
+        apply_deformation(): Applies the deformation to the planet on collision
     """
 
     def __init__(self, name:str, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
-                 planet_contour:str, init_position:list, init_velocity:list):
+                 planet_contour:str, init_position:list, init_velocity:list, material_property:dict):
         """Initializes the Planet object.
 
         Args:
@@ -53,6 +56,7 @@ class Planets():
             init_velocity (list): Initial Velocity of the Planet in motion as a list of directional velocities [vx, vy, vz] in 
                                     meter/second
             object_type (str): Identifier for type of Celestial Object.
+            material_property (dict): A dictionary containing the material properties of the planet.
             
         Raises:
             TypeError: Incase the input values do not match the expected data type
@@ -66,6 +70,7 @@ class Planets():
             assert isinstance(planet_contour, str), "Planet Property 'planet_contour' can only be of type string"
             assert isinstance(init_position, list), "Planet Property 'init_position' can only be of type list"
             assert isinstance(init_velocity, list), "Planet Property 'init_velocity' can only be of type list"
+            assert isinstance(material_property, dict), "Planet Property 'material_property' must be of type dictionary"
         except AssertionError:
             raise TypeError
         try:
@@ -81,9 +86,12 @@ class Planets():
         self.planet_contour = planet_contour
         self.init_position = np.array(init_position)
         self.init_velocity = np.array(init_velocity)
+        self.material_property = material_property
+        self.deformation = 0.0
         self.position = None
         self.velocity = None
         self.momentum = None
+        self.trajectory = []
         self.force = np.zeros(3)
         self.object_type = "planet"
     
@@ -152,6 +160,15 @@ class Planets():
         except AssertionError:
             raise ValueError
         return self._mass/self.volume
+    
+    def apply_deformation(self, deformation:float)->None:
+        """Applies the deformation to the planet on collision during N-Body Simulation
+
+        Args:
+            deformation (float): The value of deformation to determine the chunk of mass deformed.
+        """
+        self.deformation += deformation
+        self.radius -= deformation
     
 
 class Stars():
