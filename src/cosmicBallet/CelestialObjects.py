@@ -28,8 +28,8 @@ class Planets():
         object_type (str): Identifier for type of Celestial Object.
         force (array): Total Force acting on the Planet in a given time slice.
         momentum (array): Momentum of the Planet in a given time slice.
-        deformation (float): Deformation of the planet on collision.
         material_property (dict): Aggregate Material properties of the planet based on abundant materials.
+        trajectory (list): Holds the trajectory of the planet as a list of position arrays.
 
     Methods:
         radius(): Gets the value of the radius
@@ -38,7 +38,6 @@ class Planets():
         mass(value): Sets the value of the mass
         volume(): Calculates and updates the volume of the planet
         density(): Calculates and updates the density of the planet
-        apply_deformation(): Applies the deformation to the planet on collision
     """
 
     def __init__(self, name:str, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
@@ -87,7 +86,6 @@ class Planets():
         self.init_position = np.array(init_position)
         self.init_velocity = np.array(init_velocity)
         self.material_property = material_property
-        self.deformation = 0.0
         self.position = None
         self.velocity = None
         self.momentum = None
@@ -160,15 +158,53 @@ class Planets():
         except AssertionError:
             raise ValueError
         return self._mass/self.volume
-    
-    def apply_deformation(self, deformation:float)->None:
-        """Applies the deformation to the planet on collision during N-Body Simulation
+
+
+class Fragments():
+    """Internal class that holds the additional fragments generated from the collision of two planets
+
+    Attributes:
+        mass (float): Mass of the Fragment
+        velocity (array): Velocity of the fragment
+        force (array): Force acting on the fragment
+        momentum (array): Momentum of the fragment
+        radius (float): Radius of the fragment
+        position (array): Position of the fragment in space.
+        name (str): Generic Name for the Fragment
+        material_property (dict): Material Property of the Fragment.
+        volume (float): Volume of the Fragment
+        density (float): Density of the Fragment
+        planet_type (str): Define the object as a Fragment
+        trajectory (list): List containing the trajectory of the frament.
+    """
+    def __init__(self, name:str, mass:float, velocity:np.array, radius:float, position:np.array, 
+                 material_property:dict, force:np.array=None) -> None:
+        """Constructor for the Fragments class
 
         Args:
-            deformation (float): The value of deformation to determine the chunk of mass deformed.
+            name (str): Name of the fragment (generic name)
+            mass (float): Mass of the fragment
+            velocity (np.array): Velocity of the fragment
+            force (np.array): Force acting on the fragment
+            radius (float): Radius of the fragment
+            position (np.array): Position of the fragment in space.
+            material_property (dict): Material Property of the fragment.
         """
-        self.deformation += deformation
-        self.radius -= deformation
+        self.mass = mass
+        self.velocity = velocity
+        if force is not None:
+            self.force = force
+        else:
+            self.force = np.zeros(3)
+        self.momentum = mass * velocity
+        self.radius = radius
+        self.position = position
+        self.name = name
+        self.material_property = material_property
+        self.volume = np.power(self.radius, 3) * np.pi * (4/3)
+        self.density = self.mass / self.volume
+        self.planet_type = "fragment"
+        self.trajectory = []
     
 
 class Stars():
@@ -194,6 +230,7 @@ class Stars():
         object_type (str): Identifier for type of Celestial Object.
         star_type (str): Type of Star based on density
         star_class (str): Star Classification based on temperature
+        trajectory (list): Holds the trajectory of the star as a list of position arrays.
 
     Methods:
         radius(): Gets the radius of the star
@@ -275,6 +312,7 @@ class Stars():
         self.momentum = None
         self.force = np.zeros(3)
         self.object_type = "star"
+        self.trajectory = []
         
     @property
     def radius(self):
