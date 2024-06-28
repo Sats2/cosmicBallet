@@ -23,7 +23,10 @@ class Simulator():
         time_step (float/int): Discretization interval for the time used for simulation
         simulation_time (flaot/int): Total time for which simulation is needed.
         time_unit (str, optional): Unit of both the time values in the class. Defaults to seconds
-        positions (array): An array containing the trajectory of all celestial objects.
+        removed_object_list (list): A list containing all the celestial object that merged into other objects.
+        formulation (str): The type of ODE Formulation used -> Lagrangian or Hamiltonian
+        solver (str): The solver used to solve the system of ODEs
+        post_newton_correction (bool): User input whether to use Post Newton Correction of 1st order for the calculated forces.
     
     Methods:
         time_unit_correction(): Performs the conversion of values of the attributes 'simulation_time' and 'time_step' from
@@ -70,8 +73,6 @@ class Simulator():
         self.time_step = time_step
         self.simulation_time = simulation_time
         self.time_unit = time_unit
-        self.positions = None
-        self.n_body = len(celestial_bodies)
         self.removed_object_list = []
 
     @property
@@ -242,7 +243,12 @@ class Simulator():
                     elif distance > 0:
                         force_magnitude = const.G * body1.mass * body2.mass / np.power(distance, 2)
                         force_direction = r  / distance
-                        body1.force += force_magnitude * force_direction
+                        if self.post_newton_correction:
+                            v_rel = body1.velocity - body2.velocity
+                            v_rel = np.dot(v_rel, v_rel)
+                            body1.force += (force_magnitude * force_direction)*(1 + v_rel/const.C**2)
+                        else:
+                            body1.force += (force_magnitude * force_direction)
                         
     
     def __forward_euler_update(self):
@@ -335,6 +341,10 @@ class Simulator():
                 else:
                     force_magnitude = const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass / distance**2
                     force = force_magnitude * r / distance
+                    if self.post_newton_correction:
+                        v_rel = self.celestial_bodies[i].velocity - self.celestial_bodies[j].velocity
+                        v_rel = np.dot(v_rel, v_rel)
+                        force = force * (1 + v_rel/const.C**2)
                     self.potential_gradient[i] += force
                     self.potential_gradient[j] -= force
 
@@ -404,7 +414,7 @@ class Simulator():
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(body.position.copy())
 
-    def solve(self, simulation_method:str="Lagrangian", solver:str="RK4")->None:
+    def solve(self, formulation:str="Lagrangian", solver:str="RK4", correction:bool=False)->None:
         """Method of the Simulator class that solves the ODE System of the N-Body Problem to generate results for the 
         N-Body Problem Simulation.
 
@@ -416,8 +426,12 @@ class Simulator():
             simulation_method (str, optional): The formulation of the N-Body Problem the method must follow to perform the
                                                 simulation. Defaults to "Lagrangian".
             solver (str, optional): The integration scheme the method needs to use to perform the simulation. Defaults to "RK4".
+            correction (bool, optional): User input to whether the Post-Newton Correction term is applied or not. This is 
+                                        applicable to cases where heavy objects are relatively close to each other. Defaults to 
+                                        False.
 
         Raises:
+            TypeError: Raised when the input arguements are not of the defined datatype.
             ValueError: Raised when an unrecognized solver or simulation scheme is entered.
         """ 
         try:
@@ -425,7 +439,14 @@ class Simulator():
                 body.trajectory = []
         except:
             pass
-        if simulation_method.lower() == "lagrangian":
+        try:
+            assert isinstance(correction, bool), "The arguement correction needs to be of type bool"
+            assert isinstance(formulation, str), "The arguement formulation needs to be a string object"
+            assert isinstance(solver, str), "The arguement solver needs to be a string object"
+        except AssertionError:
+            raise TypeError
+        self.post_newton_correction = correction
+        if formulation.lower() == "lagrangian":
             if solver.lower() == "euler":
                 if math.ceil(self.simulation_time / self.time_step) > 1e6:
                     warnings.warn("Number of Time Steps Too Large. Error accumulation may impact accuracy of results. Consider rk4 or Hamiltonian Mechanics to solve!")
@@ -434,7 +455,7 @@ class Simulator():
                 self.__runge_kutta4()
             else:
                 raise ValueError("Unidentified Solver. Select either Euler or RK4 (Runge-Kutta 4th Order)")
-        elif simulation_method.lower() == "hamiltonian":
+        elif formulation.lower() == "hamiltonian":
             if solver.lower() == "leapfrog":
                 self.__leapfrog()
             elif solver.lower() == "forest_ruth":
