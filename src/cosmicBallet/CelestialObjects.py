@@ -175,6 +175,7 @@ class Fragments():
         volume (float): Volume of the Fragment
         density (float): Density of the Fragment
         planet_type (str): Define the object as a Fragment
+        object_type (str): Defines the object as a free fragment.
         trajectory (list): List containing the trajectory of the frament.
     """
     def __init__(self, name:str, mass:float, velocity:np.array, radius:float, position:np.array, 
@@ -204,6 +205,7 @@ class Fragments():
         self.volume = np.power(self.radius, 3) * np.pi * (4/3)
         self.density = self.mass / self.volume
         self.planet_type = "fragment"
+        self.object_type = "fragment"
         self.trajectory = []
     
 
@@ -285,7 +287,7 @@ class Stars():
             assert mass>0, "Star Property 'mass' must be a positive value"
             assert temperature>0, "Star Property 'temperature' must be a positive value"
             assert (name is not None), "Star Property 'name' cannot be None"
-            assert (radius is not None and density is not None), "Star Properties 'radius' and 'density' cannot be None"
+            assert (radius is not None or density is not None), "Star Properties 'radius' and 'density' cannot be None"
             if radius is not None:
                 assert radius>0, "Star Property 'radius' must be a positive value"
             if density is not None:

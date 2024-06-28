@@ -186,26 +186,43 @@ class Simulator():
             p1 (object): One of the colliding objects
             p2 (object): The other colliding object
         """
-        if p1.planet_type == "fragment" and p2.planet_type == "fragment":
-            self.__elastic_collision(p1=p1, p2=p2)
-            return
-        impact_velocity = np.linalg.norm(p1.velocity - p2.velocity)
-        if p1.mass > p2.mass:
-            impactor = p2
-            impacted = p2
+        if p1.object_type == "star" and p2.object_type == "star":
+            if p1.radius > p2.radius:
+                impactor = p2
+                impacted = p1
+            else:
+                impactor = p1
+                impacted = p2
+            self.__merge_objects(p1=impacted, p2=impactor)
+        elif p1.object_type == "star" or p2.object_type == "star":
+            if p1.object_type == "star":
+                impactor = p2
+                impacted = p1
+            else:
+                impactor = p1
+                impacted = p2
+            self.__merge_objects(p1=impacted, p2=impactor)
         else:
-            impactor = p1
-            impacted = p2
-        impact_energy = 0.5 * impactor.mass * impact_velocity**2
-        if p1.planet_type.lower() == "rocky" and p2.planet_type.lower() == "rocky":
-            if impact_energy > impacted.material_property["yield_strength"] * impacted.volume and \
-                impacted.volume > 1e4*impactor.volume:
-                fragments = self.__compute_fragments(impactor, impacted)
-                self.celestial_bodies.append([item for item in fragments])
+            if p1.planet_type == "fragment" and p2.planet_type == "fragment":
+                self.__elastic_collision(p1=p1, p2=p2)
+                return
+            impact_velocity = np.linalg.norm(p1.velocity - p2.velocity)
+            if p1.mass > p2.mass:
+                impactor = p2
+                impacted = p2
+            else:
+                impactor = p1
+                impacted = p2
+            impact_energy = 0.5 * impactor.mass * impact_velocity**2
+            if p1.planet_type.lower() == "rocky" and p2.planet_type.lower() == "rocky":
+                if impact_energy > impacted.material_property["yield_strength"] * impacted.volume and \
+                    impacted.volume > 1e4*impactor.volume:
+                    fragments = self.__compute_fragments(impactor, impacted)
+                    self.celestial_bodies.append([item for item in fragments])
+                else:
+                    self.__merge_objects(p1=impacted, p2=impactor)
             else:
                 self.__merge_objects(p1=impacted, p2=impactor)
-        else:
-            self.__merge_objects(p1=impacted, p2=impactor)
         return
     
     def __calculate_forces(self):

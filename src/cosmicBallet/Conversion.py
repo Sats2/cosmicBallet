@@ -39,8 +39,9 @@ def mass_conversion(mass_list:list, unit:str)->list:
         conversion_factor = const.MS
     else:
         raise ValueError("Unit not recognized. Select from 'lbs', 'Me' or 'Ms'.")
-    for item in mass_list:
-        item *= conversion_factor
+    for i,item in enumerate(mass_list):
+        item = item * conversion_factor
+        mass_list[i] = item
     return mass_list
 
 
@@ -81,8 +82,9 @@ def velocity_conversion(velocity_list:list, unit:str)->list:
         conversion_factor = const.KMPH_TO_MTPS
     else:
         raise ValueError("Unit not recognized. Select from 'ftps', 'mph', or 'kmph'.")
-    for item in velocity_list:
-        item *= conversion_factor
+    for i,item in enumerate(velocity_list):
+        item = item * conversion_factor
+        velocity_list[i] = item
     return velocity_list
 
 
@@ -125,8 +127,9 @@ def distance_conversion(distance_list:list, unit:str)->list:
         conversion_factor = const.KM_TO_MT
     else:
         raise ValueError("Unit not recognized. Select from 'AU', 'ly', 'mi' or 'km'.")
-    for item in distance_list:
-        item *= conversion_factor
+    for i,item in enumerate(distance_list):
+        item = item * conversion_factor
+        distance_list[i] = item
     return distance_list
 
 
