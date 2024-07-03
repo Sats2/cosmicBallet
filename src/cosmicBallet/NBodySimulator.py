@@ -1,5 +1,4 @@
 import Constants as const
-import numpy as np
 from typing import Union
 import warnings
 import math
@@ -55,7 +54,7 @@ class Simulator():
             if time_unit is not None:
                 assert isinstance(time_unit, str), "Simulator attribute 'time_unit' can only be of type string"
             for item in celestial_bodies:
-                assert isinstance(item, (Stars,Planets,Galaxy,BlackHole)), "All items in the Simulator attribute 'celestial_bodies' must be class objects available in module CelestialObjects"
+                assert isinstance(item, (Stars,Planets,BlackHole)), "All items in the Simulator attribute 'celestial_bodies' must be class objects available in module CelestialObjects"
         except AssertionError:
             raise TypeError
         try:
