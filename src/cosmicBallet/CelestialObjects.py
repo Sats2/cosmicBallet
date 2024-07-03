@@ -533,6 +533,7 @@ class Galaxy():
         self.radius = radius
         self.black_hole_mass = black_hole_mass
         self.star_number = star_number
+        self.object_type = "galaxy"
         self.init_position = np.array(init_position)
         self.init_velocity = np.array(init_velocity)
     
@@ -609,6 +610,8 @@ class BlackHole():
         self.mass = mass
         self.init_position = np.array(init_position)
         self.init_velocity = np.array(init_velocity)
+        self.trajectory = []
+        self.object_type = "black_hole"
         if angular_momentum is not None:
             self.angular_momentum = np.array(angular_momentum)
         else:

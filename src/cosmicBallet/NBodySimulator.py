@@ -256,16 +256,20 @@ class Simulator():
                         self.__handle_collisions(body1, body2)
                         continue
                     elif distance > 0:
-                        force_magnitude = const.G * body1.mass * body2.mass / np.power(distance, 2)
-                        force_direction = r  / distance
                         if self.post_newton_correction:
-                            v_rel = body1.velocity - body2.velocity
-                            v_rel = np.dot(v_rel, v_rel)
-                            body1.force += (force_magnitude * force_direction)*(1 + v_rel/const.C**2)
+                            n = r / np.linalg.norm(r)
+                            v = body2.velocity - body1.velocity
+                            force = const.G * body1.mass * body2.mass * n / np.power(distance,2)
+                            force_corr = (const.G * body1.mass * body2.mass / np.power(distance, 2)) \
+                            * (n * ((const.G*(body1.mass+body2.mass)/distance) - np.dot(body1.velocity, body1.velocity) \
+                               - 4*np.dot(body1.velocity, body2.velocity) - np.dot(body2.velocity, body2.velocity) \
+                                + 3.5*np.dot(n,body2.velocity)**2) + body2.velocity * (4*np.dot(n,body1.velocity) \
+                                                                                       - 3*np.dot(n,body2.velocity)))
+                            body1.force += (force + force_corr*(v/const.C)**2)
                         else:
-                            body1.force += (force_magnitude * force_direction)
+                            force_magnitude = const.G * body1.mass * body2.mass / np.power(distance,3)
+                            body1.force += force_magnitude*r
                         
-    
     def __forward_euler_update(self):
         """Private method within the Simulator Class that updates the trajectory of the celestial objects calculated with the forward euler solver.
         """
@@ -356,9 +360,17 @@ class Simulator():
                     force_magnitude = const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass / distance**2
                     force = force_magnitude * r / distance
                     if self.post_newton_correction:
-                        v_rel = self.celestial_bodies[i].velocity - self.celestial_bodies[j].velocity
-                        v_rel = np.dot(v_rel, v_rel)
-                        force = force * (1 + v_rel/const.C**2)
+                        n = r / np.linalg.norm(r)
+                        v = self.celestial_bodies[j].velocity - self.celestial_bodies[i].velocity
+                        force_corr = (const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass \
+                                    / np.power(distance, 2)) * (n * ((const.G*(self.celestial_bodies[i].mass+\
+                                    self.celestial_bodies[j].mass)/distance) \
+                                    - np.dot(self.celestial_bodies[i].velocity, self.celestial_bodies[i].velocity) \
+                                    - 4*np.dot(self.celestial_bodies[i].velocity, self.celestial_bodies[j].velocity) \
+                                    - np.dot(self.celestial_bodies[j].velocity, self.celestial_bodies[j].velocity) \
+                            + 3.5*np.dot(n,self.celestial_bodies[j].velocity)**2) + self.celestial_bodies[j].velocity \
+                                * (4*np.dot(n,self.celestial_bodies[i].velocity) - 3*np.dot(n,self.celestial_bodies[j].velocity)))
+                        force += (force + force_corr*(v/const.C)**2)
                     self.potential_gradient[i] += force
                     self.potential_gradient[j] -= force
 
