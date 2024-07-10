@@ -26,6 +26,9 @@ class Simulator():
         formulation (str): The type of ODE Formulation used -> Lagrangian or Hamiltonian
         solver (str): The solver used to solve the system of ODEs
         post_newton_correction (bool): User input whether to use Post Newton Correction of 1st order for the calculated forces.
+        total_collisions (int): Holds the total number of collisions detected during the simulation
+        fragment_collisions (int): Holds the total number of collisions between fragments that are detected during the simulation.
+        time_val (float): Holds the current time during the simulation. Begins at 0 and ends at simulation_time.
     
     Methods:
         time_unit_correction(): Performs the conversion of values of the attributes 'simulation_time' and 'time_step' from
@@ -75,6 +78,7 @@ class Simulator():
         self.total_collisions = 0
         self.fragment_collisions = 0
         self.removed_object_list = []
+        self.time_val = 0.0
 
     @property
     def time_unit_correction(self):
@@ -194,7 +198,7 @@ class Simulator():
         """
         self.total_collisions += 1
         collision_line = f"Collision detected between Celestial Objects {p1.name} and {p2.name} at position {p1.position} \
-              at time {len(self.celestial_bodies[0].trajectory)*self.time_step} s"
+              at time {self.time_val} s"
         if p1.object_type == "star" and p2.object_type == "star":
             if p1.radius > p2.radius:
                 impactor = p2
@@ -281,15 +285,16 @@ class Simulator():
         """
         num_steps = math.ceil(self.simulation_time / self.time_step)
         for step in range(num_steps):
+            self.time_val += self.time_step
             if step == 0:
                 for i,body in enumerate(self.celestial_bodies):
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
-                    body.trajectory.append(body.position.copy())
+                    body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
             self.__calculate_forces()
             self.__forward_euler_update()
             for i, body in enumerate(self.celestial_bodies):
-                body.trajectory.append(body.position.copy())
+                body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
     
     def __rk4_step(self):
         """Private Method within the Simulator Class that performs the time update according to the Runge-Kutta method.
@@ -331,14 +336,15 @@ class Simulator():
         """
         num_steps = math.ceil(self.simulation_time / self.time_step)
         for step in range(num_steps):
+            self.time_val += self.time_step
             if step == 0:
                 for i,body in enumerate(self.celestial_bodies):
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
-                    body.trajectory.append(body.position.copy())
+                    body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
             self.__rk4_step()
             for i,body in enumerate(self.celestial_bodies):
-                body.trajectory.append(body.position.copy())
+                body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
     
     def __calculate_potential_gradient(self):
         """Private function of the Simulator Class that generates the gradient of the potential energy for each object
@@ -395,15 +401,16 @@ class Simulator():
         """
         num_steps = math.ceil(self.simulation_time / self.time_step)
         for step in range(num_steps):
+            self.time_val += self.time_step
             if step == 0:
                 for i,body in enumerate(self.celestial_bodies):
                     body.position = body.init_position.astype(np.float64)
                     body.momentum = body.init_velocity.astype(np.float64) * body.mass
                     body.velocity = body.momentum / body.mass
-                    body.trajectory.append(body.position.copy())
+                    body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
             self.__leapfrog_step()
             for i,body in enumerate(self.celestial_bodies):
-                body.trajectory.append(body.position.copy())
+                body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
 
     def __forest_ruth_step(self):
         """Private method of the Simulator class that updates the momentum and position of all bodies being simulated
@@ -434,10 +441,10 @@ class Simulator():
                     body.position = body.init_position.astype(np.float64)
                     body.momentum = body.init_velocity.astype(np.float64) * body.mass
                     body.velocity = body.momentum / body.mass
-                    body.trajectory.append(body.position.copy())
+                    body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
             self.__forest_ruth_step()
             for i,body in enumerate(self.celestial_bodies):
-                body.trajectory.append(body.position.copy())
+                body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
 
     def solve(self, formulation:str="Lagrangian", solver:str="RK4", correction:bool=False)->None:
         """Method of the Simulator class that solves the ODE System of the N-Body Problem to generate results for the 
@@ -462,6 +469,7 @@ class Simulator():
         try:
             for body in self.celestial_bodies:
                 body.trajectory = []
+            self.time_val = 0.0
         except:
             pass
         try:
