@@ -5,6 +5,34 @@ import math
 from CelestialObjects import *
 
 
+def _calculate_PN1(p1:object, p2:object)->np.array:
+    """Private function of the script that calculates the first term of the Post-Newtonian Expansion
+
+    The 1PN term accounts for relativistic correction accounting for speed of the object and the speed of light.
+
+    Args:
+        p1 (object): One of the bodies in motion.
+        p2 (object): The other body in motion.
+
+    Returns:
+        F_PN1 (np.array): The first term of the Post-Newtonian Expansion.
+    """
+    mu = p1.mass * p2.mass
+    M = p1.mass + p2.mass
+    v = p2.velocity - p1.velocity
+    r = np.linalg.norm(p2.position - p1.position)
+    n = (p2.position - p1.position) / r
+    v = p2.velocity - p1.velocity
+    v1 = p1.velocity
+    v2 = p2.velocity
+    factor = const.G * mu / (r * const.C)**2
+    term1 = const.G * (4*M+p1.mass) + 1.5*(np.dot(n,v2)**2) - np.dot(v1,v1) + 4*np.dot(v1,v2) \
+            - 2*np.dot(v2,v2)
+    term2 = 4*np.dot(n,v1) - 3*np.dot(n,v2)
+    F_PN1 = -factor * (term1*n + term2*v)
+    return F_PN1
+
+
 class Simulator():
     """This is a class that is used to simulate the orbital trajectory of celestial bodies.
 
@@ -261,14 +289,9 @@ class Simulator():
                     elif distance > 0:
                         if self.post_newton_correction:
                             n = r / np.linalg.norm(r)
-                            v = body2.velocity - body1.velocity
                             force = const.G * body1.mass * body2.mass * n / np.power(distance,2)
-                            force_corr = (const.G * body1.mass * body2.mass / np.power(distance, 2)) \
-                            * (n * ((const.G*(body1.mass+body2.mass)/distance) - np.dot(body1.velocity, body1.velocity) \
-                               - 4*np.dot(body1.velocity, body2.velocity) - np.dot(body2.velocity, body2.velocity) \
-                                + 3.5*np.dot(n,body2.velocity)**2) + body2.velocity * (4*np.dot(n,body1.velocity) \
-                                                                                       - 3*np.dot(n,body2.velocity)))
-                            body1.force += (force + force_corr*(v/const.C)**2)
+                            force_PN1 = _calculate_PN1(body1, body2)
+                            body1.force += (force + force_PN1)
                         else:
                             force_magnitude = const.G * body1.mass * body2.mass / np.power(distance,3)
                             body1.force += force_magnitude*r
@@ -364,18 +387,6 @@ class Simulator():
                 else:
                     force_magnitude = const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass / distance**2
                     force = force_magnitude * r / distance
-                    if self.post_newton_correction:
-                        n = r / np.linalg.norm(r)
-                        v = self.celestial_bodies[j].velocity - self.celestial_bodies[i].velocity
-                        force_corr = (const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass \
-                                    / np.power(distance, 2)) * (n * ((const.G*(self.celestial_bodies[i].mass+\
-                                    self.celestial_bodies[j].mass)/distance) \
-                                    - np.dot(self.celestial_bodies[i].velocity, self.celestial_bodies[i].velocity) \
-                                    - 4*np.dot(self.celestial_bodies[i].velocity, self.celestial_bodies[j].velocity) \
-                                    - np.dot(self.celestial_bodies[j].velocity, self.celestial_bodies[j].velocity) \
-                            + 3.5*np.dot(n,self.celestial_bodies[j].velocity)**2) + self.celestial_bodies[j].velocity \
-                                * (4*np.dot(n,self.celestial_bodies[i].velocity) - 3*np.dot(n,self.celestial_bodies[j].velocity)))
-                        force += (force + force_corr*(v/const.C)**2)
                     self.potential_gradient[i] += force
                     self.potential_gradient[j] -= force
 
@@ -459,8 +470,8 @@ class Simulator():
                                                 simulation. Defaults to "Lagrangian".
             solver (str, optional): The integration scheme the method needs to use to perform the simulation. Defaults to "RK4".
             correction (bool, optional): User input to whether the Post-Newton Correction term is applied or not. This is 
-                                        applicable to cases where heavy objects are relatively close to each other. Defaults to 
-                                        False.
+                                        applicable to cases where heavy objects are relatively close to each other. Applied 
+                                        only to the Lagrangian Formulation. Defaults to False.
 
         Raises:
             TypeError: Raised when the input arguements are not of the defined datatype.
@@ -489,6 +500,8 @@ class Simulator():
             else:
                 raise ValueError("Unidentified Solver. Select either Euler or RK4 (Runge-Kutta 4th Order)")
         elif formulation.lower() == "hamiltonian":
+            if self.post_newton_correction:
+                print("Post-Newtonian Correction is applied only for the Lagrangian Formulation.")
             if solver.lower() == "leapfrog":
                 self.__leapfrog()
             elif solver.lower() == "forest_ruth":
