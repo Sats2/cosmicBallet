@@ -21,9 +21,15 @@ def _calculate_PN1(p1:object, p2:object)->np.array:
     M = p1.mass + p2.mass
     v = p2.velocity - p1.velocity
     r = np.linalg.norm(p2.position - p1.position)
-    r_hat = (p2.position - p1.position)/r
-    F_PN1 = const.G * mu * ((1 + 1.5*(v/const.C)**2 - 5*const.G*M/(r*const.C**2) + 0.5*(np.dot(v,r_hat)**2)/const.C**2)*r_hat \
-                            - 4*np.dot(v,r_hat)*v/const.C**2) / r**2
+    n = (p2.position - p1.position) / r
+    v = p2.velocity - p1.velocity
+    v1 = p1.velocity
+    v2 = p2.velocity
+    factor = const.G * mu / (r * const.C)**2
+    term1 = const.G * (4*M+p1.mass) + 1.5*(np.dot(n,v2)**2) - np.dot(v1,v1) + 4*np.dot(v1,v2) \
+            - 2*np.dot(v2,v2)
+    term2 = 4*np.dot(n,v1) - 3*np.dot(n,v2)
+    F_PN1 = -factor * (term1*n + term2*v)
     return F_PN1
 
 
