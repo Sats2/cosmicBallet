@@ -5,171 +5,170 @@ import math
 import Constants as const
 
 
-def _calculate_PN1(p1:object, p2:object)->np.array:
-    """Private function of the script that calculates the first term of the Post-Newtonian Expansion
+class SchwarzschildSimulator():
+    """Class that simulates the trajectory of stars orbiting a dense object.
 
-    The 1PN term accounts for relativistic correction accounting for speed of the object and the speed of light.
+    The class allows for the orbital simulation of stars around a dense object such as a (stationary) Black Hole or a
+    Neutron Star by utilizing the Schwarzschild solution to Einstein's theory of General Relativity. The simulation is
+    performed using the Schwarzschild metric for space-time. The simulation is performed under the assumption that the
+    mass of the dense body is negligible compared to the mass of the stars, hence the force acting on the dense body can
+    be ignored.
 
-    Args:
-        p1 (object): One of the bodies in motion.
-        p2 (object): The other body in motion.
+    For more information on Schwarzschild metric and equations of motion, please refer to the article:
+    - https://www.physics.usu.edu/Wheeler/GenRel/Lectures/GRNotesDecSchwarzschildGeodesicsPost.pdf
 
-    Returns:
-        F_PN1 (np.array): The first term of the Post-Newtonian Expansion.
-    """
-    mu = p1.mass * p2.mass
-    M = p1.mass + p2.mass
-    v = p2.velocity - p1.velocity
-    r = np.linalg.norm(p2.position - p1.position)
-    n = (p2.position - p1.position) / r
-    v = p2.velocity - p1.velocity
-    v1 = p1.velocity
-    v2 = p2.velocity
-    factor = const.G * mu / (r * const.C)**2
-    term1 = const.G * (4*M+p1.mass) + 1.5*(np.dot(n,v2)**2) - np.dot(v1,v1) + 4*np.dot(v1,v2) \
-            - 2*np.dot(v2,v2)
-    term2 = 4*np.dot(n,v1) - 3*np.dot(n,v2)
-    F_PN1 = -factor * (term1*n + term2*v)
-    return F_PN1
-
-
-def _calculate_PN2(p1:object, p2:object)->np.array:
-    pass
-
-
-def _calculate_PN3(p1:object, p2:object)->np.array:
-    pass
-
-class DenseObjectSimulator():
-    """A class that simulates the trajectory of stars around a dense object in space.
-
-    The class simulates the trajectory of stars around a dense object such as a black hole or neutron star using Newtonian Gravity
-    with Parameterized Post-Newtonian Approximation for approximating general relativity. The time integration for the resulting
-    Ordinary Differential Equation (ODE) is performed using 4th Order Runge-Kutta (RK4) Integration. 
+    Newtonian equations of motion are used to simulate the motion of the stars. The simulation is performed using the
+    assumption that the stars are point masses and the dense object is a stationary Black Hole or Neutron Star, with all
+    calculations performed in natural units.
 
     Attributes:
-        celestial_bodies (list): A list containing all the celestial objects that are simulated. The first item in the list 
-                                contains the dense object followed by the stars whose trajectory is simulated.
-        time_step (int/float): The time step for RK4 Integration.
-        simulation_time (int/float): The total amount of time for the trajectory simulation (also t_end in simulations).
-        n (int): The total number of time steps in the simulation.
-    
+        dense_body (object): The Neutron Star or Black Hole object.
+        stars (list): A list containing the objects for stars that are orbiting the dense body.
+        dt (int/float): The time step value for numerical integration.
+        t_end (int/float): The end time for numerical integration.
+        n (int): The total number of time steps in the numerical integration.
+        G (int): Newton's Gravitational constant in natural units (=1).
+        bh_mass (float): Mass of the Dense Body in SI Units.
+
     Methods:
-        solve(): A method that solves the N-Body problem using the RK4 Integration.
+        solve(): Performs the numerical integration for orbital simulation.
     """
-    def __init__(self, dense_body:object, celestial_object_list:list, time_step:Union[int,float],
-                 simulation_time:Union[int,float]) -> None:
-        """Constructor for the class DenseObjectSimulator.
+    def __init__(self, dense_body:object, stars:list, time_step:Union[float,int],
+                 simulation_time:Union[float,int]) -> None:
+        """Constructor for the SchwarzschildSimulator class.
 
         Args:
-            dense_body (object): The dense object being simulated.
-            celestial_object_list (list): A list containing the total number of stars whose trajectory is simulated for.
-            time_step (Union[int,float]): The time step for RK4 Integration
-            simulation_time (Union[int,float]): The total time for trajectory simulation.
+            dense_body (object): The Neutron Star or Black Hole as an initialize object.
+            stars (list): A list containing the objects for stars that are orbiting the dense body.
+            time_step (Union[float,int]): The time step for numerical integration.
+            simulation_time (Union[float,int]): The end time for numerical integration.
 
         Raises:
-            TypeError: Raised when dense_body is not a Black Hole or Neutron Star, the time step is not a numerical data type,
-                        the simulation_time is not a numerical data type, or the celestial_object_list is not a list type.
-            ValueError: Raised when the time_step or simulation_time is not positive, the time_step is too large, the objects
-                        in celestial_object_list are not Stars or are Neutron Stars.
-        """ 
+            TypeError: Raised when the time_step or simulation_time are not numerical values, or if the objects in the
+                        list of stars does not belong to the Stars class or is Neutron Star, or the dense_body is not
+                        a Black Hole or Neutron Star.
+            ValueError: Raised when the time_step or simulation_time are lesser than or equal to zero, or when the 
+                        time_step is too large when compared to the simulation_time, or when the dense body is not stationary.
+        """
         try:
-            assert isinstance(dense_body, (Stars, BlackHole)), "dense_body must be a Neutron Star or Black Hole"
-            if dense_body.object_type == "Star":
-                assert (dense_body.star_type == "Neutron"), "dense_body must be a Neutron Star or Black Hole"
-            assert isinstance(time_step, (int,float)), "time_step must be an integer or floating point value"
-            assert isinstance(simulation_time, (int,float)), "simulation_time must be an integer or floating point value"
-            assert isinstance(celestial_object_list, list), "celestial_object_list must be a list of stars"
+            assert isinstance(time_step, (int,float)), "time_step can only be a float/int value"
+            assert isinstance(simulation_time, (int,float)), "simulation_time can only be a float/int value"
+            for star in stars:
+                assert (star.star_type != "Neutron"), f"Neutron Star orbit cannot be simulated. {star.name} is a Neutron Star"
+                assert isinstance(star, Stars), f"{star.name} must be a star"
+            if isinstance(dense_body, Stars):
+                assert (star.star_type == "Neutron"), "dense_body must be a Neutron Star or Black Hole"
+            else:
+                assert isinstance(dense_body, BlackHole), "dense_body must be a Neutron Star or Black Hole"
+            assert dense_body.init_velocity.all() == 0, "dense_body must be stationary"
         except AssertionError:
             raise TypeError
         try:
-            assert time_step>0, "time_step cannot be lesser than 0"
-            assert simulation_time>0, "simulation_time cannot be lesser than 0"
-            assert time_step<0.5*simulation_time, "time step cannot be larger than 50% of simulation_time"
-            for body in celestial_object_list:
-                assert isinstance(body, Stars), f"{body.name} is not a star. All objects in celestial_object_list needs to be a non-Neutron Star"
-                assert (body.star_type!="Neutron"), f"{body.name} is a Neutron Star. All objects in celestial_object_list must be non-Neutron Stars"
+            assert time_step>0, "time_step must be a positive value"
+            assert simulation_time>0, "simulation_time must be a positive value"
+            assert time_step<0.25*simulation_time, "time_step is too large compared to simulation_time"
         except AssertionError:
             raise ValueError
-        self.celestial_objects = celestial_object_list
-        self.celestial_objects.insert(0, dense_body)
-        self.time_step = time_step
-        self.simulation_time = simulation_time
-        self.n = math.ceil(self.simulation_time / self.time_step)
+        self.dense_body = dense_body
+        self.stars = stars
+        self.dt = time_step
+        self.t_end = simulation_time
+        self.n = math.ceil(simulation_time / time_step)
     
-    def __force_correction(self, b1:object, b2:object)->np.array:
-        """Private Method of the DenseObjectSimulator class that computes the total force correction required
-
-        Args:
-            b1 (object): Object 1
-            b2 (object): Object 2
-
-        Returns:
-            force_correction_term (np.array): An array containing the total correction value to the force based on PN expansion.
+    def __convert_to_natural_units(self)->None:
+        """Private Method of the SchwarzschildSimulator class that converts the input values of the celestial objects
+        to natural units from SI units.
         """
-        pn1_term = _calculate_PN1(b1, b2)
-        pn2_term = _calculate_PN2(b1, b2)
-        pn3_term = _calculate_PN3(b1, b2)
-        force_correction_term = pn1_term + pn2_term + pn3_term
-        return force_correction_term
+        self.G = 1
+        self.bh_mass = self.dense_body.mass
+        self.bh_radius = self.dense_body.radius
+        self.dense_body.mass = 1
+        for star in self.stars:
+            star.mass = star.mass / self.bh_mass
+            star.radius *= (2 / self.bh_radius)
+            star.init_position *= (2 / self.bh_radius)
+            star.init_velocity *= 1 / const.C
     
-    def __compute_force(self)->None:
-        """Private method of the DenseObjectSimulator class that computes the total force acting on all objects.
+    def __convert_to_SI_units(self)->None:
+        """Private Method of the SchwarzschildSimulator class that converts the input values of the celestial objects
+        to SI units from natural units.
         """
-        for body in self.celestial_objects:
-            body.force[:] = 0.0
-        for i, body1 in enumerate(self.celestial_objects):
-            for j,body2 in enumerate(self.celestial_objects):
-                r = body2.position - body1.position
-                distance = np.linalg.norm(r)
-                if distance <= (body1.radius + body2.radius):
-                    self.__merge_body(body1, body2)
-                    print(f"Collision between {body1.name} and {body2.name} detected! Objects will merge.")
-                else:
-                    force = (const.G * body1.mass * body2.mass / np.power(distance,2)) * r/distance
-                    force_correction_term = self.__force_correction(body1, body2)
-                    body1.force += force + force_correction_term 
+        self.dense_body.mass = self.bh_mass
+        for star in self.stars:
+            star.mass *= self.bh_mass
+            star.radius *= 0.5*self.dense_body.radius
+            for i in range(len(star.trajectory)):
+                star.trajectory[i] *= 0.5*self.dense_body.radius
+
+    def __calculate_force(self)->None:
+        """Private method of the SchwarzschildSimulator class that computes the total force acting on the stars as they
+        orbit the central dense object.
+
+        Raises:
+            RuntimeWarning: Raised when a star is at the center of the Black Hole or when two stars collide.
+        """
+        for star in self.stars:
+            star.force[:] = 0
+            r = np.linalg.norm(star.position)
+            if r == 0:
+                print(f"{star.name} is at the center of the Black Hole")
+                raise RuntimeWarning
+            star.force = -self.G * star.mass * self.dense_body.mass * star.position / r**3
+        if len(self.stars) > 1:
+    	        for i,star1 in enumerate(self.stars): 
+                    for j,star2 in enumerate(self.stars):
+                        if i != j:
+                            r = np.linalg.norm(star1.position - star2.position)
+                            if r <= 0:
+                                print(f"{star1.name} and {star2.name} are at the same position")
+                                raise RuntimeWarning
+                            n = (star1.position - star2.position) / r
+                            star1.force -= self.G * star1.mass * star2.mass * n / r**2
 
     def __rk4_step(self)->None:
-        """A private method of the DenseObjectSimulator class that performs the RK4 integration in a single time step.
+        """Private method of the SchwarzschildSimulator class that performs the numerical integration for the system of ODEs
+        based on the Runge-Kutta method for one time step
         """
-        original_position = np.array([body.position for body in self.celestial_objects])
-        original_velocity = np.array([body.velocity for body in self.celestial_objects])
-        self.__compute_force()
-        k1_r = self.time_step * original_velocity
-        k1_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
-        for i,body in enumerate(self.celestial_bodies):
-            body.position = original_position[i] + 0.5*k1_r[i]
-            body.velocity = original_velocity[i] + 0.5*k1_v[i]
-        self.__compute_force()
-        k2_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
-        k2_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
-        for i,body in enumerate(self.celestial_bodies):
-            body.position = original_position[i] + 0.5*k2_r[i]
-            body.velocity = original_velocity[i] + 0.5*k2_v[i]
-        self.__compute_force()
-        k3_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
-        k3_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
-        for i,body in enumerate(self.celestial_bodies):
-            body.position = original_position[i] + k3_r[i]
-            body.velocity = original_velocity[i] + k3_v[i]
-        self.__compute_force()
-        k4_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
-        k4_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
-        for i,body in enumerate(self.celestial_bodies):
-            body.position = original_position[i] + (k1_r[i] + 2*k2_r[i] + 2*k3_r[i] + k4_r[i])/6
-            body.velocity = original_velocity[i] + (k1_v[i] + 2*k2_v[i] + 2*k3_v[i] + k4_v[i])/6
+        original_position = np.array([star.position for star in self.stars])
+        original_velocity = np.array([star.velocity for star in self.stars])
+        self.__calculate_force()
+        k1_v = self.dt * np.array([star.force/star.mass for star in self.stars])
+        k1_r = self.dt * original_velocity
+        for i,star in enumerate(self.stars):
+            star.position = original_position[i] + 0.5 * k1_r[i]
+            star.velocity = original_velocity[i] + 0.5 * k1_v[i]
+        self.__calculate_force()
+        k2_v = self.dt * np.array([star.force/star.mass for star in self.stars])
+        k2_r = self.dt * np.array([star.velocity for star in self.stars])
+        for i,star in enumerate(self.stars):
+            star.position = original_position[i] + 0.5 * k2_r[i]
+            star.velocity = original_velocity[i] + 0.5 * k2_v[i]
+        self.__calculate_force()
+        k3_v = self.dt * np.array([star.force/star.mass for star in self.stars])
+        k3_r = self.dt * np.array([star.velocity for star in self.stars])
+        for i,star in enumerate(self.stars):
+            star.position = original_position[i] + k3_r[i]
+            star.velocity = original_velocity[i] + k3_v[i]
+        self.__calculate_force()
+        k4_v = self.dt * np.array([star.force/star.mass for star in self.stars])
+        k4_r = self.dt * np.array([star.velocity for star in self.stars])
+        for i,star in enumerate(self.stars):
+            star.position = original_position[i] + (k1_r[i] + 2*k2_r[i] + 2*k3_r[i] + k4_r[i])/6
+            star.velocity = original_velocity[i] + (k1_v[i] + 2*k2_v[i] + 2*k3_v[i] + k4_v[i])/6
 
     def solve(self)->None:
-        """Method of the DenseObjectSimulator class that performs the RK4 Integration and updates trajectory of objects.
+        """Private method of the SchwarzschildSimulator class that performs the numerical integration for
+        the ODE System using the Runge-Kutta method.
         """
+        self.__convert_to_natural_units()
         for i in range(self.n):
             if i == 0:
-                for body in enumerate(self.celestial_objects):
-                    body.position = body.init_position
-                    body.velocity = body.init_velocity
-                    body.trajectory.append(body.position.copy())
+                for star in self.stars:
+                    star.position = star.init_position.astype(np.float64)
+                    star.velocity = star.init_velocity.astype(np.float64)
+                    star.trajectory.append(np.concatenate(([(i+1)*self.dt], star.position.copy())))
             self.__rk4_step()
-            for body in enumerate(self.celestial_objects):
-                body.trajectory.append(body.position.copy())
-            self.dense_body.trajectory.append(self.dense_body.position.copy())
+            for star in self.stars:
+                star.trajectory.append(np.concatenate(([(i+1)*self.dt], star.position.copy())))
+        self.__convert_to_SI_units()
+            

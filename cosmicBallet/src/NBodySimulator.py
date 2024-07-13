@@ -22,14 +22,13 @@ def _calculate_PN1(p1:object, p2:object)->np.array:
     v = p2.velocity - p1.velocity
     r = np.linalg.norm(p2.position - p1.position)
     n = (p2.position - p1.position) / r
-    v = p2.velocity - p1.velocity
     v1 = p1.velocity
     v2 = p2.velocity
     factor = const.G * mu / (r * const.C)**2
-    term1 = const.G * (4*M+p1.mass) + 1.5*(np.dot(n,v2)**2) - np.dot(v1,v1) + 4*np.dot(v1,v2) \
+    term1 = const.G * (4*M+p1.mass) + 1.5*(np.dot(-n,v2)**2) - np.dot(v1,v1) + 4*np.dot(v1,v2) \
             - 2*np.dot(v2,v2)
-    term2 = 4*np.dot(n,v1) - 3*np.dot(n,v2)
-    F_PN1 = -factor * (term1*n + term2*v)
+    term2 = 4*np.dot(-n,v1) - 3*np.dot(-n,v2)
+    F_PN1 = factor * (-term1*n - term2*v)
     return F_PN1
 
 
@@ -51,7 +50,7 @@ class Simulator():
         simulation_time (flaot/int): Total time for which simulation is needed.
         time_unit (str, optional): Unit of both the time values in the class. Defaults to seconds
         removed_object_list (list): A list containing all the celestial object that merged into other objects.
-        formulation (str): The type of ODE Formulation used -> Lagrangian or Hamiltonian
+        formulation (str): The type of ODE Formulation used -> Newtonian or Hamiltonian
         solver (str): The solver used to solve the system of ODEs
         post_newton_correction (bool): User input whether to use Post Newton Correction of 1st order for the calculated forces.
         total_collisions (int): Holds the total number of collisions detected during the simulation
@@ -457,21 +456,21 @@ class Simulator():
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
 
-    def solve(self, formulation:str="Lagrangian", solver:str="RK4", correction:bool=False)->None:
+    def solve(self, formulation:str="Newtonian", solver:str="RK4", correction:bool=False)->None:
         """Method of the Simulator class that solves the ODE System of the N-Body Problem to generate results for the 
         N-Body Problem Simulation.
 
-        The method contains two solvers for Lagrangian and Hamiltonian Mechanics each. The Forward Euler and 4th Order 
-        Runge-Kutta method for Lagrangian Mechanics, and, the Leapfrog and Forest-Ruth methods for the Hamiltonian Mechanics
+        The method contains two solvers for Newtonian and Hamiltonian Mechanics each. The Forward Euler and 4th Order 
+        Runge-Kutta method for Newtonian Mechanics, and, the Leapfrog and Forest-Ruth methods for the Hamiltonian Mechanics
         formulation.
 
         Args:
             simulation_method (str, optional): The formulation of the N-Body Problem the method must follow to perform the
-                                                simulation. Defaults to "Lagrangian".
+                                                simulation. Defaults to "Newtonian".
             solver (str, optional): The integration scheme the method needs to use to perform the simulation. Defaults to "RK4".
             correction (bool, optional): User input to whether the Post-Newton Correction term is applied or not. This is 
                                         applicable to cases where heavy objects are relatively close to each other. Applied 
-                                        only to the Lagrangian Formulation. Defaults to False.
+                                        only to the Newtonian Formulation. Defaults to False.
 
         Raises:
             TypeError: Raised when the input arguements are not of the defined datatype.
@@ -490,7 +489,7 @@ class Simulator():
         except AssertionError:
             raise TypeError
         self.post_newton_correction = correction
-        if formulation.lower() == "lagrangian":
+        if formulation.lower() == "newtonian":
             if solver.lower() == "euler":
                 if math.ceil(self.simulation_time / self.time_step) > 1e6:
                     warnings.warn("Number of Time Steps Too Large. Error accumulation may impact accuracy of results. Consider rk4 or Hamiltonian Mechanics to solve!")
@@ -501,7 +500,7 @@ class Simulator():
                 raise ValueError("Unidentified Solver. Select either Euler or RK4 (Runge-Kutta 4th Order)")
         elif formulation.lower() == "hamiltonian":
             if self.post_newton_correction:
-                print("Post-Newtonian Correction is applied only for the Lagrangian Formulation.")
+                print("Post-Newtonian Correction is applied only for the Newtonian Formulation.")
             if solver.lower() == "leapfrog":
                 self.__leapfrog()
             elif solver.lower() == "forest_ruth":
@@ -509,7 +508,7 @@ class Simulator():
             else:
                 raise ValueError("Unidentified Solver. Select either Leapfrog or Forest_Ruth")
         else:
-            raise ValueError("Unidentified Simulation Method. Select either Lagrangian or Hamiltonian")
+            raise ValueError("Unidentified Simulation Method. Select either Newtonian or Hamiltonian")
         if self.total_collisions == 0:
             return
         print(f"Total Collisions Detected: {self.total_collisions} out of which {self.fragment_collisions} are fragment collision.")

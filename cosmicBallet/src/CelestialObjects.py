@@ -471,10 +471,14 @@ class BlackHole():
     Attributes:
         name (str): Name of the Black Hole
         mass (float/int): Mass of the Black Hole in kilograms
-        init_position (list): Initial position of the Black Hole in space as a list of coordinates in meters
-        init_velocity (list): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
+        init_position (np.array): Initial position of the Black Hole in space as a list of coordinates in meters
+        init_velocity (np.array): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
         angular_momentum (list, optional): Angular momentum of a rotating Black Hole as list. Ignore for non-rotating Black Holes.
         radius (float): Schwarzchild radius of the Black Hole
+        position (np.array): Holds the position of the Black Hole at each time step
+        velocity (np.array): Holds the velocity of the Black Hole at each time step
+        trajectory (list): Contains the trajectory of the Black Hole.
+        force (np.array): Attribute that holds the force acting on the Black Hole at each time step.
     
     Methods:
         mass(): Gets the mass of the Black Hole
@@ -514,12 +518,15 @@ class BlackHole():
         self.mass = mass
         self.init_position = np.array(init_position)
         self.init_velocity = np.array(init_velocity)
+        self.position = np.zeros(3)
+        self.velocity = np.zeros(3)
         self.trajectory = []
         self.object_type = "black_hole"
         if angular_momentum is not None:
             self.angular_momentum = np.array(angular_momentum)
         else:
             self.angular_momentum = np.array([0, 0, 0])
+        self.force = np.zeros(3)
     
     @property
     def mass(self):
