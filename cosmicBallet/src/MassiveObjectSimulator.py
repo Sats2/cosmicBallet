@@ -5,6 +5,32 @@ import math
 import Constants as const
 
 
+def _calculate_PN1(p1:object, p2:object)->np.array:
+    """Private function of the script that calculates the first term of the Post-Newtonian Expansion
+
+    The 1PN term accounts for relativistic correction accounting for speed of the object and the speed of light.
+
+    Args:
+        p1 (object): One of the bodies in motion.
+        p2 (object): The other body in motion.
+
+    Returns:
+        F_PN1 (np.array): The first term of the Post-Newtonian Expansion.
+    """
+    mu = p1.mass * p2.mass
+    M = p1.mass + p2.mass
+    eta = mu / M**2
+    r = np.linalg.norm(p2.position - p1.position)
+    n = (p1.position - p2.position) / r
+    v = p1.velocity - p2.velocity
+    r_dot = np.dot(v,n)
+    factor = - const.G * M / np.power(r*const.C, 2)
+    term1 = (1 + 3*eta) * np.dot(v,v) - 1.5*eta*r_dot**2 - 2*(2+eta)*const.G*M/r
+    term2 = 2 * (2 - eta) * r_dot * v
+    F_PN1 = p1.mass * factor * (term1 * n - term2)
+    return F_PN1
+
+
 class SchwarzschildSimulator():
     """Class that simulates the trajectory of stars orbiting a dense object.
 
@@ -97,6 +123,8 @@ class SchwarzschildSimulator():
         for star in self.stars:
             star.mass *= self.bh_mass
             star.radius *= 0.5*self.dense_body.radius
+            star.init_position *= 0.5*self.dense_body.radius
+            star.init_velocity *= const.C
             for i in range(len(star.trajectory)):
                 star.trajectory[i] *= 0.5*self.dense_body.radius
 
@@ -114,6 +142,8 @@ class SchwarzschildSimulator():
                 print(f"{star.name} is at the center of the Black Hole")
                 raise RuntimeWarning
             star.force = -self.G * star.mass * self.dense_body.mass * star.position / r**3
+            correction_force = _calculate_PN1(star, self.dense_body)
+            star.force += correction_force
         if len(self.stars) > 1:
     	        for i,star1 in enumerate(self.stars): 
                     for j,star2 in enumerate(self.stars):
@@ -124,6 +154,8 @@ class SchwarzschildSimulator():
                                 raise RuntimeWarning
                             n = (star1.position - star2.position) / r
                             star1.force -= self.G * star1.mass * star2.mass * n / r**2
+                            correction_force = _calculate_PN1(star1, star2)
+                            star1.force += correction_force
 
     def __rk4_step(self)->None:
         """Private method of the SchwarzschildSimulator class that performs the numerical integration for the system of ODEs
@@ -160,6 +192,11 @@ class SchwarzschildSimulator():
         """Private method of the SchwarzschildSimulator class that performs the numerical integration for
         the ODE System using the Runge-Kutta method.
         """
+        try:
+            for star in self.stars:
+                star.trajectory = []
+        except:
+            pass
         self.__convert_to_natural_units()
         for i in range(self.n):
             if i == 0:

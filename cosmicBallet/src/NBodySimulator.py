@@ -19,16 +19,15 @@ def _calculate_PN1(p1:object, p2:object)->np.array:
     """
     mu = p1.mass * p2.mass
     M = p1.mass + p2.mass
-    v = p2.velocity - p1.velocity
+    eta = mu / M**2
     r = np.linalg.norm(p2.position - p1.position)
-    n = (p2.position - p1.position) / r
-    v1 = p1.velocity
-    v2 = p2.velocity
-    factor = const.G * mu / (r * const.C)**2
-    term1 = const.G * (4*M+p1.mass) + 1.5*(np.dot(-n,v2)**2) - np.dot(v1,v1) + 4*np.dot(v1,v2) \
-            - 2*np.dot(v2,v2)
-    term2 = 4*np.dot(-n,v1) - 3*np.dot(-n,v2)
-    F_PN1 = factor * (-term1*n - term2*v)
+    n = (p1.position - p2.position) / r
+    v = p1.velocity - p2.velocity
+    r_dot = np.dot(v,n)
+    factor = - const.G * M / np.power(r*const.C, 2)
+    term1 = (1 + 3*eta) * np.dot(v,v) - 1.5*eta*r_dot**2 - 2*(2+eta)*const.G*M/r
+    term2 = 2 * (2 - eta) * r_dot * v
+    F_PN1 = p1.mass * factor * (term1 * n + term2)
     return F_PN1
 
 
@@ -56,6 +55,7 @@ class Simulator():
         total_collisions (int): Holds the total number of collisions detected during the simulation
         fragment_collisions (int): Holds the total number of collisions between fragments that are detected during the simulation.
         time_val (float): Holds the current time during the simulation. Begins at 0 and ends at simulation_time.
+        fragmentation_occured (bool): Holds whether fragmentation has occured during the simulation or not at a tim slice.
     
     Methods:
         time_unit_correction(): Performs the conversion of values of the attributes 'simulation_time' and 'time_step' from
@@ -106,6 +106,7 @@ class Simulator():
         self.fragment_collisions = 0
         self.removed_object_list = []
         self.time_val = 0.0
+        self.fragmentation_occured = False
 
     @property
     def time_unit_correction(self):
@@ -149,49 +150,58 @@ class Simulator():
         self.celestial_bodies.remove(p2)
         p1.momentum = p1.mass * p1.velocity
 
-    def __compute_fragments(self, planets:list, impact_energy:float)->list:
+    def __compute_fragments(self, planets:list, fragmentation:list)->list:
         """Private method of the Simulator class that computes the fragmentation of planets on collision and
-        generates the fragments.
+        generates the fragments. The mass of the fragments are based on the ratio of the kinetic energy of the
+        collision to the gravitational binding energy of the planet (max. value of 0.8).
 
         Args:
             planets (list): List of planets that collide with each other of length 2.
-            impact_energy (float): The impact energy of collision (or kinetic energy of collision)
+            fragmentation (list): List containing whether the planets have fragmented or not.
 
         Returns:
             fragment_list (list): The total fragments generated that gets added to the class's celestial_objects
                                 attribute for further computation of the N-body problem.
         """
         p1, p2 = planets
-        mass_list = []
         fragments_list = []
-        for p in planets:
-            obj_mass = p.mass
-            obj_radius = p.radius
-            if p is p1:
-                other_mass = p2.mass
-                other_velocity = p2.velocity
+        v = p2.velocity - p1.velocity
+        kinetic_energy = 0.5 * (p1.mass * p2.mass) * np.linalg.norm(v)**2 / (p1.mass + p2.mass)
+        for i,p in enumerate([p1,p2]):
+            if fragmentation[i]:
+                planet_mass = p.mass
+                gravitational_binding_energy = 3 * const.G * p.mass**2 / (5 * p.radius)
+                if kinetic_energy > 2*gravitational_binding_energy:
+                    mass_fraction = 0.5
+                    num_fragments = 1
+                    break_apart = True
+                else:
+                    mass_fraction = 0.05
+                    num_fragments = 5
+                    break_apart = False
+                for j in range(num_fragments):
+                    if break_apart:
+                        mass_frac = np.random.normal(loc=mass_fraction, scale=0.005)
+                    else:
+                        mass_frac = mass_fraction
+                    mass = mass_frac * p.mass
+                    volume = mass / p.density
+                    radius = np.cbrt(volume * 0.75 / np.pi)
+                    frag_velocity = np.sqrt(2 * p.mass * np.dot(p.velocity,p.velocity) / mass) * p.position \
+                                    * np.random.normal(loc=1, scale=0.5) / np.linalg.norm(p.position)
+                    frag_position = p.position + self.time_step * frag_velocity
+                    fragment = Fragments(name=f"{p.name}_fragment_{j}", mass=mass, radius=radius, 
+                                         material_property=p.material_property, position=frag_position,
+                                         velocity=frag_velocity)
+                    fragments_list.append(fragment)
+                    planet_mass -= mass
+                    if planet_mass < 0.25 * p.mass:
+                        break
+                p.radius = np.cbrt(planet_mass * 0.75 / (np.pi * p.density))
+                p.mass = planet_mass
+                print(p.name, p.mass, p.radius)
             else:
-                other_mass = p1.mass
-                other_velocity = p1.velocity
-            num_fragments = int(impact_energy / (p.material_property["yield_strength"] * p.volume))
-            num_fragments = min(10, num_fragments)
-            mass_fraction_mean = 0.05
-            for _ in range(num_fragments):
-                frag_velocity = np.sqrt(2 * impact_energy / other_mass) * np.sin(np.random.normal(0,0.5*np.pi)) \
-                    * other_velocity / np.linalg.norm(other_velocity)
-                frag_position = np.array(frag_velocity * 10)
-                mass_fraction = np.random.normal(mass_fraction_mean, 0.05)
-                frag_mass = mass_fraction * p.mass
-                frag_radius = np.cbrt(0.75 * p.mass / (p.density*np.pi))
-                frag = Fragments(name="Fragment", mass=frag_mass, velocity=frag_velocity, radius=frag_radius,
-                                  position=frag_position, material_property=p.material_property)
-                fragments_list.append(frag)
-                obj_mass -= frag_mass
-                obj_radius -= frag_radius
-            mass_list.append([obj_mass, obj_radius])
-        for i,p in enumerate(planets):
-            p.mass = mass_list[i][0]
-            p.radius = mass_list[i][1]
+                pass
         return fragments_list
     
     def __elastic_collision(self, p1:object, p2:object)->None:
@@ -208,6 +218,32 @@ class Simulator():
         p1.momentum = p1.mass * p1.velocity
         p2.momentum = p2.mass * p2.velocity
         return
+    
+    def __impact_fragments(self, p1: object, p2: object) -> list:
+        """Calculates the impact fragments resulting from the collision between two objects.
+
+        Args:
+            p1 (object): The first object involved in the collision.
+            p2 (object): The second object involved in the collision.
+
+        Returns:
+            fragments (list): A list indicating whether each object has fragmented after the collision.
+                            The first element corresponds to p1 and the second element corresponds to p2.
+                            True indicates fragmentation, while False indicates no fragmentation.
+        """
+        v = p2.velocity - p1.velocity
+        kinetic_energy = 0.5 * (p1.mass * p2.mass) * np.linalg.norm(v)**2 / (p1.mass + p2.mass)
+        impact_force_p1 = kinetic_energy / p1.radius
+        impact_force_p2 = kinetic_energy / p2.radius
+        impact_area = np.pi * np.sqrt(p1.radius*p2.radius / (p1.radius + p2.radius))**2
+        impact_stress_p1 = impact_force_p1 / impact_area
+        impact_stress_p2 = impact_force_p2 / impact_area
+        fragments = [False, False]
+        if impact_stress_p1 > p1.material_property["yield_strength"]:
+            fragments[0] = True
+        if impact_stress_p2 > p2.material_property["yield_strength"]:
+            fragments[1] = True
+        return fragments
 
     def __handle_collisions(self, p1:object, p2:object)->None:
         """Private method of the Simulator class that handles any detected collisions
@@ -227,7 +263,7 @@ class Simulator():
         collision_line = f"Collision detected between Celestial Objects {p1.name} and {p2.name} at position {p1.position} \
               at time {self.time_val} s"
         if p1.object_type == "star" and p2.object_type == "star":
-            if p1.radius > p2.radius:
+            if p1.mass > p2.mass:
                 impactor = p2
                 impacted = p1
             else:
@@ -254,13 +290,13 @@ class Simulator():
             else:
                 impactor = p1
                 impacted = p2
-            impact_energy = 0.5 * (impacted.mass * np.dot(impacted.velocity, impacted.velocity) 
-                                   + impactor.mass * np.dot(impactor.velocity, impactor.velocity))
+            fragments_happen = self.__impact_fragments(p1=impactor, p2=impacted)
             if p1.planet_type.lower() == "rocky" and p2.planet_type.lower() == "rocky":
-                if impact_energy > impacted.material_property["yield_strength"] * impacted.volume:
-                    fragments = self.__compute_fragments([impactor, impacted], impact_energy=impact_energy)
+                if any(fragments_happen):
+                    fragments = self.__compute_fragments([impactor, impacted], fragmentation=fragments_happen)
                     for item in fragments:
                         self.celestial_bodies.append(item)
+                    self.fragmentation_occured = True
                 else:
                     self.__merge_objects(p1=impacted, p2=impactor)
             else:
@@ -284,7 +320,6 @@ class Simulator():
                     distance = np.linalg.norm(r)
                     if distance < (body1.radius + body2.radius):
                         self.__handle_collisions(body1, body2)
-                        continue
                     elif distance > 0:
                         if self.post_newton_correction:
                             n = r / np.linalg.norm(r)
@@ -325,6 +360,8 @@ class Simulator():
         original_velocity = np.array([body.velocity for body in self.celestial_bodies])
         # Compute k1
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k1_r = self.time_step * original_velocity
         k1_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Compute k2
@@ -332,6 +369,8 @@ class Simulator():
             body.position = original_position[i] + 0.5*k1_r[i]
             body.velocity = original_velocity[i] + 0.5*k1_v[i]
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k2_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
         k2_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Compute k3
@@ -339,6 +378,8 @@ class Simulator():
             body.position = original_position[i] + 0.5*k2_r[i]
             body.velocity = original_velocity[i] + 0.5*k2_v[i]
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k3_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
         k3_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Compute k4
@@ -346,6 +387,8 @@ class Simulator():
             body.position = original_position[i] + k3_r[i]
             body.velocity = original_velocity[i] + k3_v[i]
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k4_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
         k4_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Position and Velocity Update
@@ -376,7 +419,10 @@ class Simulator():
         self.potential_gradient = np.zeros((num_body,3))
         for i in range(num_body):
             for j in range(i+1,num_body):
-                r = self.celestial_bodies[j].position - self.celestial_bodies[i].position
+                try:
+                    r = self.celestial_bodies[j].position - self.celestial_bodies[i].position
+                except IndexError:
+                    break
                 distance = np.linalg.norm(r)
                 if distance <= (self.celestial_bodies[j].radius + self.celestial_bodies[i].radius):
                     self.__handle_collisions(self.celestial_bodies[i], self.celestial_bodies[j])
@@ -386,6 +432,9 @@ class Simulator():
                 else:
                     force_magnitude = const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass / distance**2
                     force = force_magnitude * r / distance
+                    if self.post_newton_correction:
+                        force_pn1 = _calculate_PN1(self.celestial_bodies[i], self.celestial_bodies[j])
+                        force += force_pn1
                     self.potential_gradient[i] += force
                     self.potential_gradient[j] -= force
 
@@ -400,6 +449,8 @@ class Simulator():
         for body in self.celestial_bodies:
             body.position += self.time_step * body.velocity
         self.__calculate_potential_gradient()
+        if self.fragmentation_occured:
+            return
         for i,body in enumerate(self.celestial_bodies):
             body.momentum += 0.5 * self.time_step * self.potential_gradient[i,:]
             body.velocity = body.momentum / body.mass
@@ -433,12 +484,12 @@ class Simulator():
         w4 = w1
         steps = [w1, w2, w3, w4]
         for w in steps:
-            for body in self.celestial_bodies:
-                body.position += (w * self.time_step * body.momentum /body.mass)
             self.__calculate_potential_gradient()
             for i,body in enumerate(self.celestial_bodies):
                 body.momentum += (w * self.time_step * self.potential_gradient[i])
                 body.velocity = body.momentum / body.mass
+            for body in self.celestial_bodies:
+                body.position += (w * self.time_step * body.momentum /body.mass)
 
     def __forest_ruth(self):
         """Private method of the Simulator class that implements the Forest-Ruth Integrator to solve the ODE System that
@@ -456,7 +507,7 @@ class Simulator():
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
 
-    def solve(self, formulation:str="Newtonian", solver:str="RK4", correction:bool=False)->None:
+    def solve(self, formulation:str="Hamiltonian", solver:str="forest_ruth", correction:bool=False)->None:
         """Method of the Simulator class that solves the ODE System of the N-Body Problem to generate results for the 
         N-Body Problem Simulation.
 
@@ -499,8 +550,6 @@ class Simulator():
             else:
                 raise ValueError("Unidentified Solver. Select either Euler or RK4 (Runge-Kutta 4th Order)")
         elif formulation.lower() == "hamiltonian":
-            if self.post_newton_correction:
-                print("Post-Newtonian Correction is applied only for the Newtonian Formulation.")
             if solver.lower() == "leapfrog":
                 self.__leapfrog()
             elif solver.lower() == "forest_ruth":
