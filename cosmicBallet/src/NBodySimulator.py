@@ -484,12 +484,12 @@ class Simulator():
         w4 = w1
         steps = [w1, w2, w3, w4]
         for w in steps:
+            for body in self.celestial_bodies:
+                body.position += w * body.velocity * self.time_step
             self.__calculate_potential_gradient()
             for i,body in enumerate(self.celestial_bodies):
                 body.momentum += (w * self.time_step * self.potential_gradient[i])
                 body.velocity = body.momentum / body.mass
-            for body in self.celestial_bodies:
-                body.position += (w * self.time_step * body.momentum /body.mass)
 
     def __forest_ruth(self):
         """Private method of the Simulator class that implements the Forest-Ruth Integrator to solve the ODE System that
