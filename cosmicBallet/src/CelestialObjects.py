@@ -246,7 +246,7 @@ class Stars():
     """
 
     def __init__(self, name:str, mass:Union[float, int], temperature:Union[float,int], init_position:list, init_velocity:list,
-                 radius:Union[float,int]=None, density:float=None):
+                 radius:Union[float,int]=None, density:float=None, angular_momentum:list=None):
         """Initializes the Star Object
 
         The class requires either radius or density to be provided. The radius is calculated from the density and mass but for dynamic 
@@ -281,6 +281,8 @@ class Stars():
                 assert isinstance(radius, (float, int)), "Star Property 'radius' can only be of type float/int"
             if density is not None:
                 assert isinstance(density, float), "Star Property 'density' must be of type float"
+            if angular_momentum is not None:
+                assert isinstance(angular_momentum, list), "Star Property 'angular_momentum' must be of type list"
         except AssertionError:
             raise TypeError
         try:
@@ -315,6 +317,10 @@ class Stars():
         self.force = np.zeros(3)
         self.object_type = "star"
         self.trajectory = []
+        if angular_momentum is not None:
+            self.angular_momentum = np.array(angular_momentum)
+        else:
+            self.angular_momentum = np.array([0, 0, 0]).astype(np.float64)
         
     @property
     def radius(self):
@@ -525,7 +531,7 @@ class BlackHole():
         if angular_momentum is not None:
             self.angular_momentum = np.array(angular_momentum)
         else:
-            self.angular_momentum = np.array([0, 0, 0])
+            self.angular_momentum = np.array([0, 0, 0]).astype(np.float64)
         self.force = np.zeros(3)
     
     @property

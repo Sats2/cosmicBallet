@@ -2,6 +2,7 @@ import numpy as np
 from CelestialObjects import BlackHole, Stars
 from typing import Union
 import math
+import platform
 import utils.Constants as const
 
 
@@ -29,6 +30,52 @@ def _calculate_PN1(p1:object, p2:object)->np.array:
     term2 = 2 * (2 - eta) * r_dot * v
     F_PN1 = p1.mass * factor * (term1 * n - term2)
     return F_PN1
+
+
+def _time_step_condition(stars:list, dense_object:object)->float:
+    """Private Function of the script that calculates the minimum time step for the numerical integration.
+
+    Args:
+        stars (list): The list of all stars being simulated.
+        dense_object (object): The dense object around which the stars are orbiting.
+
+    Returns:
+        float: The minimum time step for the numerical integration.
+    """
+    time_steps = []
+    for star in stars:
+        r = np.linalg.norm(star.init_position)
+        t = np.sqrt(np.power(r,3) / (dense_object.mass * const.G))
+        time_steps
+    return min(time_steps)
+
+
+def _set_origin(stars:list, dense_object:object)->np.array:
+    """Private Function of the script that sets the origin of the simulation to the dense object.
+
+    Args:
+        stars (list): The list of all stars being simulated.
+        dense_object (object): The dense object around which the stars are orbiting.
+    """
+    position = dense_object.init_position
+    for star in stars:
+        star.init_position -= position
+    dense_object.init_position = np.array([0,0,0]).astype(np.float64)
+    return position
+
+
+def _revert_origin(stars:list, dense_object:object, position:np.array)->None:
+    """Private Function of the script that reverts the origin of the simulation to the original position.
+
+    Args:
+        stars (list): The list of all stars being simulated.
+        dense_object (object): The dense object around which the stars are orbiting.
+        position (np.array): The original position of the dense object.
+    """
+    for star in stars:
+        for i in range(len(star.trajectory)):
+            star.trajectory[i][1:] += position
+    dense_object.position = position
 
 
 class SchwarzschildSimulator():
@@ -89,10 +136,12 @@ class SchwarzschildSimulator():
             assert dense_body.init_velocity.all() == 0, "dense_body must be stationary"
         except AssertionError:
             raise TypeError
+        self.dense_body_position = _set_origin(stars, dense_body)
         try:
             assert time_step>0, "time_step must be a positive value"
             assert simulation_time>0, "simulation_time must be a positive value"
-            assert time_step<0.25*simulation_time, "time_step is too large compared to simulation_time"
+            min_timestep = _time_step_condition(stars, dense_body)
+            assert time_step<=min_timestep, f"time_step must be lesser than {min_timestep}"
         except AssertionError:
             raise ValueError
         self.dense_body = dense_body
@@ -194,4 +243,74 @@ class SchwarzschildSimulator():
             for star in self.stars:
                 star.trajectory.append(np.concatenate(([(i+1)*self.dt], star.position.copy())))
         self.__convert_to_SI_units()
-            
+        _revert_origin(self.stars, self.dense_body, self.dense_body_position)
+
+
+class BinaryMerger():
+    """Class that simulates the merger of two celestial objects.
+
+    The class allows for the simulation of the merger of two celestial objects such as Neutron Stars or Black Holes. The
+    simulation is performed using the NRSur7dq2 and SurfinBH libraries for the gravitational waveforms and the final
+    remnant mass and spin calculations. The simulation is performed under the assumption that the two objects are in a
+    binary system and are in the process of merging. The simulation is performed in natural units.
+
+    Attributes:
+        binary_system (list): List of two objects that are to be simulated for Binary Merger.
+        q (float): The mass ratio of the two objects in the binary system.
+        chi1 (np.array): The dimensionless spin of the first object in the binary system.
+        chi2 (np.array): The dimensionless spin of the second object in the binary system.
+
+    Methods:
+        simulate(): Calculates the trajectory of the two objects as they merge.
+    """
+    def __init__(self, binary_system:list)->None:
+        """Constructor for the BinaryMerger class.
+
+        Args:
+            binary_system (list): List of two objects that are to be simulated for Binary Merger.
+
+        Raises:
+            OSError: Raised when the Binary Merger simulation is attempted on a non-Linux system.
+            ImportError: Raised when the NRSur7dq2 and SurfinBH libraries are not installed.
+            TypeError: Raised when the binary_system is not a list, or the objects in the list are not of the same type,
+                        or the objects are not Neutron Stars or BlackHole class.
+            ValueError: Raised when the binary_system does not have exactly two objects.
+        """
+        try:
+            assert platform.system()=="Linux", "Binary Merger simulation is only supported on Linux"
+        except AssertionError:
+            raise OSError
+        try:
+            import NRSur7dq2 as sur
+            import SurfinBH as sBH
+        except ImportError:
+            raise ImportError("NRSur7dq2 and SurfinBH libraries are required for Binary Merger simulation")
+        try:
+            assert isinstance(binary_system, list), "binary_system must be a list"
+            assert type(binary_system[0])==type(binary_system[1]), "Objects in the binary_system must be of the same type"
+            for obj in binary_system:
+                assert isinstance(obj, (Stars, BlackHole)), "Objects in the binary_system must be Neutron Stars or Black Holes"
+                if isinstance(obj, Stars):
+                    assert obj.star_type=="Neutron", f"{obj.name} is not a Neutron Star"
+        except AssertionError:
+            raise TypeError
+        try:
+            assert len(binary_system)==2, "Binary System must have only two objects"
+        except AssertionError:
+            raise ValueError
+        self.binary_system = binary_system
+        self.q = binary_system[0].mass / binary_system[1].mass
+    
+    @property
+    def calculate_chi(self)->None:
+        """Property of the BinaryMerger class that calculates the dimensionless spins of the two objects in the binary
+        system.
+        """
+        self.chi1 = const.C * self.binary_system[0].angular_momentum / (const.G * self.binary_system[0].mass**2)
+        self.chi2 = const.C * self.binary_system[1].angular_momentum / (const.G * self.binary_system[1].mass**2)
+    
+    def simulate(self):
+        pass
+
+    def animate(self):
+        pass
