@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Union
 import math
-import Constants as const
+import utils.Constants as const
 
 
 class Planets():

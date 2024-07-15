@@ -2,7 +2,7 @@ import numpy as np
 from CelestialObjects import BlackHole, Stars
 from typing import Union
 import math
-import Constants as const
+import utils.Constants as const
 
 
 def _calculate_PN1(p1:object, p2:object)->np.array:
