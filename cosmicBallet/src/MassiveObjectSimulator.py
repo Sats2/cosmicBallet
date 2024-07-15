@@ -24,8 +24,8 @@ def _calculate_PN1(p1:object, p2:object)->np.array:
     n = (p1.position - p2.position) / r
     v = p1.velocity - p2.velocity
     r_dot = np.dot(v,n)
-    factor = - const.G * M / np.power(r*const.C, 2)
-    term1 = (1 + 3*eta) * np.dot(v,v) - 1.5*eta*r_dot**2 - 2*(2+eta)*const.G*M/r
+    factor = - 1 * M / np.power(r*1, 2)
+    term1 = (1 + 3*eta) * np.dot(v,v) - 1.5*eta*r_dot**2 - 2*(2+eta)*1*M/r
     term2 = 2 * (2 - eta) * r_dot * v
     F_PN1 = p1.mass * factor * (term1 * n - term2)
     return F_PN1
@@ -141,7 +141,7 @@ class SchwarzschildSimulator():
             if r == 0:
                 print(f"{star.name} is at the center of the Black Hole")
                 raise RuntimeWarning
-            star.force = -self.G * star.mass * self.dense_body.mass * star.position / r**3
+            star.force -= self.G * star.mass * self.dense_body.mass * star.position / r**3
             correction_force = _calculate_PN1(star, self.dense_body)
             star.force += correction_force
         if len(self.stars) > 1:
@@ -157,40 +157,26 @@ class SchwarzschildSimulator():
                             correction_force = _calculate_PN1(star1, star2)
                             star1.force += correction_force
 
-    def __rk4_step(self)->None:
-        """Private method of the SchwarzschildSimulator class that performs the numerical integration for the system of ODEs
-        based on the Runge-Kutta method for one time step
+    def __forest_ruth_step(self):
+        """Private method of the SchwarzschildSimulator class that updates the velocity and position of all bodies being simulated
+        in a time slice for the Forest-Ruth Integrator.
         """
-        original_position = np.array([star.position for star in self.stars])
-        original_velocity = np.array([star.velocity for star in self.stars])
-        self.__calculate_force()
-        k1_v = self.dt * np.array([star.force/star.mass for star in self.stars])
-        k1_r = self.dt * original_velocity
-        for i,star in enumerate(self.stars):
-            star.position = original_position[i] + 0.5 * k1_r[i]
-            star.velocity = original_velocity[i] + 0.5 * k1_v[i]
-        self.__calculate_force()
-        k2_v = self.dt * np.array([star.force/star.mass for star in self.stars])
-        k2_r = self.dt * np.array([star.velocity for star in self.stars])
-        for i,star in enumerate(self.stars):
-            star.position = original_position[i] + 0.5 * k2_r[i]
-            star.velocity = original_velocity[i] + 0.5 * k2_v[i]
-        self.__calculate_force()
-        k3_v = self.dt * np.array([star.force/star.mass for star in self.stars])
-        k3_r = self.dt * np.array([star.velocity for star in self.stars])
-        for i,star in enumerate(self.stars):
-            star.position = original_position[i] + k3_r[i]
-            star.velocity = original_velocity[i] + k3_v[i]
-        self.__calculate_force()
-        k4_v = self.dt * np.array([star.force/star.mass for star in self.stars])
-        k4_r = self.dt * np.array([star.velocity for star in self.stars])
-        for i,star in enumerate(self.stars):
-            star.position = original_position[i] + (k1_r[i] + 2*k2_r[i] + 2*k3_r[i] + k4_r[i])/6
-            star.velocity = original_velocity[i] + (k1_v[i] + 2*k2_v[i] + 2*k3_v[i] + k4_v[i])/6
+        gamma = 1 / (2 - np.cbrt(2))
+        w1 = gamma / 2
+        w2 = (1 - gamma) / 2
+        w3 = w2
+        w4 = w1
+        steps = [w1, w2, w3, w4]
+        for w in steps:
+            for body in self.stars:
+                body.position += w * body.velocity * self.dt
+            self.__calculate_force()
+            for i,body in enumerate(self.stars):
+                body.velocity += w *self.dt * body.force / body.mass
 
     def solve(self)->None:
         """Private method of the SchwarzschildSimulator class that performs the numerical integration for
-        the ODE System using the Runge-Kutta method.
+        the ODE System using the Forest-Ruth method.
         """
         try:
             for star in self.stars:
@@ -204,7 +190,7 @@ class SchwarzschildSimulator():
                     star.position = star.init_position.astype(np.float64)
                     star.velocity = star.init_velocity.astype(np.float64)
                     star.trajectory.append(np.concatenate(([(i+1)*self.dt], star.position.copy())))
-            self.__rk4_step()
+            self.__forest_ruth_step()
             for star in self.stars:
                 star.trajectory.append(np.concatenate(([(i+1)*self.dt], star.position.copy())))
         self.__convert_to_SI_units()
