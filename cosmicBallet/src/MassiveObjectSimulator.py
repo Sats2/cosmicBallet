@@ -46,8 +46,8 @@ def _time_step_condition(stars:list, dense_object:object)->float:
     for star in stars:
         r = np.linalg.norm(star.init_position)
         t = np.sqrt(np.power(r,3) / (dense_object.mass * const.G))
-        time_steps
-    return min(time_steps)
+        time_steps.append(t)
+    return min(time_steps)/100
 
 
 def _set_origin(stars:list, dense_object:object)->np.array:
