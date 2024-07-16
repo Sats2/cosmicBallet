@@ -563,6 +563,17 @@ class Simulator():
             return
         print(f"Total Collisions Detected: {self.total_collisions} out of which {self.fragment_collisions} are fragment collision.")
 
+    def __compile_results(self):
+        """Private method of the Simulator class that compiles the results of the simulation into a single list.
+        """
+        for body in self.removed_object_list:
+            if len(body.trajectory) > 0:
+                self.celestial_bodies.append(body)
+        for body in self.celestial_bodies:
+            if len(body.trajectory) == 0:
+                idx = self.celestial_bodies.index(body)
+                self.celestial_bodies.pop(idx)
+
     def visualize(self, visualization_type:str="scientific", save_figure:bool=False, figure_name:str=None,
                   animate:bool=False, time_interval:Union[float,int]=None)->None:
         """Method of the Simulator class that visualizes the trajectory of the celestial objects in the N-Body Problem Simulation.
@@ -592,6 +603,7 @@ class Simulator():
                 assert len(body.trajectory)>0, "The trajectory of the celestial objects is empty. Please run the simulation first"
         except AssertionError:
             raise ValueError
+        self.__compile_results()
         vis = Visualize(celestial_objects=self.celestial_bodies, visualization_type=visualization_type, 
                         save_figure=save_figure, figure_name=figure_name)
         vis.visualize(animate=animate, time_interval=time_interval)

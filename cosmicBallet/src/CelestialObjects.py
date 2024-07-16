@@ -30,6 +30,7 @@ class Planets():
         momentum (array): Momentum of the Planet in a given time slice.
         material_property (dict): Aggregate Material properties of the planet based on abundant materials.
         trajectory (list): Holds the trajectory of the planet as a list of position arrays.
+        color (tuple): Color of the planet for visualization purposes.
 
     Methods:
         radius(): Gets the value of the radius
@@ -92,6 +93,16 @@ class Planets():
         self.trajectory = []
         self.force = np.zeros(3)
         self.object_type = "planet"
+        if self.planet_type.lower() == "rocky":
+            if self.planet_contour.lower() == "earth-like":
+                self.color = (0,0.2,1)
+            else:
+                self.color = (1,0,1)
+        else:
+            if self.planet_contour.lower() == "jupiter-like":
+                self.color = (0.5,1,0)
+            else:
+                self.color = (0,0,1)
     
     @property
     def radius(self):
@@ -233,6 +244,7 @@ class Stars():
         star_type (str): Type of Star based on density
         star_class (str): Star Classification based on temperature
         trajectory (list): Holds the trajectory of the star as a list of position arrays.
+        color (tuple): Color of the star for visualization purposes.
 
     Methods:
         radius(): Gets the radius of the star
@@ -435,6 +447,7 @@ class Stars():
                 (i)     Red, if 3700K < Temperature < 10000K, red giant/hypergiant
                 (ii)    Blue, if Temperature >= 10000K, blue giant/hypergiant
             White dwarfs and Neutron Stars do not have spectral classification.
+            The color is based on the chromaticity of the star and is used for visualization purposes.
 
         Raises:
             ValueError: If the surface temperature of the star is too low for luminosity.
@@ -444,18 +457,25 @@ class Stars():
         """
         if self.star_type == "Main Sequence":
             if self.temperature > 2300 and self.temperature < 3900:
+                self.color = (1, 0, 0)
                 return "M"
             elif self.temperature > 3900 and self.temperature < 5300:
+                self.color = (1,0.5,0)
                 return "K"
             elif self.temperature > 5300 and self.temperature < 6000:
+                self.color = (1,1,0)
                 return "G"
             elif self.temperature > 6000 and self.temperature < 7300:
+                self.color = (0.8,0.9,1)
                 return "F"
             elif self.temperature > 7300 and self.temperature < 10000:
+                self.color = (1,1,1)
                 return "A"
             elif self.temperature > 10000 and self.temperature < 33000:
+                self.color = (0,0.3,1)
                 return "B"
             elif self.temperature > 33000:
+                self.color = (0,0,1)
                 return "O"
             else:
                 raise ValueError("Temperature of Star Too Low and uncharacteristic of Stars. Modification to Temperature needed")

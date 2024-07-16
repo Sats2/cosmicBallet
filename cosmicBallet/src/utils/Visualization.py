@@ -10,7 +10,8 @@ class Visualize():
     """A class for Visualizing the trajectory of the orbits of the N-Bodies Simulated
 
     Attributes:
-        results (object): An object belonging to one of the Simulation Classes containing the simulation results for the orbital trajectory
+        celestial_objects (object): An object belonging to Simulation Classes containing the simulation results for 
+                                    the orbital trajectory.
         visual_type (str): A user input to determine whether to render an animation, or a simple scientific plot
         save_fig (bool): A user input to determine whether to save the trajectory visualization. Defaults to False
         figure_name (str): The name for the figure to be saved. Defaults to None
@@ -21,7 +22,7 @@ class Visualize():
         """Constructor for the Visualization class
 
         Args:
-            simulation_result (object): An object of the simulation class containing the trajectory of the bodies
+            celestial_objects (object): An object of the simulation class containing the trajectory of the bodies
             visualization_type (str, optional): Type of Visualization (scientific or animation). Defaults to "scientific".
             save_figure (bool, optional): A value to determine whether to save the visualization or not. Defaults to False.
             figure_name (str, optional): Name of the file that will hold the visualization if save_figure is True. Defaults to None.
@@ -42,7 +43,7 @@ class Visualize():
             assert (visualization_type.lower() in accepted_choices), "The visualization type must be either scientific/animation"
         except AssertionError:
             raise ValueError
-        self.results = celestial_objects
+        self.celestial_objects = celestial_objects
         self.visual_type = visualization_type
         self.save_fig = save_figure
         self.ani_name = None
@@ -58,37 +59,49 @@ class Visualize():
         """
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
-        points = [ax.plot(obj.trajectory[0][0,1], obj.trajectory[0][0,2], obj.trajectory[0][0,3], "o", label=obj.name)[0] \
-                   for obj in self.celestial_objects]
-        traj = [ax.plot(obj.trajectory[0][:1,1], obj.trajectory[0][:1,2], obj.trajectory[0][:1,3], label=obj.name)[0] \
-                for obj in self.celestial_objects]
-        all_x = [obj.trajectory[0][:1,1] for obj in self.celestial_objects]
-        all_y = [obj.trajectory[0][:1,2] for obj in self.celestial_objects]
-        all_z = [obj.trajectory[0][:1,3] for obj in self.celestial_objects]
-        ax.set_xlim(min(all_x), max(all_x))
-        ax.set_ylim(min(all_y), max(all_y))
-        ax.set_zlim(min(all_z), max(all_z))
+        points = []
+        traj = []
+        all_points = []
+        for body in self.celestial_objects:
+            spacetime_point = body.trajectory[0]
+            if spacetime_point[0] == 0:
+                points.append(ax.plot(spacetime_point[1], spacetime_point[2], spacetime_point[3], "o", label=body.name)[0])
+                traj.append(ax.plot(spacetime_point[:1,1], spacetime_point[:1,2], spacetime_point[:1,3])[0])
+                all_points.append(spacetime_point)
+            else:
+                points.append(None)
+                traj.append(None)
+        all_points = np.array(all_points)
+        ax.set_xlimit(all_points[:,1].min(), all_points[:,1].max())
+        ax.set_ylimit(all_points[:,2].min(), all_points[:,2].max())
+        ax.set_zlimit(all_points[:,3].min(), all_points[:,3].max())
+        ax.set_xlabel("X [m]")
+        ax.set_ylabel("Y [m]")
+        ax.set_zlabel("Z [m]")
 
         def update(frame):
-            for i, obj in enumerate(self.celestial_objects):
-                points[i].set_data(obj.trajectory[frame][0,1], obj.trajectory[frame][0,2])
-                points[i].set_3d_properties(obj.trajectory[frame][0,3])
-                traj[i].set_data(obj.trajectory[frame][:,1], obj.trajectory[frame][:,2])
-                traj[i].set_3d_properties(obj.trajectory[frame][:,3])
-                all_x = [obj.trajectory[frame][:,1] for obj in self.celestial_objects]
-                all_y = [obj.trajectory[frame][:,2] for obj in self.celestial_objects]
-                all_z = [obj.trajectory[frame][:,3] for obj in self.celestial_objects]
-                ax.set_xlim(min(all_x), max(all_x))
-                ax.set_ylim(min(all_y), max(all_y))
-                ax.set_zlim(min(all_z), max(all_z))
-            return traj + points
-
-        ani = FuncAnimation(fig, update, frames=len(self.celestial_objects[0].trajectory), interval=50, blit=False)
+            all_points = []
+            for body in self.celestial_objects:
+                spacetime_point = body.trajectory[frame]
+                if spacetime_point[0] == frame:
+                    i = self.celestial_objects.index(body)
+                    points[i].set_data(spacetime_point[frame], spacetime_point[frame])
+                    points[i].set_3d_properties(spacetime_point[frame])
+                    spacetime_trajectory = np.array(body.trajectory)[:frame]
+                    traj[i].set_data(spacetime_trajectory[:frame, 1], spacetime_trajectory[:frame, 2])
+                    traj[i].set_3d_properties(spacetime_trajectory)
+                    all_points.append(spacetime_trajectory)
+            all_points = np.array(all_points)
+            ax.set_xlimit(all_points[:,1].min(), all_points[:,1].max())
+            ax.set_ylimit(all_points[:,2].min(), all_points[:,2].max())
+            ax.set_zlimit(all_points[:,3].min(), all_points[:,3].max())
+            return traj+points
+        
+        ani = FuncAnimation(fig, update, frames=len(self.celestial_objects[0].trajectory), blit=False)
         if self.save_fig:
             ani.save(self.ani_name, dpi=300)
-        else:
-            plt.show()
-    
+        plt.show()
+            
     
     def __scientific_plot(self, animate:bool)->None:
         """Private method of the Visualization class that generates a maplotlib plot of the trajectory of the bodies.
@@ -122,7 +135,43 @@ class Visualize():
         plt.show()
     
     def __animation(self)->None:
-        pass
+        fig = mlab.figure(size=(1280, 720))
+        points = []
+        traj = []
+        for body in self.celestial_objects:
+            spacetime_point = body.trajectory[0]
+            if spacetime_point[0] == 0:
+                points.append(mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3], 
+                                            scale_factor=body.radius, color=body.color))
+                traj.append(mlab.plot3d(spacetime_point[:1,1], spacetime_point[:1,2], spacetime_point[:1,3],
+                                        color=body.color))
+            else:
+                points.append(None)
+                traj.append(None)
+        
+        def update(frame):
+            spacetime_point = body.trajectory[frame]
+            all_points = []
+            for i,body in self.celestial_objects:
+                if spacetime_point[0] == frame:
+                    spacetime_trajectory = np.array(body.trajectory)[:frame]
+                    points[i] = mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3],
+                                            scale_factor=body.radius, color=body.color)
+                    traj[i] = mlab.plot3d(spacetime_trajectory[:frame,1], spacetime_trajectory[:frame,2], 
+                                          spacetime_trajectory[:frame,3], color=body.color)
+                    all_points.append(spacetime_trajectory)
+            all_points = np.array(all_points)
+            mlab.view(focalpoint=(all_points[:,1].mean(), all_points[:,2].mean(), all_points[:,3].mean()))
+        
+        def animate():
+            for frame in range(self.n_total):
+                update(frame)
+                mlab.process_ui_events()
+                mlab.draw()
+                mlab.pause(0.05)
+        
+        animate()
+        mlab.show()
     
     def visualize(self, animate:bool=False, time_interval:Union[float,int]=None)->None:
         """Method of the visualization class that generates the visualization for the trajectories based on the visualization type
