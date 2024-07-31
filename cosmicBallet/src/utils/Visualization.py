@@ -28,21 +28,33 @@ class Visualize():
             figure_name (str, optional): Name of the file that will hold the visualization if save_figure is True. Defaults to None.
 
         Raises:
-            TypeError: Raised when input values do not belong to the required datatypes
-            ValueError: Raised when visualization_type does not belong to the allowed value.
+            TypeError: When celestial_objects is not a list of objects
+            TypeError: When visualization_type is not a string
+            TypeError: When save_figure is not a boolean
+            TypeError: When figure_name is not a string
+            ValueError: When visualization_type is not scientific/animation.
         """
         try:
-            assert isinstance(celestial_objects, object), "The celestial_objects needs to be a list of objects for visualization"
-            assert isinstance(visualization_type, str), "The visualization_type needs to be a string"
-            assert isinstance(save_figure, bool), "The attribute save_figure must be a boolean"
-            assert isinstance(figure_name, str), "The figure_name must be a string"
+            assert isinstance(celestial_objects, object)
         except AssertionError:
-            raise TypeError
+            raise TypeError("celestial_objects needs to be a list of objects for visualization")
+        try:
+            assert isinstance(visualization_type, str)
+        except AssertionError:
+            raise TypeError("visualization_type needs to be a string")
+        try:
+            assert isinstance(save_figure, bool)
+        except AssertionError:
+            raise TypeError("The attribute save_figure must be a boolean")
+        try:
+            assert isinstance(figure_name, str)
+        except AssertionError:
+            raise TypeError("The figure_name must be a string")#
         try:
             accepted_choices = ["scientific", "animation"]
-            assert (visualization_type.lower() in accepted_choices), "The visualization type must be either scientific/animation"
+            assert (visualization_type.lower() in accepted_choices)
         except AssertionError:
-            raise ValueError
+            raise ValueError("The visualization type must be either scientific/animation")
         self.celestial_objects = celestial_objects
         self.visual_type = visualization_type
         self.save_fig = save_figure
@@ -81,6 +93,7 @@ class Visualize():
 
         def update(frame):
             all_points = []
+            frame = int(100*frame)
             for body in self.celestial_objects:
                 spacetime_point = body.trajectory[frame]
                 if spacetime_point[0] == frame:
@@ -97,7 +110,7 @@ class Visualize():
             ax.set_zlim(all_points[:,3].min(), all_points[:,3].max())
             return traj+points
         
-        ani = FuncAnimation(fig, update, frames=len(self.celestial_objects[0].trajectory), blit=False)
+        ani = FuncAnimation(fig, update, frames=int(0.01*len(self.celestial_objects[0].trajectory)), blit=False)
         if self.save_fig:
             ani.save(self.ani_name, dpi=300)
         plt.show()
@@ -121,11 +134,8 @@ class Visualize():
         i = 1
         for body in self.celestial_objects:
             trajectory = np.array(body.trajectory)
-            if body.object_type != "fragment":
-                ax.plot(trajectory[:,1], trajectory[:,2], trajectory[:,3], label=body.name)
-            else:
-                ax.plot(trajectory[:,1], trajectory[:,2], trajectory[:,3], label=f"fragment{i}")
-                i += 1
+            ax.plot(trajectory[:,1], trajectory[:,2], trajectory[:,3], label=body.name)
+            i += 1
         plt.legend()
         ax.set_xlabel("x [m]")
         ax.set_ylabel("y [m]")
@@ -173,22 +183,19 @@ class Visualize():
         animate()
         mlab.show()
     
-    def visualize(self, animate:bool=False, time_interval:Union[float,int]=None)->None:
+    def visualize(self, animate:bool=False)->None:
         """Method of the visualization class that generates the visualization for the trajectories based on the visualization type
 
         Args:
-            animate (bool): Used for scientific visualization and control whether an animation is generated.
-            time_interval (float/int, optional): Required on for animations to determine the time interval between each frame. 
-                                                Defaults to None.
+            animate (bool): Used for scientific visualization and control whether an animation is generated. Defaults to False
 
         Raises:
             ValueError: When the time_interval is not specified for the animation render.
         """
         try:
-            assert isinstance(animate, bool), "animate can only be set to True/False"
-            #assert (isinstance(time_interval, (float,int)) and self.visual_type == "animation"), "Time Interval cannot be None for Animation Renders"
+            assert isinstance(animate, bool)
         except AssertionError:
-            raise ValueError
+            raise ValueError("animate must be a boolean value")
         if self.visual_type == "scientific":
             self.__scientific_plot(animate=animate)
         else:
