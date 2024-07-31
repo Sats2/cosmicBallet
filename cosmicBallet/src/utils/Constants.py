@@ -20,6 +20,7 @@ HOUR_TO_SEC = 3600          # Conversion from hours to seconds (s)
 DAY_TO_SEC = 24*HOUR_TO_SEC # Conversion from days to seconds (s)
 MON_TO_SEC = 30*DAY_TO_SEC  # Conversion from months to seconds (s)
 YEAR_TO_sEC = 12*MON_TO_SEC # Conversion from years to seconds (s)
+AUPD_TP_MTPS = AU/DAY_TO_SEC# Conversion from Astronomical Units per Day (AU/day) to meters per second (m/s)
 
 
 # Materials Dictionaries with material properties, all values in pascals (Pa)

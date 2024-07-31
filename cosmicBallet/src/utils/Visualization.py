@@ -66,15 +66,15 @@ class Visualize():
             spacetime_point = body.trajectory[0]
             if spacetime_point[0] == 0:
                 points.append(ax.plot(spacetime_point[1], spacetime_point[2], spacetime_point[3], "o", label=body.name)[0])
-                traj.append(ax.plot(spacetime_point[:1,1], spacetime_point[:1,2], spacetime_point[:1,3])[0])
+                traj.append(ax.plot(spacetime_point[1], spacetime_point[2], spacetime_point[3])[0])
                 all_points.append(spacetime_point)
             else:
                 points.append(None)
                 traj.append(None)
         all_points = np.array(all_points)
-        ax.set_xlimit(all_points[:,1].min(), all_points[:,1].max())
-        ax.set_ylimit(all_points[:,2].min(), all_points[:,2].max())
-        ax.set_zlimit(all_points[:,3].min(), all_points[:,3].max())
+        ax.set_xlim(all_points[:,1].min(), all_points[:,1].max())
+        ax.set_ylim(all_points[:,2].min(), all_points[:,2].max())
+        ax.set_zlim(all_points[:,3].min(), all_points[:,3].max())
         ax.set_xlabel("X [m]")
         ax.set_ylabel("Y [m]")
         ax.set_zlabel("Z [m]")
@@ -85,16 +85,16 @@ class Visualize():
                 spacetime_point = body.trajectory[frame]
                 if spacetime_point[0] == frame:
                     i = self.celestial_objects.index(body)
-                    points[i].set_data(spacetime_point[frame], spacetime_point[frame])
-                    points[i].set_3d_properties(spacetime_point[frame])
+                    points[i].set_data(spacetime_point[1], spacetime_point[2])
+                    points[i].set_3d_properties(spacetime_point[3])
                     spacetime_trajectory = np.array(body.trajectory)[:frame]
-                    traj[i].set_data(spacetime_trajectory[:frame, 1], spacetime_trajectory[:frame, 2])
-                    traj[i].set_3d_properties(spacetime_trajectory)
+                    traj[i].set_data(spacetime_trajectory[:, 1], spacetime_trajectory[:, 2])
+                    traj[i].set_3d_properties(spacetime_trajectory[:, 3])
                     all_points.append(spacetime_trajectory)
             all_points = np.array(all_points)
-            ax.set_xlimit(all_points[:,1].min(), all_points[:,1].max())
-            ax.set_ylimit(all_points[:,2].min(), all_points[:,2].max())
-            ax.set_zlimit(all_points[:,3].min(), all_points[:,3].max())
+            ax.set_xlim(all_points[:,1].min(), all_points[:,1].max())
+            ax.set_ylim(all_points[:,2].min(), all_points[:,2].max())
+            ax.set_zlim(all_points[:,3].min(), all_points[:,3].max())
             return traj+points
         
         ani = FuncAnimation(fig, update, frames=len(self.celestial_objects[0].trajectory), blit=False)
@@ -186,7 +186,7 @@ class Visualize():
         """
         try:
             assert isinstance(animate, bool), "animate can only be set to True/False"
-            assert (isinstance(time_interval, (float,int)) and self.visual_type == "animation"), "Time Interval cannot be None for Animation Renders"
+            #assert (isinstance(time_interval, (float,int)) and self.visual_type == "animation"), "Time Interval cannot be None for Animation Renders"
         except AssertionError:
             raise ValueError
         if self.visual_type == "scientific":

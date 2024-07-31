@@ -43,42 +43,107 @@ class Planets():
 
     def __init__(self, name:str, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
                  planet_contour:str, init_position:list, init_velocity:list, material_property:dict):
-        """Initializes the Planet object.
+        """Constructor for the Planets class.
 
         Args:
             name (str): Name of the Planet
-            mass (float/int): Mass of the Planet in kilograms (Use Converter class to convert from accepted units to kg)
-            radius (float/int): Radius of the Planet in meters (Use Converter class to convert from accepted units to m)
-            planet_type (str): Type of Planet as string, accepted values are Rocky/Gaseous, case independent
-            planet_contour (str): Contour of the Planet solely for visualization, excepted "Earth-like/Mars-like" for Rocky Planets
-                                    and "Jupiter-like/Neptune-like" for Gaseous Planets
-            init_position (list): Initial Position of the Planet in motion as a list of coordinates [x, y, z] in meters from origin
-            init_velocity (list): Initial Velocity of the Planet in motion as a list of directional velocities [vx, vy, vz] in 
-                                    meter/second
-            object_type (str): Identifier for type of Celestial Object.
-            material_property (dict): A dictionary containing the material properties of the planet.
-            
+            mass (Union[float, int]): Mass of the Planet in kilograms
+            radius (Union[float,int]): Radius of the Planet in meters
+            planet_type (str): Type of the Planet. Accepted values are "Rocky" or "Gaseous"
+            planet_contour (str): Contour of the Planet. Accepted values are "Earth-like", 
+                                "Mars-like", "Jupiter-like" or "Neptune-like"
+            init_position (list): Initial Position of the Planet as a list of coordinates (in meters)
+            init_velocity (list): Initial Velocity of the Planet as a list of directional velocities (in meters/second)
+            material_property (dict): Material Properties of the Planet.
+
         Raises:
-            TypeError: Incase the input values do not match the expected data type
-            ValueError: Incase the input values are out of bounds (mass or radius are zero or negative)
+            TypeError: name is not of type string
+            TypeError: mass is not of type float/int
+            TypeError: radius is not of type float/int
+            TypeError: planet_type is not of type string
+            TypeError: planet_contour is not of type string
+            TypeError: init_position is not of type list
+            TypeError: init_velocity is not of type list
+            TypeError: material_property is not of type dictionary
+            ValueError: name is None
+            ValueError: mass is zero or negative
+            ValueError: radius is zero or negative
+            ValueError: planet_type is not "Rocky" or "Gaseous"
+            ValueError: planet_contour is not "Earth-like", "Mars-like", "Jupiter-like" or "Neptune-like"
+            ValueError: init_position does not contain 3 coordinates
+            ValueError: init_velocity does not contain 3 directional velocities
+            TypeError: init_position does not contain float/int values
+            TypeError: init_velocity does not contain float/int values
         """
         try:
-            assert isinstance(name, str), "Planet Property 'name' can only be of type string"
-            assert isinstance(mass, (float, int)), "Planet Property 'mass' can only be of type float/int"
-            assert isinstance(radius, (float, int)), "Planet Property 'radius' can only be of type float/int"
-            assert isinstance(planet_type, str), "Planet Property 'planet_type' can only be of type string"
-            assert isinstance(planet_contour, str), "Planet Property 'planet_contour' can only be of type string"
-            assert isinstance(init_position, list), "Planet Property 'init_position' can only be of type list"
-            assert isinstance(init_velocity, list), "Planet Property 'init_velocity' can only be of type list"
-            assert isinstance(material_property, dict), "Planet Property 'material_property' must be of type dictionary"
+            assert isinstance(name, str)
         except AssertionError:
-            raise TypeError
+            raise TypeError("Planet Property 'name' can only be of type string")
         try:
-            assert mass>0, "Planet Property 'mass' can not be zero or non-negative"
-            assert radius>0, "Planet Property 'radius' can not be zero or non-negative"
-            assert (name is not None), "Planet Property 'name' cannot be None"
+            assert isinstance(mass, (float, int))
         except AssertionError:
-            raise ValueError
+            raise TypeError("Planet Property 'mass' can only be of type float/int")
+        try:
+            assert isinstance(radius, (float, int))
+        except AssertionError:
+            raise TypeError("Planet Property 'radius' can only be of type float/int")
+        try:
+            assert isinstance(planet_type, str)
+        except AssertionError:
+            raise TypeError("Planet Property 'planet_type' can only be of type string")
+        try:
+            assert isinstance(planet_contour, str)
+        except AssertionError:
+            raise TypeError("Planet Property 'planet_contour' can only be of type string")
+        try:
+            assert isinstance(init_position, list)
+        except AssertionError:
+            raise TypeError("Planet Property 'init_position' can only be of type list")
+        try:
+            assert isinstance(init_velocity, list)
+        except AssertionError:
+            raise TypeError("Planet Property 'init_velocity' can only be of type list")
+        try:
+            assert isinstance(material_property, dict)
+        except AssertionError:
+            raise TypeError("Planet Property 'material_property' must be of type dictionary")
+        try:
+            assert mass>0
+        except AssertionError:
+            raise ValueError("Planet Property 'mass' can not be zero or non-negative")
+        try:
+            assert radius>0
+        except AssertionError:
+            raise ValueError("Planet Property 'radius' can not be zero or non-negative")
+        try:
+            assert (name is not None)
+        except AssertionError:
+            raise ValueError("Planet Property 'name' cannot be None")
+        try:
+            assert (planet_type.lower() == "rocky" or planet_type.lower() == "gaseous")
+        except AssertionError:
+            raise ValueError("Planet Property 'planet_type' can only be 'Rocky' or 'Gaseous'")
+        try:
+            assert (planet_contour.lower() == "earth-like" or planet_contour.lower() == "mars-like" or \
+                    planet_contour.lower() == "jupiter-like" or planet_contour.lower() == "neptune-like")
+        except AssertionError:
+            raise ValueError("Planet Property 'planet_contour' can only be 'Earth-like', 'Mars-like', 'Jupiter-like' or 'Neptune-like'")
+        try:
+            assert len(init_position)==3
+        except AssertionError:
+            raise ValueError("Planet Property 'init_position' must contain 3 coordinates")
+        try:
+            assert len(init_velocity)==3
+        except AssertionError:
+            raise ValueError("Planet Property 'init_velocity' must contain 3 directional velocities")
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_position)
+        except AssertionError:
+            raise TypeError("Planet Property 'init_position' must contain float/int values")
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_velocity)
+        except AssertionError:
+            raise TypeError("Planet Property 'init_velocity' must contain float/int values")
         self.name = name
         self.mass = mass
         self.radius = radius
@@ -91,6 +156,7 @@ class Planets():
         self.velocity = None
         self.momentum = None
         self.trajectory = []
+        self.vel_list = []
         self.force = np.zeros(3)
         self.object_type = "planet"
         if self.planet_type.lower() == "rocky":
@@ -270,48 +336,109 @@ class Stars():
 
         Args:
             name (str): Name of the Star
-            mass (float/int): Mass of the Star in SI Units (Use the Conversion class to convert from accepted units)
-            temperature (float/int): Surface temperature of the Star in SI Units
-            init_position (list): Initial Position of the Star as a list of coordinates [x, y, z]
-            init_velocity (list): Initial Velocity of the Star as a list of directional velocities [vx, vy, vz]
-            radius (float/int, optional): Radius of the Star in meters. Defaults to None.
-            density (float, optional): Density of the Star in meters. Defaults to None.
-
+            mass (float/int): Mass of the Star in kilograms
+            temperature (float/int): Temperature of the Star in kelvin
+            init_position (list): Initial position of the star in space as a list of coordinates in meters
+            init_velocity (list): Initial orbital velocity of the star as a list of directional velocities in meter/second
+            radius (float/int, optional): Radius of the Star in meters
+            density (float, optional): Density of the Star in kilograms/meter^3
+            angular_momentum (list, optional): Angular Momentum of the Star as a list of axial momenta in kilograms*radian/second
+        
         Raises:
-            TypeError: If datatype of the input arguements are not fulfilled.
-            ValueError: If values of the mass/temperature are less than or equal to zero (only positive values accepted) or 
-                        if the density and radius are not provided, or in case both are provided and the calculated density and 
-                        provided density are not within a tolerable error range.
+            TypeError: name is not of type string
+            TypeError: mass is not of type float/int
+            TypeError: temperature is not of type float/int
+            TypeError: init_position is not of type list
+            TypeError: init_velocity is not of type list
+            TypeError: radius is not of type float/int
+            TypeError: density is not of type float
+            TypeError: angular_momentum is not of type list (if provided)
+            TypeError: init_position does not contain float/int values
+            TypeError: init_velocity does not contain float/int values
+            ValueError: name is None
+            ValueError: mass is zero or negative
+            ValueError: radius is zero or negative
+            ValueError: temperature is zero or negative
+            ValueError: density is zero or negative
+            ValueError: init_position does not contain 3 coordinates
+            ValueError: init_velocity does not contain 3 directional velocities
         """
         try:
-            assert isinstance(name, str), "Star Property 'name' can only be of type string"
-            assert isinstance(mass, (float, int)), "Star Property 'mass' can only be of type float/int"
-            assert isinstance(temperature, (float, int)), "Star Property 'temperature' can only be of type float/int"
-            assert isinstance(init_position, list), "Star Property 'init_position' can only be of type list"
-            assert isinstance(init_velocity, list), "Star Property 'init_velocity' can only be of type list"
-            if radius is not None:
-                assert isinstance(radius, (float, int)), "Star Property 'radius' can only be of type float/int"
-            if density is not None:
-                assert isinstance(density, float), "Star Property 'density' must be of type float"
-            if angular_momentum is not None:
-                assert isinstance(angular_momentum, list), "Star Property 'angular_momentum' must be of type list"
+            assert isinstance(name, str)
         except AssertionError:
-            raise TypeError
+            raise TypeError("Star Property 'name' can only be of type string")
         try:
-            assert mass>0, "Star Property 'mass' must be a positive value"
-            assert temperature>0, "Star Property 'temperature' must be a positive value"
-            assert (name is not None), "Star Property 'name' cannot be None"
-            assert (radius is not None or density is not None), "Star Properties 'radius' and 'density' cannot be None"
-            if radius is not None:
-                assert radius>0, "Star Property 'radius' must be a positive value"
-            if density is not None:
-                assert density>0, "Star Property 'density' must be a positive value"
-            if radius is not None and density is not None:
-                vol = (4/3) * np.pi * np.power(radius, 3)
-                calc_density = mass / vol
-                assert math.isclose(calc_density, density, abs_tol=1e-8), "Provided Density of Star and Calculated Density of Star do not match"
+            assert isinstance(mass, (float, int))
         except AssertionError:
-            raise ValueError
+            raise TypeError("Star Property 'mass' can only be of type float/int")
+        try:
+            assert isinstance(temperature, (float, int))
+        except AssertionError:
+            raise TypeError("Star Property 'temperature' can only be of type float/int")
+        try:
+            assert isinstance(init_position, list)
+        except AssertionError:
+            raise TypeError("Star Property 'init_position' can only be of type list")
+        try:
+            assert isinstance(init_velocity, list)
+        except AssertionError:
+            raise TypeError("Star Property 'init_velocity' can only be of type list")
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_position)
+        except AssertionError:
+            raise TypeError("Star Property 'init_position' can only contain float/int values")
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_velocity)
+        except AssertionError:
+            raise TypeError("Star Property 'init_velocity' can only contain float/int values")
+        if radius is not None:
+            try:
+                assert isinstance(radius, (float, int))
+            except AssertionError:
+                raise TypeError("Star Property 'radius' can only be of type float/int")
+        if density is not None:
+            try:
+                assert isinstance(density, float)
+            except AssertionError:
+                raise TypeError("Star Property 'density' must be of type float")
+        if angular_momentum is not None:
+            try:
+                assert isinstance(angular_momentum, list)
+            except AssertionError:
+                raise TypeError("Star Property 'angular_momentum' must be of type list")
+        try:
+            assert mass>0
+        except AssertionError:
+            raise ValueError("Star Property 'mass' must be a positive value")
+        try:
+            assert temperature>0
+        except AssertionError:
+            raise ValueError("Star Property 'temperature' must be a positive value")
+        try:
+            assert (name is not None)
+        except AssertionError:
+            raise ValueError("Star Property 'name' cannot be None")
+        try:
+            assert (radius is not None or density is not None)
+        except AssertionError:
+            raise ValueError("Star Properties 'radius' and 'density' cannot be None")
+        if radius is not None:
+            try:
+                assert radius>0
+            except AssertionError:
+                raise ValueError("Star Property 'radius' must be a positive value")
+        if density is not None:
+            try:
+                assert density>0
+            except AssertionError:
+                raise ValueError("Star Property 'density' must be a positive value")
+        if radius is not None and density is not None:
+            vol = (4/3) * np.pi * np.power(radius, 3)
+            calc_density = mass / vol
+            try:
+                assert math.isclose(calc_density, density, abs_tol=1e-3)
+            except AssertionError:
+                raise ValueError("Provided Density of Star and Calculated Density of Star do not match")
         self.name = name
         self.mass = mass
         self.temperature = temperature
@@ -329,8 +456,9 @@ class Stars():
         self.force = np.zeros(3)
         self.object_type = "star"
         self.trajectory = []
+        self.vel_list = []
         if angular_momentum is not None:
-            self.angular_momentum = np.array(angular_momentum)
+            self.angular_momentum = np.array(angular_momentum).astype(np.float64)
         else:
             self.angular_momentum = np.array([0, 0, 0]).astype(np.float64)
         
@@ -501,6 +629,7 @@ class BlackHole():
         init_velocity (np.array): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
         angular_momentum (list, optional): Angular momentum of a rotating Black Hole as list. Ignore for non-rotating Black Holes.
         radius (float): Schwarzchild radius of the Black Hole
+        spin (np.array): Dimensionless spin coefficients of the Black Hole
         position (np.array): Holds the position of the Black Hole at each time step
         velocity (np.array): Holds the velocity of the Black Hole at each time step
         trajectory (list): Contains the trajectory of the Black Hole.
@@ -510,36 +639,72 @@ class BlackHole():
         mass(): Gets the mass of the Black Hole
         mass(value): Sets the mass of the Black Hole
         radius(): Calculates and updates the Schwarzchild radius of the Black Hole
+        spin(): Calculates the spin of the Black Hole based on the angular momentum
     """
 
     def __init__(self, name:str, mass:Union[float,int], init_position:list, init_velocity:list, angular_momentum:list=None):
-        """Initializes the Black Hole object.
+        """Constructor for the Black Hole Class
 
         Args:
             name (str): Name of the Black Hole
-            mass (float/int): Mass of the Black Hole in kilograms (Use conversion tool to convert from accepted units).
-            init_position (list): Initial Position of the Black Hole as a list of coordinates [x, y, z] in meters.
-            init_velocity (list): Initial Velocity of the Black Hole as a list of directional velocities [vx, vy, vz] in meters/second.
-            angular_momentum (list): The angular momentum of the Black Hole as list of axial momenta [Lx, Ly, Lz] in kilograms*radian/second.
+            mass (Union[float,int]): Mass of the Black Hole in kilograms
+            init_position (list): Initial position of the Black Hole in space as a list of coordinates in meters
+            init_velocity (list): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
+            angular_momentum (list, optional): Angular Momentum of the Black Hole. Defaults to None.
 
         Raises:
-            TypeError: If the input arguements do not match the specified datatypes
-            ValueError: If the input arguements (mass) are negative or zero
+            TypeError: name is not of type string
+            TypeError: mass is not of type float/int
+            TypeError: init_position is not of type list
+            TypeError: init_velocity is not of type list
+            TypeError: angular_momentum is not of type list (if provided)
+            TypeError: init_position does not contain float/int values
+            TypeError: init_velocity does not contain float/int values
+            TypeError: angular_momentum does not contain float/int values (if provided)
+            ValueError: name is None
+            ValueError: mass is zero or negative
         """
         try:
-            assert isinstance(name, str), "Black Hole property 'name' must be of type string"
-            assert isinstance(mass, (float, int)), "Black Hole property 'mass' must be of type float/int"
-            assert isinstance(init_position, list), "Black Hole property 'init_position' must be of type list"
-            assert isinstance(init_velocity, list), "Black Hole property 'init_velocity' must be of type list"
-            if angular_momentum is not None:
-                assert isinstance(angular_momentum, list), "Black Hole property 'angular_momentum' must be of type list"
+            assert isinstance(name, str)
         except AssertionError:
-            raise TypeError
+            raise TypeError("Black Hole property 'name' must be of type string")
         try:
-            assert mass>0, "Black Hole property 'mass' needs to be a positive value"
-            assert (name is not None), "Black Hole property 'name' cannot be None"
+            assert isinstance(mass, (float, int))
         except AssertionError:
-            raise ValueError
+            raise TypeError("Black Hole property 'mass' must be of type float/int")
+        try:
+            assert isinstance(init_position, list)
+        except AssertionError:
+            raise TypeError("Black Hole property 'init_position' must be of type list")
+        try:
+            assert isinstance(init_velocity, list)
+        except AssertionError:
+            raise TypeError("Black Hole property 'init_velocity' must be of type list")
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_position)
+        except AssertionError:
+            raise TypeError("Black Hole Property 'init_position' can only contain float/int values")
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_velocity)
+        except AssertionError:
+            raise TypeError("Black Hole Property 'init_velocity' can only contain float/int values")
+        if angular_momentum is not None:
+            try:
+                assert isinstance(angular_momentum, list)
+            except AssertionError:
+                raise TypeError("Black Hole Property 'angular_momentum' must be of type list")
+            try:
+                assert all(isinstance(i, (float, int)) for i in angular_momentum)
+            except AssertionError:
+                raise TypeError("Black Hole Property 'angular_momentum' can only contain float/int values")
+        try:
+            assert mass>0
+        except AssertionError:
+            raise ValueError("Black Hole Property 'mass' must be a positive value")
+        try:
+            assert (name is not None)
+        except AssertionError:
+            raise ValueError("Black Hole Property 'name' cannot be None")
         self.name = name
         self.mass = mass
         self.init_position = np.array(init_position)
@@ -555,7 +720,7 @@ class BlackHole():
         self.force = np.zeros(3)
     
     @property
-    def mass(self):
+    def mass(self)->Union[float,int]:
         """Initializes the mass of the black hole as a dynamic property.
 
         Returns:
@@ -564,7 +729,7 @@ class BlackHole():
         return self._mass
     
     @mass.setter
-    def mass(self, value:Union[float,int]):
+    def mass(self, value:Union[float,int])->None:
         """Sets the mass of the Black Hole.
 
         Args:
@@ -573,7 +738,7 @@ class BlackHole():
         self._mass = value
 
     @property
-    def radius(self):
+    def radius(self)->float:
         """Calculates the Schwarzchild radius of the Black Hole.
 
         The Schwarzchild radius of the black hole (in meters) is the distance between the singularity (center) and the edge 
@@ -591,3 +756,22 @@ class BlackHole():
         radius = 2 * const.G * self._mass / (const.C * const.C)
         return radius
 
+    @property
+    def spin(self)->np.array:
+        """Calculates the dimensionless spin coefficients of the Black Hole based on the angular momentum.
+
+        The spin of the black hole is calculated based on the angular momentum of the black hole. The spin is calculated as:
+            spin = angular_momentum * c / (G * m^2)
+                where:
+                    angular_momentum - Angular Momentum of the Black Hole (kilogram*meter^2/second)
+                    mass - Mass of the Black Hole (kilogram)
+                    c - Speed of light (meter/second)
+                    G - Universal Gravitational Constant (Newton*meter^2/kilogram^2)
+
+        Returns:
+            array: Spin of the Black Hole
+        """
+        if all(self.angular_momentum==0):
+            return np.array([0, 0, 0]).astype(np.float64)
+        spin = self.angular_momentum * const.C / (const.G * np.power(self._mass, 2))
+        return spin

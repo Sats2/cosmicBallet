@@ -76,29 +76,63 @@ class Simulator():
             time_unit (str, optional): Unit of the arguements 'time_step' and 'simulation_time'. Defaults to seconds.
 
         Raises:
-            TypeError: Raised when the input arguements do not match the intended data type.
-            ValueError: Raised when parameter values are out-of-bounds.
+            TypeError: When celestial_bodies is not a list
+            TypeError: When time_step is not a float or an integer
+            TypeError: When simulation_time is not a float or an integer
+            TypeError: When time_unit is not a string
+            ValueError: When time_step is less than or equal to 0
+            ValueError: When simulation_time is less than or equal to 0
+            ValueError: When time_unit is not one of the available units for conversion
+            ValueError: When the number of celestial bodies is less than 2
+            ValueError: When the celestial bodies are not of type Stars or Planets, or star type is Neutron
+            ValueError: When the celestial bodies have the same name
         """
         try:
-            assert isinstance(time_step, (float,int)), "Simulator attribute 'time_step' can only be of type float"
-            assert isinstance(simulation_time, (float,int)), "Simulator attribute 'simulation time' can only be of type float/int"
-            if time_unit is not None:
-                assert isinstance(time_unit, str), "Simulator attribute 'time_unit' can only be of type string"
-            for item in celestial_bodies:
-                assert isinstance(item, (Stars,Planets,BlackHole)), "All items in the Simulator attribute 'celestial_bodies' must be class objects available in module CelestialObjects"
+            assert isinstance(celestial_bodies, list)
         except AssertionError:
-            raise TypeError
+            raise TypeError("Celestial Bodies must be a list of Celestial Objects")
         try:
-            assert time_step>0, "Simulator attribute 'time_step' must be a positive value"
-            assert simulation_time>0, "Simulator attribute 'simulation_time' must be a positive value"
-            assert time_step<=simulation_time, "The chosen 'time_step' must be lesser than or equal to the 'simulation_time'"
-            for item in celestial_bodies:
-                assert (item.object_type != 'galaxy'), "The NBodySimulator cannot simulate Galaxies. Please use the Simulator in GalaxySimulator"
-                assert (item.object_type != 'black_hole'), "The NBodySimulator cannot simulate Black Holes. Please use the Simulator in MassiveObjectSimulator"
-                if item.object_type == "star":
-                    assert (item.star_type != "Neutron"), "The NBodySimulator cannot simulate Neutron Stars. Please use the Simulator in MassiveObjectSimulator"
+            assert isinstance(time_step, (float,int))
         except AssertionError:
-            raise ValueError
+            raise TypeError("Time Step must be a float or an integer")
+        try:
+            assert isinstance(simulation_time, (float,int))
+        except AssertionError:
+            raise TypeError("Simulation Time must be a float or an integer")
+        try:
+            assert isinstance(time_unit, str)
+        except AssertionError:
+            raise TypeError("Time Unit must be a string")
+        try:
+            assert time_step > 0
+        except AssertionError:
+            raise ValueError("Time Step must be greater than 0")
+        try:
+            assert simulation_time > 0
+        except AssertionError:
+            raise ValueError("Simulation Time must be greater than 0")
+        try:
+            assert time_unit in ["seconds", "days", "hours", "months", "years"]
+        except AssertionError:
+            raise ValueError("Time Unit must be either 'seconds', 'days', 'hours', 'months' or 'years'")
+        try:
+            assert len(celestial_bodies) > 1
+        except AssertionError:
+            raise ValueError("At least 2 celestial bodies are needed for simulation")
+        try:
+            for body in celestial_bodies:
+                assert isinstance(body, (Stars, Planets))
+                if body.object_type == "star":
+                    assert body.star_type!="Neutron", "Neutron Stars cannot be simulated with this simulator"
+        except AssertionError:
+            raise ValueError("Celestial Bodies must be of type Stars or Planets")
+        try:
+            name_list = []
+            for body in celestial_bodies:
+                name_list.append(body.name)
+            assert len(name_list) == len(set(name_list))
+        except AssertionError:
+            raise ValueError("Celestial Bodies must have unique names")
         self.celestial_bodies = celestial_bodies
         self.time_step = time_step
         self.simulation_time = simulation_time
@@ -349,10 +383,12 @@ class Simulator():
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
             self.__calculate_forces()
             self.__forward_euler_update()
             for i, body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
     
     def __rk4_step(self):
         """Private Method within the Simulator Class that performs the time update according to the Runge-Kutta method.
@@ -408,9 +444,11 @@ class Simulator():
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
             self.__rk4_step()
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
     
     def __calculate_potential_gradient(self):
         """Private function of the Simulator Class that generates the gradient of the potential energy for each object
@@ -463,16 +501,18 @@ class Simulator():
         """
         num_steps = math.ceil(self.simulation_time / self.time_step)
         for step in range(num_steps):
-            self.time_val += self.time_step
             if step == 0:
                 for i,body in enumerate(self.celestial_bodies):
                     body.position = body.init_position.astype(np.float64)
                     body.momentum = body.init_velocity.astype(np.float64) * body.mass
                     body.velocity = body.momentum / body.mass
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
             self.__leapfrog_step()
+            self.time_val += self.time_step
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
 
     def __forest_ruth_step(self):
         """Private method of the Simulator class that updates the momentum and position of all bodies being simulated
@@ -504,9 +544,12 @@ class Simulator():
                     body.momentum = body.init_velocity.astype(np.float64) * body.mass
                     body.velocity = body.momentum / body.mass
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy()))) 
             self.__forest_ruth_step()
+            self.time_val += self.time_step
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
 
     def solve(self, formulation:str="Hamiltonian", solver:str="forest_ruth", correction:bool=False)->None:
         """Method of the Simulator class that solves the ODE System of the N-Body Problem to generate results for the 
@@ -575,7 +618,7 @@ class Simulator():
                 self.celestial_bodies.pop(idx)
 
     def visualize(self, visualization_type:str="scientific", save_figure:bool=False, figure_name:str=None,
-                  animate:bool=False, time_interval:Union[float,int]=None)->None:
+                  animate:bool=False, interval:Union[float,int]=None)->None:
         """Method of the Simulator class that visualizes the trajectory of the celestial objects in the N-Body Problem Simulation.
 
         The method uses the Visualize class from the Visualization module to generate the visualization of the trajectory of the 
@@ -606,4 +649,4 @@ class Simulator():
         self.__compile_results()
         vis = Visualize(celestial_objects=self.celestial_bodies, visualization_type=visualization_type, 
                         save_figure=save_figure, figure_name=figure_name)
-        vis.visualize(animate=animate, time_interval=time_interval)
+        vis.visualize(animate=animate, time_interval=interval)

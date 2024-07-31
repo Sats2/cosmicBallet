@@ -117,33 +117,58 @@ class SchwarzschildSimulator():
             simulation_time (Union[float,int]): The end time for numerical integration.
 
         Raises:
-            TypeError: Raised when the time_step or simulation_time are not numerical values, or if the objects in the
-                        list of stars does not belong to the Stars class or is Neutron Star, or the dense_body is not
-                        a Black Hole or Neutron Star.
-            ValueError: Raised when the time_step or simulation_time are lesser than or equal to zero, or when the 
-                        time_step is too large when compared to the simulation_time, or when the dense body is not stationary.
+            TypeError: When dense_body is not a Black Hole or Neutron Star 
+            TypeError: When stars is not a list of stars
+            TypeError: When object in stars list is not a Star object or is a Neutron Star
+            TypeError: When time_step is not a float or int value
+            TypeError: When simulation_time is not a float or int value
+            ValueError: When time_step is not a positive value
+            ValueError: When simulation_time is not a positive value
+            ValueError: When time_step is greater than the minimum time step for the simulation
+            ValueError: When all star objects in Stars list have common names.
         """
         try:
-            assert isinstance(time_step, (int,float)), "time_step can only be a float/int value"
-            assert isinstance(simulation_time, (int,float)), "simulation_time can only be a float/int value"
+            assert isinstance(dense_body, (Stars, BlackHole))
+        except AssertionError:
+            raise TypeError("dense_body must be a Neutron Star or Black Hole")
+        try:
+            assert isinstance(stars, list)
+        except AssertionError:
+            raise TypeError("stars must be a list of stars")
+        try:
             for star in stars:
-                assert (star.star_type != "Neutron"), f"Neutron Star orbit cannot be simulated. {star.name} is a Neutron Star"
-                assert isinstance(star, Stars), f"{star.name} must be a star"
-            if isinstance(dense_body, Stars):
-                assert (star.star_type == "Neutron"), "dense_body must be a Neutron Star or Black Hole"
-            else:
-                assert isinstance(dense_body, BlackHole), "dense_body must be a Neutron Star or Black Hole"
-            assert dense_body.init_velocity.all() == 0, "dense_body must be stationary"
+                assert isinstance(star, Stars), "Object in stars must be a Star object"
+                assert star.star_type != "Neutron", "Neutron Star orbit cannot be simulated"
         except AssertionError:
             raise TypeError
-        self.dense_body_position = _set_origin(stars, dense_body)
         try:
-            assert time_step>0, "time_step must be a positive value"
-            assert simulation_time>0, "simulation_time must be a positive value"
-            min_timestep = _time_step_condition(stars, dense_body)
-            assert time_step<=min_timestep, f"time_step must be lesser than {min_timestep}"
+            assert isinstance(time_step, (int,float))
         except AssertionError:
-            raise ValueError
+            raise TypeError("time_step can only be a float/int value")
+        try:
+            assert isinstance(simulation_time, (int,float))
+        except AssertionError:
+            raise TypeError("simulation_time can only be a float/int value")
+        try:
+            assert time_step>0
+        except AssertionError:
+            raise ValueError("time_step must be a positive value")
+        try:
+            assert simulation_time>0
+        except AssertionError:
+            raise ValueError("simulation_time must be a positive value")
+        min_timestep = _time_step_condition(stars, dense_body)
+        try:
+            assert time_step<=min_timestep
+        except AssertionError:
+            raise ValueError(f"time_step must be lesser than {min_timestep}")
+        try:
+            name_list = []
+            for star in stars:
+                name_list.append(star.name)
+            assert len(name_list) == len(set(name_list))
+        except AssertionError:
+            raise ValueError("All star objects in Stars list must have unique names")
         self.dense_body = dense_body
         self.stars = stars
         self.dt = time_step

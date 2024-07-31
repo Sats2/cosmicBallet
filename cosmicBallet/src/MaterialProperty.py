@@ -24,25 +24,41 @@ class MaterialProperty():
             material_fraction (list): List of fractions of the materials in the planet.
 
         Raises:
-            TypeError: Raised when the datatype of the input arguements are not of the supported types
-            ValueError: Raised when there is value mismatch or iinconsistency in the number of materials.
+            TypeError: When material_list is not of type list.
+            TypeError: When material_fraction is not of type list.
+            TypeError: When any item in material_list is not of type string.
+            TypeError: When any item in material_fraction is not of type float.
+            ValueError: When the sum of all items in material_fraction is not 1.
+            ValueError: When the length of material_list and material_fraction are not the same.
         """
         try:
-            assert isinstance(material_list, list), "Material List must be a list of material names"
-            assert isinstance(material_fraction, list), "Material Fraction must be a list of material fractions"
+            assert isinstance(material_list, list)
+        except AssertionError:
+            raise TypeError("Material List must be a list of material names")
+        try:
+            assert isinstance(material_fraction, list)
+        except AssertionError:
+            raise TypeError("Material Fraction must be a list of material fractions")
+        try:
             for item in material_list:
-                assert isinstance(item, str), "Each item in material_list must be of type string"
+                assert isinstance(item, str)
+        except AssertionError:
+            raise TypeError("Each item in material_list must be of type string")
+        try:
             sum_fraction = 0
             for item in material_fraction:
-                assert isinstance(item, (float,int)), "Each item in material_fraction must be of type float"
+                assert isinstance(item, (float,int))
                 sum_fraction += item
         except AssertionError:
-            raise TypeError
+            raise TypeError("Each item in material_fraction must be of type float")
         try:
-            assert (len(material_list) == len(material_fraction)), "Lists material_list and material_fraction must be of same length"
-            assert (sum_fraction == float(1)), "The sum of all items in material_fraction must be 1"
+            assert sum_fraction==1
         except AssertionError:
-            raise ValueError
+            raise ValueError("The sum of all items in material_fraction must be 1")
+        try:
+            assert (len(material_list) == len(material_fraction))
+        except AssertionError:
+            raise ValueError("Lists material_list and material_fraction must be of same length")
         self.material_list = material_list
         self.material_fraction = material_fraction
     
