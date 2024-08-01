@@ -161,14 +161,18 @@ class Planets():
         self.object_type = "planet"
         if self.planet_type.lower() == "rocky":
             if self.planet_contour.lower() == "earth-like":
-                self.color = (0,0.2,1)
+                self.color_myv = (0,0.2,1)
+                self.color = "blue"
             else:
-                self.color = (1,0,1)
+                self.color_myv = (1,0,1)
+                self.color = "brown"
         else:
             if self.planet_contour.lower() == "jupiter-like":
-                self.color = (0.5,1,0)
+                self.color_myv = (0.5,1,0)
+                self.color = "orange"
             else:
-                self.color = (0,0,1)
+                self.color_myv = (0,0,1)
+                self.color = "blue"
     
     @property
     def radius(self):
@@ -187,6 +191,42 @@ class Planets():
             value (float/int): Radius of the Planet
         """
         self._radius = value
+
+    @property
+    def color(self):
+        """Gets the color of the planet as a class property
+
+        Returns:
+            str: Color of the planet
+        """
+        return self._color
+    
+    @color.setter
+    def color(self, value:str):
+        """Sets the color of the Planet
+
+        Args:
+            value (str): Color of the Planet
+        """
+        self._color = value
+    
+    @property
+    def color_myv(self):
+        """Gets the color of the planet as a class property as a tuple
+        
+        Returns:
+            tuple: Color of the planet as a tuple
+        """
+        return self._color_myv
+    
+    @color_myv.setter
+    def color_myv(self, value:tuple):
+        """Sets the color of the Planet as a tuple
+
+        Args:
+            value (tuple): Color of the Planet as a tuple
+        """
+        self._color_myv = value
     
     @property
     def mass(self):
@@ -284,6 +324,7 @@ class Fragments():
         self.planet_type = "fragment"
         self.object_type = "fragment"
         self.trajectory = []
+        self.color = "grey"
     
 
 class Stars():
@@ -310,7 +351,8 @@ class Stars():
         star_type (str): Type of Star based on density
         star_class (str): Star Classification based on temperature
         trajectory (list): Holds the trajectory of the star as a list of position arrays.
-        color (tuple): Color of the star for visualization purposes.
+        color_myv (tuple): Color of the star for visualization purposes.
+        color (str): Color of the star for visualization purposes.
 
     Methods:
         radius(): Gets the radius of the star
@@ -455,6 +497,9 @@ class Stars():
         self.momentum = None
         self.force = np.zeros(3)
         self.object_type = "star"
+        self.color = ""
+        self.color_myv = (1,1,0)
+        self.star_class
         self.trajectory = []
         self.vel_list = []
         if angular_momentum is not None:
@@ -553,8 +598,12 @@ class Stars():
         elif self.density > 1000 and self.density < 1e8:
             return "Main Sequence"
         elif self.density > 1e8 and self.density < 1e16:
+            self.color = "white"
+            self.color_myv = (1,1,1)
             return "White Dwarf"
         else:
+            self.color = "white"
+            self.color_myv = (1,1,1)
             return "Neutron"
     
     @property
@@ -584,33 +633,44 @@ class Stars():
             str: Classification of star based on luminosity (or effective surface temperature)
         """
         if self.star_type == "Main Sequence":
-            if self.temperature > 2300 and self.temperature < 3900:
-                self.color = (1, 0, 0)
+            if self.temperature > 2300 and self.temperature <= 3900:
+                self.color_myv = (1, 0, 0)
+                self.color = "red"
                 return "M"
-            elif self.temperature > 3900 and self.temperature < 5300:
-                self.color = (1,0.5,0)
+            elif self.temperature > 3900 and self.temperature <= 5300:
+                self.color_myv = (1,0.5,0)
+                self.color = "orange"
                 return "K"
-            elif self.temperature > 5300 and self.temperature < 6000:
-                self.color = (1,1,0)
+            elif self.temperature > 5300 and self.temperature <= 6000:
+                self.color_myv = (1,1,0)
+                self.color = "yellow"
                 return "G"
-            elif self.temperature > 6000 and self.temperature < 7300:
-                self.color = (0.8,0.9,1)
+            elif self.temperature > 6000 and self.temperature <= 7300:
+                self.color_myv = (0.8,0.9,1)
+                self.color = "white"
                 return "F"
-            elif self.temperature > 7300 and self.temperature < 10000:
-                self.color = (1,1,1)
+            elif self.temperature > 7300 and self.temperature <= 10000:
+                self.color_myv = (1,1,1)
+                self.color = "white"
                 return "A"
-            elif self.temperature > 10000 and self.temperature < 33000:
-                self.color = (0,0.3,1)
+            elif self.temperature > 10000 and self.temperature <= 33000:
+                self.color_myv = (0,0.3,1)
+                self.color = "purple"
                 return "B"
             elif self.temperature > 33000:
-                self.color = (0,0,1)
+                self.color_myv = (0,0,1)
+                self.color = "blue"
                 return "O"
             else:
                 raise ValueError("Temperature of Star Too Low and uncharacteristic of Stars. Modification to Temperature needed")
         elif self.star_type == "Giant":
             if self.temperature > 3700 and self.temperature < 10000:
+                self.color_myv = (1,0,0)
+                self.color = "red"
                 return "Red"
             elif self.temperature > 10000:
+                self.color_myv = (0,0,1)
+                self.color = "blue"
                 return "Blue"
             else:
                 raise ValueError("Temperature of Star Too Low and uncharacteristic of Giants. Modification to Temperature needed")
@@ -634,6 +694,7 @@ class BlackHole():
         velocity (np.array): Holds the velocity of the Black Hole at each time step
         trajectory (list): Contains the trajectory of the Black Hole.
         force (np.array): Attribute that holds the force acting on the Black Hole at each time step.
+        color (str): Color of the Black Hole for visualization purposes.
     
     Methods:
         mass(): Gets the mass of the Black Hole
@@ -718,6 +779,7 @@ class BlackHole():
         else:
             self.angular_momentum = np.array([0, 0, 0]).astype(np.float64)
         self.force = np.zeros(3)
+        self.color = "black"
     
     @property
     def mass(self)->Union[float,int]:

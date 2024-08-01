@@ -618,7 +618,7 @@ class Simulator():
                 self.celestial_bodies.pop(idx)
 
     def visualize(self, visualization_type:str="scientific", save_figure:bool=False, figure_name:str=None,
-                  animate:bool=False, interval:Union[float,int]=None)->None:
+                  animate:bool=False)->None:
         """Method of the Simulator class that visualizes the trajectory of the celestial objects in the N-Body Problem Simulation.
 
         The method uses the Visualize class from the Visualization module to generate the visualization of the trajectory of the 
@@ -629,24 +629,16 @@ class Simulator():
             save_figure (bool, optional): User input to whether the generated visualization needs to be saved or not. Defaults to False.
             figure_name (str, optional): The name of the file that holds the visualization if save_figure is True. Defaults to None.
             animate (bool, optional): User input to whether the visualization needs to be animated or not. Defaults to False.
-            time_interval (float,int, optional): The time interval between each frame of the animation. Defaults to None.
-
+        
         Raises:
-            TypeError: Raised when the input arguements are not of the defined datatype.
             ValueError: Raised when an unrecognized visualization type is entered.
         """
         try:
-            assert isinstance(visualization_type, str), "The arguement visualization_type needs to be a string object"
-            assert isinstance(save_figure, bool), "The arguement save_figure needs to be a boolean object"
-            assert isinstance(figure_name, str), "The arguement figure_name needs to be a string object"
-        except AssertionError:
-            raise TypeError
-        try:
             for body in self.celestial_bodies:
-                assert len(body.trajectory)>0, "The trajectory of the celestial objects is empty. Please run the simulation first"
+                assert len(body.trajectory)>0
         except AssertionError:
-            raise ValueError
+            raise ValueError("The trajectory of the celestial objects is empty. Please run the simulation first")
         self.__compile_results()
         vis = Visualize(celestial_objects=self.celestial_bodies, visualization_type=visualization_type, 
                         save_figure=save_figure, figure_name=figure_name)
-        vis.visualize(animate=animate, time_interval=interval)
+        vis.visualize(animate=animate)

@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-from mpl_toolkits.mplot3d import Axes3D
-from typing import Union
+import os
+import shutil
 import numpy as np
 import mayavi.mlab as mlab
 
@@ -46,10 +45,11 @@ class Visualize():
             assert isinstance(save_figure, bool)
         except AssertionError:
             raise TypeError("The attribute save_figure must be a boolean")
-        try:
-            assert isinstance(figure_name, str)
-        except AssertionError:
-            raise TypeError("The figure_name must be a string")#
+        if figure_name is not None:
+            try:
+                assert isinstance(figure_name, str)
+            except AssertionError:
+                raise TypeError("The figure_name must be a string")
         try:
             accepted_choices = ["scientific", "animation"]
             assert (visualization_type.lower() in accepted_choices)
@@ -61,59 +61,46 @@ class Visualize():
         self.ani_name = None
         if figure_name is not None and visualization_type == "scientific":
             self.figure_name = figure_name + ".jpeg"
-            self.ani_name = figure_name + ".gif"
+            self.ani_name = figure_name + ".mp4"
         else:
-            if self.figure_name is not None:
+            if figure_name is not None:
                 self.ani_name = figure_name + ".gif"
+
+    def _create_figure(self,celestial_objects:list, var:int, zero_padding:str)->None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        ax.set_xlabel("x [m]")
+        ax.set_ylabel("y [m]")
+        ax.set_zlabel("z [m]")
+        for i in range(len(celestial_objects)):
+            body = celestial_objects[i]
+            trajectory = np.array(body.trajectory[:int(10*var) + 1])
+            ax.plot(trajectory[:, 1], trajectory[:, 2], trajectory[:, 3], label=body.name, color=body.color)
+            ax.plot(trajectory[-1, 1], trajectory[-1, 2], trajectory[-1, 3], "o", color=body.color)
+        ax.legend(loc='center left', bbox_to_anchor=(1.09, 0.35))
+        plt.savefig(f"temp/data_{var:0{zero_padding}d}.png", dpi=300)
+        #plt.show()
+        plt.clf()
+        plt.close(fig)
 
     def __create_matplotlib_animation(self):
         """Private method of the Visualization class that generates an animation of the trajectory of the bodies.	
         """
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection="3d")
-        points = []
-        traj = []
-        all_points = []
-        for body in self.celestial_objects:
-            spacetime_point = body.trajectory[0]
-            if spacetime_point[0] == 0:
-                points.append(ax.plot(spacetime_point[1], spacetime_point[2], spacetime_point[3], "o", label=body.name)[0])
-                traj.append(ax.plot(spacetime_point[1], spacetime_point[2], spacetime_point[3])[0])
-                all_points.append(spacetime_point)
-            else:
-                points.append(None)
-                traj.append(None)
-        all_points = np.array(all_points)
-        ax.set_xlim(all_points[:,1].min(), all_points[:,1].max())
-        ax.set_ylim(all_points[:,2].min(), all_points[:,2].max())
-        ax.set_zlim(all_points[:,3].min(), all_points[:,3].max())
-        ax.set_xlabel("X [m]")
-        ax.set_ylabel("Y [m]")
-        ax.set_zlabel("Z [m]")
-
-        def update(frame):
-            all_points = []
-            frame = int(100*frame)
-            for body in self.celestial_objects:
-                spacetime_point = body.trajectory[frame]
-                if spacetime_point[0] == frame:
-                    i = self.celestial_objects.index(body)
-                    points[i].set_data(spacetime_point[1], spacetime_point[2])
-                    points[i].set_3d_properties(spacetime_point[3])
-                    spacetime_trajectory = np.array(body.trajectory)[:frame]
-                    traj[i].set_data(spacetime_trajectory[:, 1], spacetime_trajectory[:, 2])
-                    traj[i].set_3d_properties(spacetime_trajectory[:, 3])
-                    all_points.append(spacetime_trajectory)
-            all_points = np.array(all_points)
-            ax.set_xlim(all_points[:,1].min(), all_points[:,1].max())
-            ax.set_ylim(all_points[:,2].min(), all_points[:,2].max())
-            ax.set_zlim(all_points[:,3].min(), all_points[:,3].max())
-            return traj+points
-        
-        ani = FuncAnimation(fig, update, frames=int(0.01*len(self.celestial_objects[0].trajectory)), blit=False)
-        if self.save_fig:
-            ani.save(self.ani_name, dpi=300)
-        plt.show()
+        try:
+            os.mkdir("temp")
+        except:
+            pass
+        self.n_total = int(0.1*len(self.celestial_objects[0].trajectory))
+        zero_padding = len(str(self.n_total))
+        for j in range(0, self.n_total):
+            var = j
+            self._create_figure(self.celestial_objects, var, zero_padding)
+        ffmpeg_command = (
+            f"ffmpeg -r {15} -i temp/data_%0{zero_padding}d.png "
+            f"-vcodec mpeg4 -qscale:v 2 -filter:v 'setpts={1/1}*PTS' -y {self.ani_name}"
+        )
+        os.system(ffmpeg_command)
+        shutil.rmtree("temp")
             
     
     def __scientific_plot(self, animate:bool)->None:
@@ -131,10 +118,11 @@ class Visualize():
             self.__create_matplotlib_animation()
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
-        i = 1
+        i = 0
         for body in self.celestial_objects:
             trajectory = np.array(body.trajectory)
-            ax.plot(trajectory[:,1], trajectory[:,2], trajectory[:,3], label=body.name)
+            ax.plot(trajectory[:,1], trajectory[:,2], trajectory[:,3], label=body.name, color=body.color)
+            ax.scatter(trajectory[-1,1], trajectory[-1,2], trajectory[-1,3], color=body.color)
             i += 1
         plt.legend()
         ax.set_xlabel("x [m]")
@@ -152,9 +140,9 @@ class Visualize():
             spacetime_point = body.trajectory[0]
             if spacetime_point[0] == 0:
                 points.append(mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3], 
-                                            scale_factor=body.radius, color=body.color))
+                                            scale_factor=body.radius, color=body.color_myv))
                 traj.append(mlab.plot3d(spacetime_point[:1,1], spacetime_point[:1,2], spacetime_point[:1,3],
-                                        color=body.color))
+                                        color=body.color_myv))
             else:
                 points.append(None)
                 traj.append(None)
@@ -166,9 +154,9 @@ class Visualize():
                 if spacetime_point[0] == frame:
                     spacetime_trajectory = np.array(body.trajectory)[:frame]
                     points[i] = mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3],
-                                            scale_factor=body.radius, color=body.color)
+                                            scale_factor=body.radius, color=body.color_myv)
                     traj[i] = mlab.plot3d(spacetime_trajectory[:frame,1], spacetime_trajectory[:frame,2], 
-                                          spacetime_trajectory[:frame,3], color=body.color)
+                                          spacetime_trajectory[:frame,3], color=body.color_myv)
                     all_points.append(spacetime_trajectory)
             all_points = np.array(all_points)
             mlab.view(focalpoint=(all_points[:,1].mean(), all_points[:,2].mean(), all_points[:,3].mean()))
@@ -188,15 +176,17 @@ class Visualize():
 
         Args:
             animate (bool): Used for scientific visualization and control whether an animation is generated. Defaults to False
+            dense_body_sim (bool): Used for scientific visualization and control whether the visualization is for a 
+                                dense body simulation. Defaults to False
 
         Raises:
-            ValueError: When the time_interval is not specified for the animation render.
+            TypeError: When the animate not a boolean value.
         """
         try:
             assert isinstance(animate, bool)
         except AssertionError:
-            raise ValueError("animate must be a boolean value")
+            raise TypeError("animate must be a boolean value")
         if self.visual_type == "scientific":
             self.__scientific_plot(animate=animate)
         else:
-            self.__animation()
+            self.__animation()    

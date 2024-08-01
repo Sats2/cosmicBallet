@@ -3,6 +3,7 @@ from CelestialObjects import BlackHole, Stars
 from typing import Union
 import math
 import platform
+from utils.Visualization import Visualize
 import mayavi.mlab as mlab
 import utils.Constants as const
 
@@ -183,6 +184,7 @@ class SchwarzschildSimulator():
         n (int): The total number of time steps in the numerical integration.
         G (int): Newton's Gravitational constant in natural units (=1).
         bh_mass (float): Mass of the Dense Body in SI Units.
+        dense_body_position (np.array): The initial position of the dense body.
 
     Methods:
         solve(): Performs the numerical integration for orbital simulation.
@@ -255,6 +257,7 @@ class SchwarzschildSimulator():
         self.dt = time_step
         self.t_end = simulation_time
         self.n = math.ceil(simulation_time / time_step)
+        self.dense_body_position = _set_origin(stars, dense_body)
     
     def __convert_to_natural_units(self)->None:
         """Private Method of the SchwarzschildSimulator class that converts the input values of the celestial objects
@@ -351,6 +354,46 @@ class SchwarzschildSimulator():
         self.__convert_to_SI_units()
         _revert_origin(self.stars, self.dense_body, self.dense_body_position)
 
+    def __compile_results(self)->list:
+        """Private method of the SchwarzschildSimulator class that compiles the results of the simulation into a list.
+
+        Returns:
+            celestial_object_list (list): A list of all celestial objects in the simulation.
+        """
+        self.dense_body.trajectory = []
+        for i in range(self.n+1):
+            self.dense_body.trajectory.append(np.concatenate(([(i+1)*self.dt], self.dense_body.init_position.copy())))
+        celestial_object_list = [self.dense_body]
+        for star in self.stars:
+            celestial_object_list.append(star)
+        return celestial_object_list
+
+    def visualize(self, visualization_type:str="scientific", save_figure:bool=False, figure_name:str=None,
+                  animate:bool=False)->None:
+        """Method of the SchwarzschildSimulator class that visualizes the trajectory of the stars.
+
+        The method uses the Visualize class from the Visualization module to generate the visualization of the trajectory of the 
+        stars around a central dense body.
+
+        Args:
+            visualization_type (str, optional): The type of visualization the method needs to generate. Defaults to "scientific".
+            save_figure (bool, optional): User input to whether the generated visualization needs to be saved or not. Defaults to False.
+            figure_name (str, optional): The name of the file that holds the visualization if save_figure is True. Defaults to None.
+            animate (bool, optional): User input to whether the visualization needs to be animated or not. Defaults to False.
+        
+        Raises:
+            ValueError: Raised when an unrecognized visualization type is entered.
+        """
+        try:
+            for star in self.stars:
+                assert len(star.trajectory)>0
+        except AssertionError:
+            raise ValueError("The trajectory of the celestial objects is empty. Please run the simulation first")
+        celestial_objects = self.__compile_results()
+        vis = Visualize(celestial_objects=celestial_objects, visualization_type=visualization_type, 
+                        save_figure=save_figure, figure_name=figure_name)
+        vis.visualize(animate=animate)
+
 
 class BinaryMerger():
     """Class that simulates the merger of two celestial objects.
@@ -361,6 +404,7 @@ class BinaryMerger():
     binary system and are in the process of merging. The simulation is performed in natural units.
 
     Attributes:
+        binaryBH (module): The module that contains the functions for the Binary Merger simulation.
         binary_system (list): List of two objects that are to be simulated for Binary Merger.
         q (float): The mass ratio of the two objects in the binary system.
         chi1 (np.array): The dimensionless spin of the first object in the binary system.
@@ -392,7 +436,8 @@ class BinaryMerger():
         except AssertionError:
             raise OSError("Binary Merger simulation is only supported on Linux")
         try:
-            from utils.binaryBH import get_binary_data
+            import utils.binaryBH as binaryBH
+            self.binaryBH = binaryBH
         except ImportError:
             raise ImportError("NRSur7dq2 and SurfinBH libraries are required for Binary Merger simulation")
         try:
@@ -410,6 +455,7 @@ class BinaryMerger():
             raise ValueError
         self.binary_system = binary_system
         self.q = binary_system[0].mass / binary_system[1].mass
+        self.calculate_chi
     
     @property
     def calculate_chi(self)->None:
@@ -422,7 +468,7 @@ class BinaryMerger():
     def simulate(self):
         """ Method of the BinaryMerger class that calculates the trajectory of the two objects as they merge.
         """
-        vals = get_binary_data(self.q, self.chi1, self.chi2, None, None, None)
+        vals = self.binaryBH.get_binary_data(self.q, self.chi1, self.chi2, None, None, None)
         self.trajectory = [vals[5], vals[6]]
         self.waveforms = vals[4]
         self.time_vals = vals[0]
