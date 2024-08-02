@@ -46,7 +46,7 @@ The successful installation of the optional libraries are not guaranteed due to 
 After the library installation, the package can be installed with:
 
 ```
-pip install .
+pip install cosmicBallet
 ```
 
 ## Usage
