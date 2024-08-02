@@ -1,4 +1,4 @@
-import Constants as const
+import utils.Constants as const
 from typing import Union
 
 
@@ -80,6 +80,8 @@ def velocity_conversion(velocity_list:list, unit:str)->list:
         conversion_factor = const.MPH_TP_MTPS
     elif unit == "kmph":
         conversion_factor = const.KMPH_TO_MTPS
+    elif unit == "AUpD":
+        conversion_factor = const.AUPD_TP_MTPS
     else:
         raise ValueError("Unit not recognized. Select from 'ftps', 'mph', or 'kmph'.")
     for i,item in enumerate(velocity_list):

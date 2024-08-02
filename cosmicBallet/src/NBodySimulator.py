@@ -1,8 +1,9 @@
-import Constants as const
+import utils.Constants as const
 from typing import Union
 import warnings
 import math
 from CelestialObjects import *
+from utils.Visualization import Visualize
 
 
 def _calculate_PN1(p1:object, p2:object)->np.array:
@@ -19,17 +20,15 @@ def _calculate_PN1(p1:object, p2:object)->np.array:
     """
     mu = p1.mass * p2.mass
     M = p1.mass + p2.mass
-    v = p2.velocity - p1.velocity
+    eta = mu / M**2
     r = np.linalg.norm(p2.position - p1.position)
-    n = (p2.position - p1.position) / r
-    v = p2.velocity - p1.velocity
-    v1 = p1.velocity
-    v2 = p2.velocity
-    factor = const.G * mu / (r * const.C)**2
-    term1 = const.G * (4*M+p1.mass) + 1.5*(np.dot(n,v2)**2) - np.dot(v1,v1) + 4*np.dot(v1,v2) \
-            - 2*np.dot(v2,v2)
-    term2 = 4*np.dot(n,v1) - 3*np.dot(n,v2)
-    F_PN1 = -factor * (term1*n + term2*v)
+    n = (p1.position - p2.position) / r
+    v = p1.velocity - p2.velocity
+    r_dot = np.dot(v,n)
+    factor = - const.G * M / np.power(r*const.C, 2)
+    term1 = (1 + 3*eta) * np.dot(v,v) - 1.5*eta*r_dot**2 - 2*(2+eta)*const.G*M/r
+    term2 = 2 * (2 - eta) * r_dot * v
+    F_PN1 = p1.mass * factor * (term1 * n + term2)
     return F_PN1
 
 
@@ -51,12 +50,13 @@ class Simulator():
         simulation_time (flaot/int): Total time for which simulation is needed.
         time_unit (str, optional): Unit of both the time values in the class. Defaults to seconds
         removed_object_list (list): A list containing all the celestial object that merged into other objects.
-        formulation (str): The type of ODE Formulation used -> Lagrangian or Hamiltonian
+        formulation (str): The type of ODE Formulation used -> Newtonian or Hamiltonian
         solver (str): The solver used to solve the system of ODEs
         post_newton_correction (bool): User input whether to use Post Newton Correction of 1st order for the calculated forces.
         total_collisions (int): Holds the total number of collisions detected during the simulation
         fragment_collisions (int): Holds the total number of collisions between fragments that are detected during the simulation.
         time_val (float): Holds the current time during the simulation. Begins at 0 and ends at simulation_time.
+        fragmentation_occured (bool): Holds whether fragmentation has occured during the simulation or not at a tim slice.
     
     Methods:
         time_unit_correction(): Performs the conversion of values of the attributes 'simulation_time' and 'time_step' from
@@ -76,29 +76,63 @@ class Simulator():
             time_unit (str, optional): Unit of the arguements 'time_step' and 'simulation_time'. Defaults to seconds.
 
         Raises:
-            TypeError: Raised when the input arguements do not match the intended data type.
-            ValueError: Raised when parameter values are out-of-bounds.
+            TypeError: When celestial_bodies is not a list
+            TypeError: When time_step is not a float or an integer
+            TypeError: When simulation_time is not a float or an integer
+            TypeError: When time_unit is not a string
+            ValueError: When time_step is less than or equal to 0
+            ValueError: When simulation_time is less than or equal to 0
+            ValueError: When time_unit is not one of the available units for conversion
+            ValueError: When the number of celestial bodies is less than 2
+            ValueError: When the celestial bodies are not of type Stars or Planets, or star type is Neutron
+            ValueError: When the celestial bodies have the same name
         """
         try:
-            assert isinstance(time_step, (float,int)), "Simulator attribute 'time_step' can only be of type float"
-            assert isinstance(simulation_time, (float,int)), "Simulator attribute 'simulation time' can only be of type float/int"
-            if time_unit is not None:
-                assert isinstance(time_unit, str), "Simulator attribute 'time_unit' can only be of type string"
-            for item in celestial_bodies:
-                assert isinstance(item, (Stars,Planets,BlackHole)), "All items in the Simulator attribute 'celestial_bodies' must be class objects available in module CelestialObjects"
+            assert isinstance(celestial_bodies, list)
         except AssertionError:
-            raise TypeError
+            raise TypeError("Celestial Bodies must be a list of Celestial Objects")
         try:
-            assert time_step>0, "Simulator attribute 'time_step' must be a positive value"
-            assert simulation_time>0, "Simulator attribute 'simulation_time' must be a positive value"
-            assert time_step<=simulation_time, "The chosen 'time_step' must be lesser than or equal to the 'simulation_time'"
-            for item in celestial_bodies:
-                assert (item.object_type != 'galaxy'), "The NBodySimulator cannot simulate Galaxies. Please use the Simulator in GalaxySimulator"
-                assert (item.object_type != 'black_hole'), "The NBodySimulator cannot simulate Black Holes. Please use the Simulator in MassiveObjectSimulator"
-                if item.object_type == "star":
-                    assert (item.star_type != "Neutron"), "The NBodySimulator cannot simulate Neutron Stars. Please use the Simulator in MassiveObjectSimulator"
+            assert isinstance(time_step, (float,int))
         except AssertionError:
-            raise ValueError
+            raise TypeError("Time Step must be a float or an integer")
+        try:
+            assert isinstance(simulation_time, (float,int))
+        except AssertionError:
+            raise TypeError("Simulation Time must be a float or an integer")
+        try:
+            assert isinstance(time_unit, str)
+        except AssertionError:
+            raise TypeError("Time Unit must be a string")
+        try:
+            assert time_step > 0
+        except AssertionError:
+            raise ValueError("Time Step must be greater than 0")
+        try:
+            assert simulation_time > 0
+        except AssertionError:
+            raise ValueError("Simulation Time must be greater than 0")
+        try:
+            assert time_unit in ["seconds", "days", "hours", "months", "years"]
+        except AssertionError:
+            raise ValueError("Time Unit must be either 'seconds', 'days', 'hours', 'months' or 'years'")
+        try:
+            assert len(celestial_bodies) > 1
+        except AssertionError:
+            raise ValueError("At least 2 celestial bodies are needed for simulation")
+        try:
+            for body in celestial_bodies:
+                assert isinstance(body, (Stars, Planets))
+                if body.object_type == "star":
+                    assert body.star_type!="Neutron", "Neutron Stars cannot be simulated with this simulator"
+        except AssertionError:
+            raise ValueError("Celestial Bodies must be of type Stars or Planets")
+        try:
+            name_list = []
+            for body in celestial_bodies:
+                name_list.append(body.name)
+            assert len(name_list) == len(set(name_list))
+        except AssertionError:
+            raise ValueError("Celestial Bodies must have unique names")
         self.celestial_bodies = celestial_bodies
         self.time_step = time_step
         self.simulation_time = simulation_time
@@ -107,6 +141,7 @@ class Simulator():
         self.fragment_collisions = 0
         self.removed_object_list = []
         self.time_val = 0.0
+        self.fragmentation_occured = False
 
     @property
     def time_unit_correction(self):
@@ -150,49 +185,58 @@ class Simulator():
         self.celestial_bodies.remove(p2)
         p1.momentum = p1.mass * p1.velocity
 
-    def __compute_fragments(self, planets:list, impact_energy:float)->list:
+    def __compute_fragments(self, planets:list, fragmentation:list)->list:
         """Private method of the Simulator class that computes the fragmentation of planets on collision and
-        generates the fragments.
+        generates the fragments. The mass of the fragments are based on the ratio of the kinetic energy of the
+        collision to the gravitational binding energy of the planet (max. value of 0.8).
 
         Args:
             planets (list): List of planets that collide with each other of length 2.
-            impact_energy (float): The impact energy of collision (or kinetic energy of collision)
+            fragmentation (list): List containing whether the planets have fragmented or not.
 
         Returns:
             fragment_list (list): The total fragments generated that gets added to the class's celestial_objects
                                 attribute for further computation of the N-body problem.
         """
         p1, p2 = planets
-        mass_list = []
         fragments_list = []
-        for p in planets:
-            obj_mass = p.mass
-            obj_radius = p.radius
-            if p is p1:
-                other_mass = p2.mass
-                other_velocity = p2.velocity
+        v = p2.velocity - p1.velocity
+        kinetic_energy = 0.5 * (p1.mass * p2.mass) * np.linalg.norm(v)**2 / (p1.mass + p2.mass)
+        for i,p in enumerate([p1,p2]):
+            if fragmentation[i]:
+                planet_mass = p.mass
+                gravitational_binding_energy = 3 * const.G * p.mass**2 / (5 * p.radius)
+                if kinetic_energy > 2*gravitational_binding_energy:
+                    mass_fraction = 0.5
+                    num_fragments = 1
+                    break_apart = True
+                else:
+                    mass_fraction = 0.05
+                    num_fragments = 5
+                    break_apart = False
+                for j in range(num_fragments):
+                    if break_apart:
+                        mass_frac = np.random.normal(loc=mass_fraction, scale=0.005)
+                    else:
+                        mass_frac = mass_fraction
+                    mass = mass_frac * p.mass
+                    volume = mass / p.density
+                    radius = np.cbrt(volume * 0.75 / np.pi)
+                    frag_velocity = np.sqrt(2 * p.mass * np.dot(p.velocity,p.velocity) / mass) * p.position \
+                                    * np.random.normal(loc=1, scale=0.5) / np.linalg.norm(p.position)
+                    frag_position = p.position + self.time_step * frag_velocity
+                    fragment = Fragments(name=f"{p.name}_fragment_{j}", mass=mass, radius=radius, 
+                                         material_property=p.material_property, position=frag_position,
+                                         velocity=frag_velocity)
+                    fragments_list.append(fragment)
+                    planet_mass -= mass
+                    if planet_mass < 0.25 * p.mass:
+                        break
+                p.radius = np.cbrt(planet_mass * 0.75 / (np.pi * p.density))
+                p.mass = planet_mass
+                print(p.name, p.mass, p.radius)
             else:
-                other_mass = p1.mass
-                other_velocity = p1.velocity
-            num_fragments = int(impact_energy / (p.material_property["yield_strength"] * p.volume))
-            num_fragments = min(10, num_fragments)
-            mass_fraction_mean = 0.05
-            for _ in range(num_fragments):
-                frag_velocity = np.sqrt(2 * impact_energy / other_mass) * np.sin(np.random.normal(0,0.5*np.pi)) \
-                    * other_velocity / np.linalg.norm(other_velocity)
-                frag_position = np.array(frag_velocity * 10)
-                mass_fraction = np.random.normal(mass_fraction_mean, 0.05)
-                frag_mass = mass_fraction * p.mass
-                frag_radius = np.cbrt(0.75 * p.mass / (p.density*np.pi))
-                frag = Fragments(name="Fragment", mass=frag_mass, velocity=frag_velocity, radius=frag_radius,
-                                  position=frag_position, material_property=p.material_property)
-                fragments_list.append(frag)
-                obj_mass -= frag_mass
-                obj_radius -= frag_radius
-            mass_list.append([obj_mass, obj_radius])
-        for i,p in enumerate(planets):
-            p.mass = mass_list[i][0]
-            p.radius = mass_list[i][1]
+                pass
         return fragments_list
     
     def __elastic_collision(self, p1:object, p2:object)->None:
@@ -209,6 +253,32 @@ class Simulator():
         p1.momentum = p1.mass * p1.velocity
         p2.momentum = p2.mass * p2.velocity
         return
+    
+    def __impact_fragments(self, p1: object, p2: object) -> list:
+        """Calculates the impact fragments resulting from the collision between two objects.
+
+        Args:
+            p1 (object): The first object involved in the collision.
+            p2 (object): The second object involved in the collision.
+
+        Returns:
+            fragments (list): A list indicating whether each object has fragmented after the collision.
+                            The first element corresponds to p1 and the second element corresponds to p2.
+                            True indicates fragmentation, while False indicates no fragmentation.
+        """
+        v = p2.velocity - p1.velocity
+        kinetic_energy = 0.5 * (p1.mass * p2.mass) * np.linalg.norm(v)**2 / (p1.mass + p2.mass)
+        impact_force_p1 = kinetic_energy / p1.radius
+        impact_force_p2 = kinetic_energy / p2.radius
+        impact_area = np.pi * np.sqrt(p1.radius*p2.radius / (p1.radius + p2.radius))**2
+        impact_stress_p1 = impact_force_p1 / impact_area
+        impact_stress_p2 = impact_force_p2 / impact_area
+        fragments = [False, False]
+        if impact_stress_p1 > p1.material_property["yield_strength"]:
+            fragments[0] = True
+        if impact_stress_p2 > p2.material_property["yield_strength"]:
+            fragments[1] = True
+        return fragments
 
     def __handle_collisions(self, p1:object, p2:object)->None:
         """Private method of the Simulator class that handles any detected collisions
@@ -228,7 +298,7 @@ class Simulator():
         collision_line = f"Collision detected between Celestial Objects {p1.name} and {p2.name} at position {p1.position} \
               at time {self.time_val} s"
         if p1.object_type == "star" and p2.object_type == "star":
-            if p1.radius > p2.radius:
+            if p1.mass > p2.mass:
                 impactor = p2
                 impacted = p1
             else:
@@ -255,13 +325,13 @@ class Simulator():
             else:
                 impactor = p1
                 impacted = p2
-            impact_energy = 0.5 * (impacted.mass * np.dot(impacted.velocity, impacted.velocity) 
-                                   + impactor.mass * np.dot(impactor.velocity, impactor.velocity))
+            fragments_happen = self.__impact_fragments(p1=impactor, p2=impacted)
             if p1.planet_type.lower() == "rocky" and p2.planet_type.lower() == "rocky":
-                if impact_energy > impacted.material_property["yield_strength"] * impacted.volume:
-                    fragments = self.__compute_fragments([impactor, impacted], impact_energy=impact_energy)
+                if any(fragments_happen):
+                    fragments = self.__compute_fragments([impactor, impacted], fragmentation=fragments_happen)
                     for item in fragments:
                         self.celestial_bodies.append(item)
+                    self.fragmentation_occured = True
                 else:
                     self.__merge_objects(p1=impacted, p2=impactor)
             else:
@@ -285,7 +355,6 @@ class Simulator():
                     distance = np.linalg.norm(r)
                     if distance < (body1.radius + body2.radius):
                         self.__handle_collisions(body1, body2)
-                        continue
                     elif distance > 0:
                         if self.post_newton_correction:
                             n = r / np.linalg.norm(r)
@@ -314,10 +383,12 @@ class Simulator():
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
             self.__calculate_forces()
             self.__forward_euler_update()
             for i, body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
     
     def __rk4_step(self):
         """Private Method within the Simulator Class that performs the time update according to the Runge-Kutta method.
@@ -326,6 +397,8 @@ class Simulator():
         original_velocity = np.array([body.velocity for body in self.celestial_bodies])
         # Compute k1
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k1_r = self.time_step * original_velocity
         k1_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Compute k2
@@ -333,6 +406,8 @@ class Simulator():
             body.position = original_position[i] + 0.5*k1_r[i]
             body.velocity = original_velocity[i] + 0.5*k1_v[i]
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k2_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
         k2_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Compute k3
@@ -340,6 +415,8 @@ class Simulator():
             body.position = original_position[i] + 0.5*k2_r[i]
             body.velocity = original_velocity[i] + 0.5*k2_v[i]
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k3_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
         k3_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Compute k4
@@ -347,6 +424,8 @@ class Simulator():
             body.position = original_position[i] + k3_r[i]
             body.velocity = original_velocity[i] + k3_v[i]
         self.__calculate_forces()
+        if self.fragmentation_occured:
+            return
         k4_r = self.time_step * np.array([body.velocity for body in self.celestial_bodies])
         k4_v = self.time_step * np.array([body.force / body.mass for body in self.celestial_bodies])
         # Position and Velocity Update
@@ -365,9 +444,11 @@ class Simulator():
                     body.position = body.init_position.astype(np.float64)
                     body.velocity = body.init_velocity.astype(np.float64)
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
             self.__rk4_step()
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
     
     def __calculate_potential_gradient(self):
         """Private function of the Simulator Class that generates the gradient of the potential energy for each object
@@ -377,7 +458,10 @@ class Simulator():
         self.potential_gradient = np.zeros((num_body,3))
         for i in range(num_body):
             for j in range(i+1,num_body):
-                r = self.celestial_bodies[j].position - self.celestial_bodies[i].position
+                try:
+                    r = self.celestial_bodies[j].position - self.celestial_bodies[i].position
+                except IndexError:
+                    break
                 distance = np.linalg.norm(r)
                 if distance <= (self.celestial_bodies[j].radius + self.celestial_bodies[i].radius):
                     self.__handle_collisions(self.celestial_bodies[i], self.celestial_bodies[j])
@@ -387,6 +471,9 @@ class Simulator():
                 else:
                     force_magnitude = const.G * self.celestial_bodies[i].mass * self.celestial_bodies[j].mass / distance**2
                     force = force_magnitude * r / distance
+                    if self.post_newton_correction:
+                        force_pn1 = _calculate_PN1(self.celestial_bodies[i], self.celestial_bodies[j])
+                        force += force_pn1
                     self.potential_gradient[i] += force
                     self.potential_gradient[j] -= force
 
@@ -401,6 +488,8 @@ class Simulator():
         for body in self.celestial_bodies:
             body.position += self.time_step * body.velocity
         self.__calculate_potential_gradient()
+        if self.fragmentation_occured:
+            return
         for i,body in enumerate(self.celestial_bodies):
             body.momentum += 0.5 * self.time_step * self.potential_gradient[i,:]
             body.velocity = body.momentum / body.mass
@@ -412,16 +501,18 @@ class Simulator():
         """
         num_steps = math.ceil(self.simulation_time / self.time_step)
         for step in range(num_steps):
-            self.time_val += self.time_step
             if step == 0:
                 for i,body in enumerate(self.celestial_bodies):
                     body.position = body.init_position.astype(np.float64)
                     body.momentum = body.init_velocity.astype(np.float64) * body.mass
                     body.velocity = body.momentum / body.mass
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
             self.__leapfrog_step()
+            self.time_val += self.time_step
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
 
     def __forest_ruth_step(self):
         """Private method of the Simulator class that updates the momentum and position of all bodies being simulated
@@ -435,7 +526,7 @@ class Simulator():
         steps = [w1, w2, w3, w4]
         for w in steps:
             for body in self.celestial_bodies:
-                body.position += (w * self.time_step * body.momentum /body.mass)
+                body.position += w * body.velocity * self.time_step
             self.__calculate_potential_gradient()
             for i,body in enumerate(self.celestial_bodies):
                 body.momentum += (w * self.time_step * self.potential_gradient[i])
@@ -453,25 +544,28 @@ class Simulator():
                     body.momentum = body.init_velocity.astype(np.float64) * body.mass
                     body.velocity = body.momentum / body.mass
                     body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                    body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy()))) 
             self.__forest_ruth_step()
+            self.time_val += self.time_step
             for i,body in enumerate(self.celestial_bodies):
                 body.trajectory.append(np.concatenate(([self.time_val], body.position.copy())))
+                body.vel_list.append(np.concatenate(([self.time_val], body.velocity.copy())))
 
-    def solve(self, formulation:str="Lagrangian", solver:str="RK4", correction:bool=False)->None:
+    def solve(self, formulation:str="Hamiltonian", solver:str="forest_ruth", correction:bool=False)->None:
         """Method of the Simulator class that solves the ODE System of the N-Body Problem to generate results for the 
         N-Body Problem Simulation.
 
-        The method contains two solvers for Lagrangian and Hamiltonian Mechanics each. The Forward Euler and 4th Order 
-        Runge-Kutta method for Lagrangian Mechanics, and, the Leapfrog and Forest-Ruth methods for the Hamiltonian Mechanics
+        The method contains two solvers for Newtonian and Hamiltonian Mechanics each. The Forward Euler and 4th Order 
+        Runge-Kutta method for Newtonian Mechanics, and, the Leapfrog and Forest-Ruth methods for the Hamiltonian Mechanics
         formulation.
 
         Args:
             simulation_method (str, optional): The formulation of the N-Body Problem the method must follow to perform the
-                                                simulation. Defaults to "Lagrangian".
+                                                simulation. Defaults to "Newtonian".
             solver (str, optional): The integration scheme the method needs to use to perform the simulation. Defaults to "RK4".
             correction (bool, optional): User input to whether the Post-Newton Correction term is applied or not. This is 
                                         applicable to cases where heavy objects are relatively close to each other. Applied 
-                                        only to the Lagrangian Formulation. Defaults to False.
+                                        only to the Newtonian Formulation. Defaults to False.
 
         Raises:
             TypeError: Raised when the input arguements are not of the defined datatype.
@@ -490,7 +584,7 @@ class Simulator():
         except AssertionError:
             raise TypeError
         self.post_newton_correction = correction
-        if formulation.lower() == "lagrangian":
+        if formulation.lower() == "newtonian":
             if solver.lower() == "euler":
                 if math.ceil(self.simulation_time / self.time_step) > 1e6:
                     warnings.warn("Number of Time Steps Too Large. Error accumulation may impact accuracy of results. Consider rk4 or Hamiltonian Mechanics to solve!")
@@ -500,8 +594,6 @@ class Simulator():
             else:
                 raise ValueError("Unidentified Solver. Select either Euler or RK4 (Runge-Kutta 4th Order)")
         elif formulation.lower() == "hamiltonian":
-            if self.post_newton_correction:
-                print("Post-Newtonian Correction is applied only for the Lagrangian Formulation.")
             if solver.lower() == "leapfrog":
                 self.__leapfrog()
             elif solver.lower() == "forest_ruth":
@@ -509,7 +601,44 @@ class Simulator():
             else:
                 raise ValueError("Unidentified Solver. Select either Leapfrog or Forest_Ruth")
         else:
-            raise ValueError("Unidentified Simulation Method. Select either Lagrangian or Hamiltonian")
+            raise ValueError("Unidentified Simulation Method. Select either Newtonian or Hamiltonian")
         if self.total_collisions == 0:
             return
         print(f"Total Collisions Detected: {self.total_collisions} out of which {self.fragment_collisions} are fragment collision.")
+
+    def __compile_results(self):
+        """Private method of the Simulator class that compiles the results of the simulation into a single list.
+        """
+        for body in self.removed_object_list:
+            if len(body.trajectory) > 0:
+                self.celestial_bodies.append(body)
+        for body in self.celestial_bodies:
+            if len(body.trajectory) == 0:
+                idx = self.celestial_bodies.index(body)
+                self.celestial_bodies.pop(idx)
+
+    def visualize(self, visualization_type:str="scientific", save_figure:bool=False, figure_name:str=None,
+                  animate:bool=False)->None:
+        """Method of the Simulator class that visualizes the trajectory of the celestial objects in the N-Body Problem Simulation.
+
+        The method uses the Visualize class from the Visualization module to generate the visualization of the trajectory of the 
+        celestial objects in the N-Body Problem Simulation.
+
+        Args:
+            visualization_type (str, optional): The type of visualization the method needs to generate. Defaults to "scientific".
+            save_figure (bool, optional): User input to whether the generated visualization needs to be saved or not. Defaults to False.
+            figure_name (str, optional): The name of the file that holds the visualization if save_figure is True. Defaults to None.
+            animate (bool, optional): User input to whether the visualization needs to be animated or not. Defaults to False.
+        
+        Raises:
+            ValueError: Raised when an unrecognized visualization type is entered.
+        """
+        try:
+            for body in self.celestial_bodies:
+                assert len(body.trajectory)>0
+        except AssertionError:
+            raise ValueError("The trajectory of the celestial objects is empty. Please run the simulation first")
+        self.__compile_results()
+        vis = Visualize(celestial_objects=self.celestial_bodies, visualization_type=visualization_type, 
+                        save_figure=save_figure, figure_name=figure_name)
+        vis.visualize(animate=animate)

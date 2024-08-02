@@ -1,0 +1,7 @@
+scipy
+scikit-learn>=0.19.1
+h5py
+lalsuite>=6.70
+gwsurrogate
+NRSur7dq2
+surfinBH
