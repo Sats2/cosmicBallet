@@ -65,7 +65,7 @@ class Visualize():
             self.ani_name = figure_name + ".mp4"
         else:
             if figure_name is not None:
-                self.ani_name = figure_name + ".gif"
+                self.ani_name = figure_name + ".mp4"
 
     def _create_figure(self,celestial_objects:list, var:int, zero_padding:str)->None:
         fig = plt.figure()
@@ -142,33 +142,54 @@ class Visualize():
             spacetime_trajectory = np.array(body.trajectory[:1])
             if spacetime_point[0] == 1:
                 points.append(mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3], 
-                                            scale_factor=body.radius, color=body.color_myv))
+                                            scale_factor=body.radius, color=body.color_myv, resolution=20))
                 traj.append(mlab.plot3d(spacetime_trajectory[0,1], spacetime_trajectory[0,2], 
                                         spacetime_trajectory[0,3], color=body.color_myv))
             else:
                 points.append(None)
-                #traj.append(None)
+                traj.append(None)
         
         def update(frame):
             all_points = []
+            for point in points:
+                if point is not None:
+                    point.remove()
             for i,body in enumerate(self.celestial_objects):
                 spacetime_point = body.trajectory[frame]
                 if int(spacetime_point[0]) == frame+1:
                     spacetime_trajectory = np.array(body.trajectory[:frame+1])
                     points[i] = mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3],
-                                            scale_factor=body.radius, color=body.color_myv)
+                                            scale_factor=body.radius, color=body.color_myv, resolution=20)
                     traj[i] = mlab.plot3d(spacetime_trajectory[:,1], spacetime_trajectory[:,2], 
-                                           spacetime_trajectory[:,3], color=body.color_myv, tube_radius=0.25)
-                    all_points.append(spacetime_point)
+                                           spacetime_trajectory[:,3], color=body.color_myv, tube_radius=50)
+                    all_points.append(spacetime_trajectory)
             all_points = np.array(all_points)
-            mlab.view(focalpoint=(all_points[:,1].mean(), all_points[:,2].mean(), all_points[:,3].mean()))
+            mlab.view(focalpoint=(all_points[:,0,1].mean(), all_points[:,0,2].mean(), all_points[:,0,3].mean()))
+
+        if self.save_fig:
+            try:
+                os.mkdir("temp")
+            except:
+                pass
+        
+        zero_padding = len(str(self.n_total))
 
         for frame in range(self.n_total):
             update(frame*10)
             mlab.process_ui_events()
             mlab.draw()
+            if self.save_fig:
+                mlab.savefig(f"temp/data_{frame:0{zero_padding}d}.png")
         
         mlab.show()
+
+        if self.save_fig:
+            ffmpeg_command = (
+                            f"ffmpeg -r {15} -i temp/data_%0{zero_padding}d.png "
+                            f"-vcodec mpeg4 -qscale:v 2 -filter:v 'setpts={1/1}*PTS' -y {self.ani_name}"
+                            )
+            os.system(ffmpeg_command)
+            shutil.rmtree("temp")
     
     def visualize(self, animate:bool=False)->None:
         """Method of the visualization class that generates the visualization for the trajectories based on the visualization type
