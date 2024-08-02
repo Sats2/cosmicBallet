@@ -288,7 +288,7 @@ class SchwarzschildSimulator():
             star.init_position *= 0.5*self.dense_body.radius
             star.init_velocity *= const.C
             for i in range(len(star.trajectory)):
-                star.trajectory[i] *= 0.5*self.dense_body.radius
+                star.trajectory[i][1:] *= 0.5*self.dense_body.radius
 
     def __calculate_force(self)->None:
         """Private method of the SchwarzschildSimulator class that computes the total force acting on the stars as they
@@ -354,7 +354,7 @@ class SchwarzschildSimulator():
                     star.trajectory.append(np.concatenate(([(i+1)*self.dt], star.position.copy())))
             self.__forest_ruth_step()
             for star in self.stars:
-                star.trajectory.append(np.concatenate(([(i+1)*self.dt], star.position.copy())))
+                star.trajectory.append(np.concatenate(([(i+2)*self.dt], star.position.copy())))
         self.__convert_to_SI_units()
         _revert_origin(self.stars, self.dense_body, self.dense_body_position)
 

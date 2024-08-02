@@ -59,6 +59,7 @@ class Visualize():
         self.visual_type = visualization_type
         self.save_fig = save_figure
         self.ani_name = None
+        self.n_total = int(0.1*len(self.celestial_objects[0].trajectory))
         if figure_name is not None and visualization_type == "scientific":
             self.figure_name = figure_name + ".jpeg"
             self.ani_name = figure_name + ".mp4"
@@ -90,7 +91,6 @@ class Visualize():
             os.mkdir("temp")
         except:
             pass
-        self.n_total = int(0.1*len(self.celestial_objects[0].trajectory))
         zero_padding = len(str(self.n_total))
         for j in range(0, self.n_total):
             var = j
@@ -133,42 +133,41 @@ class Visualize():
         plt.show()
     
     def __animation(self)->None:
+        print(self.celestial_objects)
         fig = mlab.figure(size=(1280, 720))
         points = []
         traj = []
         for body in self.celestial_objects:
             spacetime_point = body.trajectory[0]
-            if spacetime_point[0] == 0:
+            spacetime_trajectory = np.array(body.trajectory[:1])
+            if spacetime_point[0] == 1:
                 points.append(mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3], 
                                             scale_factor=body.radius, color=body.color_myv))
-                traj.append(mlab.plot3d(spacetime_point[:1,1], spacetime_point[:1,2], spacetime_point[:1,3],
-                                        color=body.color_myv))
+                traj.append(mlab.plot3d(spacetime_trajectory[0,1], spacetime_trajectory[0,2], 
+                                        spacetime_trajectory[0,3], color=body.color_myv))
             else:
                 points.append(None)
-                traj.append(None)
+                #traj.append(None)
         
         def update(frame):
-            spacetime_point = body.trajectory[frame]
             all_points = []
-            for i,body in self.celestial_objects:
-                if spacetime_point[0] == frame:
-                    spacetime_trajectory = np.array(body.trajectory)[:frame]
+            for i,body in enumerate(self.celestial_objects):
+                spacetime_point = body.trajectory[frame]
+                if int(spacetime_point[0]) == frame+1:
+                    spacetime_trajectory = np.array(body.trajectory[:frame+1])
                     points[i] = mlab.points3d(spacetime_point[1], spacetime_point[2], spacetime_point[3],
                                             scale_factor=body.radius, color=body.color_myv)
-                    traj[i] = mlab.plot3d(spacetime_trajectory[:frame,1], spacetime_trajectory[:frame,2], 
-                                          spacetime_trajectory[:frame,3], color=body.color_myv)
-                    all_points.append(spacetime_trajectory)
+                    traj[i] = mlab.plot3d(spacetime_trajectory[:,1], spacetime_trajectory[:,2], 
+                                           spacetime_trajectory[:,3], color=body.color_myv, tube_radius=0.25)
+                    all_points.append(spacetime_point)
             all_points = np.array(all_points)
             mlab.view(focalpoint=(all_points[:,1].mean(), all_points[:,2].mean(), all_points[:,3].mean()))
+
+        for frame in range(self.n_total):
+            update(frame*10)
+            mlab.process_ui_events()
+            mlab.draw()
         
-        def animate():
-            for frame in range(self.n_total):
-                update(frame)
-                mlab.process_ui_events()
-                mlab.draw()
-                mlab.pause(0.05)
-        
-        animate()
         mlab.show()
     
     def visualize(self, animate:bool=False)->None:

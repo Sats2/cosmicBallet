@@ -695,6 +695,7 @@ class BlackHole():
         trajectory (list): Contains the trajectory of the Black Hole.
         force (np.array): Attribute that holds the force acting on the Black Hole at each time step.
         color (str): Color of the Black Hole for visualization purposes.
+        color_myv (tuple): Color of the Black Hole for visualization purposes.
     
     Methods:
         mass(): Gets the mass of the Black Hole
@@ -780,6 +781,7 @@ class BlackHole():
             self.angular_momentum = np.array([0, 0, 0]).astype(np.float64)
         self.force = np.zeros(3)
         self.color = "black"
+        self.color_myv = (0,0,0)
     
     @property
     def mass(self)->Union[float,int]:
