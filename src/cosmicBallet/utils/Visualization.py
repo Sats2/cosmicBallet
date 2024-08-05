@@ -108,13 +108,17 @@ class Visualize():
 
         Raises:
             ValueError: When no trajectory for the celestial objects are found
+            ValueError: When no figure name is provided to save the animation
         """
         try:
             for body in self.celestial_objects:
-                assert body.trajectory!=[], f"Empty trajectory found for {body.name}. Run Simulations first"
+                assert body.trajectory!=[]
         except AssertionError:
-            raise ValueError
+            raise ValueError(f"Empty trajectory found for {body.name}. Run Simulations first")
         if animate:
+            if self.ani_name is None:
+                raise ValueError("Please provide a figure name to save the animation. Animations are saved as videos" 
+                                 " and require a name")
             self.__create_matplotlib_animation()
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")

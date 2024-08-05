@@ -1,4 +1,4 @@
-from utils.Constants import material_property_list
+from cosmicBallet.utils.Constants import material_property_list
 
 class MaterialProperty():
     """A class that is used to generate a Planet's material properties based on the abundent elements present within.

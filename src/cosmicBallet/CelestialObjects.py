@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Union
 import math
-import utils.Constants as const
+from cosmicBallet.utils import Constants as const
 
 
 class Planets():

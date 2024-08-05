@@ -1,9 +1,9 @@
-import utils.Constants as const
+import cosmicBallet.utils.Constants as const
 from typing import Union
 import warnings
 import math
-from CelestialObjects import *
-from utils.Visualization import Visualize
+from cosmicBallet.CelestialObjects import *
+from cosmicBallet.utils.Visualization import Visualize
 
 
 def _calculate_PN1(p1:object, p2:object)->np.array:
