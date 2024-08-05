@@ -1,4 +1,4 @@
-conda create --name cosmicball --file spec-file-optional.txt
+conda create --name cosmicBallet --file spec-file-optional.txt
 conda init
 conda activate cosmicball
 pip install NRSur7dq2
