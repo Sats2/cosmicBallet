@@ -1,6 +1,6 @@
 # cosmicBallet
 
-**cosmicBallet** is a python based N-Body Problem solver that has the capabilities to solve the N-Body Problem using various solvers that can be user specified depending on the required accuracy and runtime complexities.
+**cosmicBallet** is a python based N-Body Problem solver that has the capabilities to solve the N-Body Problem using various solvers that can be user specified depending on the required accuracy and runtime complexities. For saving animation results, it is assumed that the user already has ```ffmpeg``` already installed in the system. If it is not installed, refer to the installation procedures available in the guides linked for [Windows](https://www.wikihow.com/Install-FFmpeg-on-Windows), [Unix](https://www.tecmint.com/install-ffmpeg-in-linux/) and [MacOS](https://phoenixnap.com/kb/ffmpeg-mac), or via the official documentation [here](https://ffmpeg.org/download.html).
 
 ## Installation Guide
 
