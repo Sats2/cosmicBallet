@@ -168,8 +168,8 @@ def _animate_merger(times:np.array, traj:list, radius_list:list)->None:
         os.system(ffmpeg_command)
         shutil.rmtree("temp")
     except:
-        print(f"Animation Video could not be saved. Check if ffmpeg is installed on your system.
-              You can create the video manually by using the saved images in the temp folder")
+        print("Animation Video could not be saved. Check if ffmpeg is installed on your system."
+              "You can create the video manually by using the saved images in the temp folder")
 
     mlab.close()
 
