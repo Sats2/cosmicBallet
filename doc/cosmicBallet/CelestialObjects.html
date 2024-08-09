@@ -1,0 +1,1843 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.1">
+<title>cosmicBallet.CelestialObjects API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>cosmicBallet.CelestialObjects</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="cosmicBallet.CelestialObjects.BlackHole"><code class="flex name class">
+<span>class <span class="ident">BlackHole</span></span>
+<span>(</span><span>name: str, mass: Union[float, int], init_position: list, init_velocity: list, angular_momentum: list = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class that initializes a Black Hole.</p>
+<pre><code>The characteristics of the black hole is calculated within the class dynamically. If the angular momentum of the black
+hole is not specified, it is assumed that the black is a non-rotating black hole.
+</code></pre>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the Black Hole</dd>
+<dt>mass (float/int): Mass of the Black Hole in kilograms</dt>
+<dt><strong><code>init_position</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Initial position of the Black Hole in space as a list of coordinates in meters</dd>
+<dt><strong><code>init_velocity</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds</dd>
+<dt><strong><code>angular_momentum</code></strong> :&ensp;<code>list</code>, optional</dt>
+<dd>Angular momentum of a rotating Black Hole as list. Ignore for non-rotating Black Holes.</dd>
+<dt><strong><code>radius</code></strong> :&ensp;<code>float</code></dt>
+<dd>Schwarzchild radius of the Black Hole</dd>
+<dt><strong><code>spin</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Dimensionless spin coefficients of the Black Hole</dd>
+<dt><strong><code>position</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Holds the position of the Black Hole at each time step</dd>
+<dt><strong><code>velocity</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Holds the velocity of the Black Hole at each time step</dd>
+<dt><strong><code>trajectory</code></strong> :&ensp;<code>list</code></dt>
+<dd>Contains the trajectory of the Black Hole.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Attribute that holds the force acting on the Black Hole at each time step.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>str</code></dt>
+<dd>Color of the Black Hole for visualization purposes.</dd>
+<dt><strong><code>color_myv</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>Color of the Black Hole for visualization purposes.</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>mass(): Gets the mass of the Black Hole
+mass(value): Sets the mass of the Black Hole
+radius(): Calculates and updates the Schwarzchild radius of the Black Hole
+spin(): Calculates the spin of the Black Hole based on the angular momentum</p>
+<p>Constructor for the Black Hole Class</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the Black Hole</dd>
+<dt><strong><code>mass</code></strong> :&ensp;<code>Union[float,int]</code></dt>
+<dd>Mass of the Black Hole in kilograms</dd>
+<dt><strong><code>init_position</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial position of the Black Hole in space as a list of coordinates in meters</dd>
+<dt><strong><code>init_velocity</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds</dd>
+<dt><strong><code>angular_momentum</code></strong> :&ensp;<code>list</code>, optional</dt>
+<dd>Angular Momentum of the Black Hole. Defaults to None.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>name is not of type string</dd>
+<dt><code>TypeError</code></dt>
+<dd>mass is not of type float/int</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_position is not of type list</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_velocity is not of type list</dd>
+<dt><code>TypeError</code></dt>
+<dd>angular_momentum is not of type list (if provided)</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_position does not contain float/int values</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_velocity does not contain float/int values</dd>
+<dt><code>TypeError</code></dt>
+<dd>angular_momentum does not contain float/int values (if provided)</dd>
+<dt><code>ValueError</code></dt>
+<dd>name is None</dd>
+<dt><code>ValueError</code></dt>
+<dd>mass is zero or negative</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BlackHole():
+    &#34;&#34;&#34;Class that initializes a Black Hole.
+
+        The characteristics of the black hole is calculated within the class dynamically. If the angular momentum of the black
+        hole is not specified, it is assumed that the black is a non-rotating black hole.
+
+    Attributes:
+        name (str): Name of the Black Hole
+        mass (float/int): Mass of the Black Hole in kilograms
+        init_position (np.array): Initial position of the Black Hole in space as a list of coordinates in meters
+        init_velocity (np.array): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
+        angular_momentum (list, optional): Angular momentum of a rotating Black Hole as list. Ignore for non-rotating Black Holes.
+        radius (float): Schwarzchild radius of the Black Hole
+        spin (np.array): Dimensionless spin coefficients of the Black Hole
+        position (np.array): Holds the position of the Black Hole at each time step
+        velocity (np.array): Holds the velocity of the Black Hole at each time step
+        trajectory (list): Contains the trajectory of the Black Hole.
+        force (np.array): Attribute that holds the force acting on the Black Hole at each time step.
+        color (str): Color of the Black Hole for visualization purposes.
+        color_myv (tuple): Color of the Black Hole for visualization purposes.
+    
+    Methods:
+        mass(): Gets the mass of the Black Hole
+        mass(value): Sets the mass of the Black Hole
+        radius(): Calculates and updates the Schwarzchild radius of the Black Hole
+        spin(): Calculates the spin of the Black Hole based on the angular momentum
+    &#34;&#34;&#34;
+
+    def __init__(self, name:str, mass:Union[float,int], init_position:list, init_velocity:list, angular_momentum:list=None):
+        &#34;&#34;&#34;Constructor for the Black Hole Class
+
+        Args:
+            name (str): Name of the Black Hole
+            mass (Union[float,int]): Mass of the Black Hole in kilograms
+            init_position (list): Initial position of the Black Hole in space as a list of coordinates in meters
+            init_velocity (list): Initial orbital velocity of the Black Hole as a list of directional velocities in meter/seconds
+            angular_momentum (list, optional): Angular Momentum of the Black Hole. Defaults to None.
+
+        Raises:
+            TypeError: name is not of type string
+            TypeError: mass is not of type float/int
+            TypeError: init_position is not of type list
+            TypeError: init_velocity is not of type list
+            TypeError: angular_momentum is not of type list (if provided)
+            TypeError: init_position does not contain float/int values
+            TypeError: init_velocity does not contain float/int values
+            TypeError: angular_momentum does not contain float/int values (if provided)
+            ValueError: name is None
+            ValueError: mass is zero or negative
+        &#34;&#34;&#34;
+        try:
+            assert isinstance(name, str)
+        except AssertionError:
+            raise TypeError(&#34;Black Hole property &#39;name&#39; must be of type string&#34;)
+        try:
+            assert isinstance(mass, (float, int))
+        except AssertionError:
+            raise TypeError(&#34;Black Hole property &#39;mass&#39; must be of type float/int&#34;)
+        try:
+            assert isinstance(init_position, list)
+        except AssertionError:
+            raise TypeError(&#34;Black Hole property &#39;init_position&#39; must be of type list&#34;)
+        try:
+            assert isinstance(init_velocity, list)
+        except AssertionError:
+            raise TypeError(&#34;Black Hole property &#39;init_velocity&#39; must be of type list&#34;)
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_position)
+        except AssertionError:
+            raise TypeError(&#34;Black Hole Property &#39;init_position&#39; can only contain float/int values&#34;)
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_velocity)
+        except AssertionError:
+            raise TypeError(&#34;Black Hole Property &#39;init_velocity&#39; can only contain float/int values&#34;)
+        if angular_momentum is not None:
+            try:
+                assert isinstance(angular_momentum, list)
+            except AssertionError:
+                raise TypeError(&#34;Black Hole Property &#39;angular_momentum&#39; must be of type list&#34;)
+            try:
+                assert all(isinstance(i, (float, int)) for i in angular_momentum)
+            except AssertionError:
+                raise TypeError(&#34;Black Hole Property &#39;angular_momentum&#39; can only contain float/int values&#34;)
+        try:
+            assert mass&gt;0
+        except AssertionError:
+            raise ValueError(&#34;Black Hole Property &#39;mass&#39; must be a positive value&#34;)
+        try:
+            assert (name is not None)
+        except AssertionError:
+            raise ValueError(&#34;Black Hole Property &#39;name&#39; cannot be None&#34;)
+        self.name = name
+        self.mass = mass
+        self.init_position = np.array(init_position)
+        self.init_velocity = np.array(init_velocity)
+        self.position = np.zeros(3)
+        self.velocity = np.zeros(3)
+        self.trajectory = []
+        self.object_type = &#34;black_hole&#34;
+        if angular_momentum is not None:
+            self.angular_momentum = np.array(angular_momentum)
+        else:
+            self.angular_momentum = np.array([0, 0, 0]).astype(np.float64)
+        self.force = np.zeros(3)
+        self.color = &#34;black&#34;
+        self.color_myv = (0,0,0)
+    
+    @property
+    def mass(self)-&gt;Union[float,int]:
+        &#34;&#34;&#34;Initializes the mass of the black hole as a dynamic property.
+
+        Returns:
+            float/int: Mass of the Black Hole
+        &#34;&#34;&#34;
+        return self._mass
+    
+    @mass.setter
+    def mass(self, value:Union[float,int])-&gt;None:
+        &#34;&#34;&#34;Sets the mass of the Black Hole.
+
+        Args:
+            value (float/int): New mass of the black hole
+        &#34;&#34;&#34;
+        self._mass = value
+
+    @property
+    def radius(self)-&gt;float:
+        &#34;&#34;&#34;Calculates the Schwarzchild radius of the Black Hole.
+
+        The Schwarzchild radius of the black hole (in meters) is the distance between the singularity (center) and the edge 
+        of the event horizon (visible part of the black hole).
+        Calculated using the formula:
+                radius_schwarzchild = 2 * G * M / c^2
+                    where:
+                        G - Universal Gravitational Constant (Newton*meter^2/kilogram^2)
+                        M - Mass of the Black Hole (singularity) (kilogram)
+                        c - Speed of light (meter/second)
+
+        Returns:
+            float: Schwarzchild radius of the Black Hole.
+        &#34;&#34;&#34;
+        radius = 2 * const.G * self._mass / (const.C * const.C)
+        return radius
+
+    @property
+    def spin(self)-&gt;np.array:
+        &#34;&#34;&#34;Calculates the dimensionless spin coefficients of the Black Hole based on the angular momentum.
+
+        The spin of the black hole is calculated based on the angular momentum of the black hole. The spin is calculated as:
+            spin = angular_momentum * c / (G * m^2)
+                where:
+                    angular_momentum - Angular Momentum of the Black Hole (kilogram*meter^2/second)
+                    mass - Mass of the Black Hole (kilogram)
+                    c - Speed of light (meter/second)
+                    G - Universal Gravitational Constant (Newton*meter^2/kilogram^2)
+
+        Returns:
+            array: Spin of the Black Hole
+        &#34;&#34;&#34;
+        if all(self.angular_momentum==0):
+            return np.array([0, 0, 0]).astype(np.float64)
+        spin = self.angular_momentum * const.C / (const.G * np.power(self._mass, 2))
+        return spin</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="cosmicBallet.CelestialObjects.BlackHole.mass"><code class="name">prop <span class="ident">mass</span> : Union[float, int]</code></dt>
+<dd>
+<div class="desc"><p>Initializes the mass of the black hole as a dynamic property.</p>
+<h2 id="returns">Returns</h2>
+<p>float/int: Mass of the Black Hole</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mass(self)-&gt;Union[float,int]:
+    &#34;&#34;&#34;Initializes the mass of the black hole as a dynamic property.
+
+    Returns:
+        float/int: Mass of the Black Hole
+    &#34;&#34;&#34;
+    return self._mass</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.BlackHole.radius"><code class="name">prop <span class="ident">radius</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Calculates the Schwarzchild radius of the Black Hole.</p>
+<p>The Schwarzchild radius of the black hole (in meters) is the distance between the singularity (center) and the edge
+of the event horizon (visible part of the black hole).
+Calculated using the formula:
+radius_schwarzchild = 2 * G * M / c^2
+where:
+G - Universal Gravitational Constant (Newton*meter^2/kilogram^2)
+M - Mass of the Black Hole (singularity) (kilogram)
+c - Speed of light (meter/second)</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Schwarzchild radius of the Black Hole.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def radius(self)-&gt;float:
+    &#34;&#34;&#34;Calculates the Schwarzchild radius of the Black Hole.
+
+    The Schwarzchild radius of the black hole (in meters) is the distance between the singularity (center) and the edge 
+    of the event horizon (visible part of the black hole).
+    Calculated using the formula:
+            radius_schwarzchild = 2 * G * M / c^2
+                where:
+                    G - Universal Gravitational Constant (Newton*meter^2/kilogram^2)
+                    M - Mass of the Black Hole (singularity) (kilogram)
+                    c - Speed of light (meter/second)
+
+    Returns:
+        float: Schwarzchild radius of the Black Hole.
+    &#34;&#34;&#34;
+    radius = 2 * const.G * self._mass / (const.C * const.C)
+    return radius</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.BlackHole.spin"><code class="name">prop <span class="ident">spin</span> : <built-in function array></code></dt>
+<dd>
+<div class="desc"><p>Calculates the dimensionless spin coefficients of the Black Hole based on the angular momentum.</p>
+<p>The spin of the black hole is calculated based on the angular momentum of the black hole. The spin is calculated as:
+spin = angular_momentum * c / (G * m^2)
+where:
+angular_momentum - Angular Momentum of the Black Hole (kilogram<em>meter^2/second)
+mass - Mass of the Black Hole (kilogram)
+c - Speed of light (meter/second)
+G - Universal Gravitational Constant (Newton</em>meter^2/kilogram^2)</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>array</code></dt>
+<dd>Spin of the Black Hole</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def spin(self)-&gt;np.array:
+    &#34;&#34;&#34;Calculates the dimensionless spin coefficients of the Black Hole based on the angular momentum.
+
+    The spin of the black hole is calculated based on the angular momentum of the black hole. The spin is calculated as:
+        spin = angular_momentum * c / (G * m^2)
+            where:
+                angular_momentum - Angular Momentum of the Black Hole (kilogram*meter^2/second)
+                mass - Mass of the Black Hole (kilogram)
+                c - Speed of light (meter/second)
+                G - Universal Gravitational Constant (Newton*meter^2/kilogram^2)
+
+    Returns:
+        array: Spin of the Black Hole
+    &#34;&#34;&#34;
+    if all(self.angular_momentum==0):
+        return np.array([0, 0, 0]).astype(np.float64)
+    spin = self.angular_momentum * const.C / (const.G * np.power(self._mass, 2))
+    return spin</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Fragments"><code class="flex name class">
+<span>class <span class="ident">Fragments</span></span>
+<span>(</span><span>name: str, mass: float, velocity: <built-in function array>, radius: float, position: <built-in function array>, material_property: dict, force: <built-in function array> = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Internal class that holds the additional fragments generated from the collision of two planets</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>mass</code></strong> :&ensp;<code>float</code></dt>
+<dd>Mass of the Fragment</dd>
+<dt><strong><code>velocity</code></strong> :&ensp;<code>array</code></dt>
+<dd>Velocity of the fragment</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>array</code></dt>
+<dd>Force acting on the fragment</dd>
+<dt><strong><code>momentum</code></strong> :&ensp;<code>array</code></dt>
+<dd>Momentum of the fragment</dd>
+<dt><strong><code>radius</code></strong> :&ensp;<code>float</code></dt>
+<dd>Radius of the fragment</dd>
+<dt><strong><code>position</code></strong> :&ensp;<code>array</code></dt>
+<dd>Position of the fragment in space.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Generic Name for the Fragment</dd>
+<dt><strong><code>material_property</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Material Property of the Fragment.</dd>
+<dt><strong><code>volume</code></strong> :&ensp;<code>float</code></dt>
+<dd>Volume of the Fragment</dd>
+<dt><strong><code>density</code></strong> :&ensp;<code>float</code></dt>
+<dd>Density of the Fragment</dd>
+<dt><strong><code>planet_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Define the object as a Fragment</dd>
+<dt><strong><code>object_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Defines the object as a free fragment.</dd>
+<dt><strong><code>trajectory</code></strong> :&ensp;<code>list</code></dt>
+<dd>List containing the trajectory of the frament.</dd>
+</dl>
+<p>Constructor for the Fragments class</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the fragment (generic name)</dd>
+<dt><strong><code>mass</code></strong> :&ensp;<code>float</code></dt>
+<dd>Mass of the fragment</dd>
+<dt><strong><code>velocity</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Velocity of the fragment</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Force acting on the fragment</dd>
+<dt><strong><code>radius</code></strong> :&ensp;<code>float</code></dt>
+<dd>Radius of the fragment</dd>
+<dt><strong><code>position</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>Position of the fragment in space.</dd>
+<dt><strong><code>material_property</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Material Property of the fragment.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Fragments():
+    &#34;&#34;&#34;Internal class that holds the additional fragments generated from the collision of two planets
+
+    Attributes:
+        mass (float): Mass of the Fragment
+        velocity (array): Velocity of the fragment
+        force (array): Force acting on the fragment
+        momentum (array): Momentum of the fragment
+        radius (float): Radius of the fragment
+        position (array): Position of the fragment in space.
+        name (str): Generic Name for the Fragment
+        material_property (dict): Material Property of the Fragment.
+        volume (float): Volume of the Fragment
+        density (float): Density of the Fragment
+        planet_type (str): Define the object as a Fragment
+        object_type (str): Defines the object as a free fragment.
+        trajectory (list): List containing the trajectory of the frament.
+    &#34;&#34;&#34;
+    def __init__(self, name:str, mass:float, velocity:np.array, radius:float, position:np.array, 
+                 material_property:dict, force:np.array=None) -&gt; None:
+        &#34;&#34;&#34;Constructor for the Fragments class
+
+        Args:
+            name (str): Name of the fragment (generic name)
+            mass (float): Mass of the fragment
+            velocity (np.array): Velocity of the fragment
+            force (np.array): Force acting on the fragment
+            radius (float): Radius of the fragment
+            position (np.array): Position of the fragment in space.
+            material_property (dict): Material Property of the fragment.
+        &#34;&#34;&#34;
+        self.mass = mass
+        self.velocity = velocity
+        if force is not None:
+            self.force = force
+        else:
+            self.force = np.zeros(3)
+        self.momentum = mass * velocity
+        self.radius = radius
+        self.position = position
+        self.name = name
+        self.material_property = material_property
+        self.volume = np.power(self.radius, 3) * np.pi * (4/3)
+        self.density = self.mass / self.volume
+        self.planet_type = &#34;fragment&#34;
+        self.object_type = &#34;fragment&#34;
+        self.trajectory = []
+        self.color = &#34;grey&#34;</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Planets"><code class="flex name class">
+<span>class <span class="ident">Planets</span></span>
+<span>(</span><span>name: str, mass: Union[float, int], radius: Union[float, int], planet_type: str, planet_contour: str, init_position: list, init_velocity: list, material_property: dict)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class that initializes the object Planet for the N-Body Simulation and Visualization</p>
+<p>This is the class that creates a template for Planets that will be used in the N-Body Simulation. The initialized planets are assumed
+to be perfectly spherical for ease of volume/density analysis as well as collisions. The class contains information regarding the planet
+for simulation, such as the mass and orbital properties, as well as, for visualizations to load the contours of the planets in the animation
+renders.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the Planet</dd>
+<dt>mass (float/int): Mass of the Planet in kilograms</dt>
+<dt>radius (float/int): Radius of the Planet in meters</dt>
+<dt><strong><code>volume</code></strong> :&ensp;<code>float</code></dt>
+<dd>Volume of the Planet in meter^3</dd>
+<dt><strong><code>density</code></strong> :&ensp;<code>float</code></dt>
+<dd>Density of the Planet in kilograms/meter^3</dd>
+<dt><strong><code>planet_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of Planet. Accepted values are "Rocky" or "Gaseous"</dd>
+<dt><strong><code>planet_contour</code></strong> :&ensp;<code>str</code></dt>
+<dd>Planet contour type ("Earth-like"/"Mars-like" for Rocky Planets and "Jupiter-like"/"Neptune-like" for
+Gaseous Planets)</dd>
+<dt><strong><code>init_position</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial position of the Planet in space as a list of coordinates in meters</dd>
+<dt><strong><code>init_velocity</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial orbital velocity of the Planet as a list of directional velocities in meter/second.</dd>
+<dt><strong><code>position</code></strong> :&ensp;<code>array</code></dt>
+<dd>Position of the planet in a given time slice.</dd>
+<dt><strong><code>velocity</code></strong> :&ensp;<code>array</code></dt>
+<dd>Velocity of the planet in a given time slice.</dd>
+<dt><strong><code>object_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Identifier for type of Celestial Object.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>array</code></dt>
+<dd>Total Force acting on the Planet in a given time slice.</dd>
+<dt><strong><code>momentum</code></strong> :&ensp;<code>array</code></dt>
+<dd>Momentum of the Planet in a given time slice.</dd>
+<dt><strong><code>material_property</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Aggregate Material properties of the planet based on abundant materials.</dd>
+<dt><strong><code>trajectory</code></strong> :&ensp;<code>list</code></dt>
+<dd>Holds the trajectory of the planet as a list of position arrays.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>Color of the planet for visualization purposes.</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>radius(): Gets the value of the radius
+radius(value): Sets the value of the radius
+mass(): Gets the value of the mass
+mass(value): Sets the value of the mass
+volume(): Calculates and updates the volume of the planet
+density(): Calculates and updates the density of the planet</p>
+<p>Constructor for the Planets class.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the Planet</dd>
+<dt><strong><code>mass</code></strong> :&ensp;<code>Union[float, int]</code></dt>
+<dd>Mass of the Planet in kilograms</dd>
+<dt><strong><code>radius</code></strong> :&ensp;<code>Union[float,int]</code></dt>
+<dd>Radius of the Planet in meters</dd>
+<dt><strong><code>planet_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of the Planet. Accepted values are "Rocky" or "Gaseous"</dd>
+<dt><strong><code>planet_contour</code></strong> :&ensp;<code>str</code></dt>
+<dd>Contour of the Planet. Accepted values are "Earth-like",
+"Mars-like", "Jupiter-like" or "Neptune-like"</dd>
+<dt><strong><code>init_position</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial Position of the Planet as a list of coordinates (in meters)</dd>
+<dt><strong><code>init_velocity</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial Velocity of the Planet as a list of directional velocities (in meters/second)</dd>
+<dt><strong><code>material_property</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Material Properties of the Planet.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>name is not of type string</dd>
+<dt><code>TypeError</code></dt>
+<dd>mass is not of type float/int</dd>
+<dt><code>TypeError</code></dt>
+<dd>radius is not of type float/int</dd>
+<dt><code>TypeError</code></dt>
+<dd>planet_type is not of type string</dd>
+<dt><code>TypeError</code></dt>
+<dd>planet_contour is not of type string</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_position is not of type list</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_velocity is not of type list</dd>
+<dt><code>TypeError</code></dt>
+<dd>material_property is not of type dictionary</dd>
+<dt><code>ValueError</code></dt>
+<dd>name is None</dd>
+<dt><code>ValueError</code></dt>
+<dd>mass is zero or negative</dd>
+<dt><code>ValueError</code></dt>
+<dd>radius is zero or negative</dd>
+<dt><code>ValueError</code></dt>
+<dd>planet_type is not "Rocky" or "Gaseous"</dd>
+<dt><code>ValueError</code></dt>
+<dd>planet_contour is not "Earth-like", "Mars-like", "Jupiter-like" or "Neptune-like"</dd>
+<dt><code>ValueError</code></dt>
+<dd>init_position does not contain 3 coordinates</dd>
+<dt><code>ValueError</code></dt>
+<dd>init_velocity does not contain 3 directional velocities</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_position does not contain float/int values</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_velocity does not contain float/int values</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Planets():
+    &#34;&#34;&#34;Class that initializes the object Planet for the N-Body Simulation and Visualization
+    
+    This is the class that creates a template for Planets that will be used in the N-Body Simulation. The initialized planets are assumed
+    to be perfectly spherical for ease of volume/density analysis as well as collisions. The class contains information regarding the planet 
+    for simulation, such as the mass and orbital properties, as well as, for visualizations to load the contours of the planets in the animation 
+    renders.
+
+    Attributes:
+        name (str): Name of the Planet
+        mass (float/int): Mass of the Planet in kilograms
+        radius (float/int): Radius of the Planet in meters
+        volume (float): Volume of the Planet in meter^3
+        density (float): Density of the Planet in kilograms/meter^3
+        planet_type (str): Type of Planet. Accepted values are &#34;Rocky&#34; or &#34;Gaseous&#34;
+        planet_contour (str): Planet contour type (&#34;Earth-like&#34;/&#34;Mars-like&#34; for Rocky Planets and &#34;Jupiter-like&#34;/&#34;Neptune-like&#34; for
+                                Gaseous Planets)
+        init_position (list): Initial position of the Planet in space as a list of coordinates in meters
+        init_velocity (list): Initial orbital velocity of the Planet as a list of directional velocities in meter/second.
+        position (array): Position of the planet in a given time slice.
+        velocity (array): Velocity of the planet in a given time slice.
+        object_type (str): Identifier for type of Celestial Object.
+        force (array): Total Force acting on the Planet in a given time slice.
+        momentum (array): Momentum of the Planet in a given time slice.
+        material_property (dict): Aggregate Material properties of the planet based on abundant materials.
+        trajectory (list): Holds the trajectory of the planet as a list of position arrays.
+        color (tuple): Color of the planet for visualization purposes.
+
+    Methods:
+        radius(): Gets the value of the radius
+        radius(value): Sets the value of the radius
+        mass(): Gets the value of the mass
+        mass(value): Sets the value of the mass
+        volume(): Calculates and updates the volume of the planet
+        density(): Calculates and updates the density of the planet
+    &#34;&#34;&#34;
+
+    def __init__(self, name:str, mass:Union[float, int], radius:Union[float,int], planet_type:str, 
+                 planet_contour:str, init_position:list, init_velocity:list, material_property:dict):
+        &#34;&#34;&#34;Constructor for the Planets class.
+
+        Args:
+            name (str): Name of the Planet
+            mass (Union[float, int]): Mass of the Planet in kilograms
+            radius (Union[float,int]): Radius of the Planet in meters
+            planet_type (str): Type of the Planet. Accepted values are &#34;Rocky&#34; or &#34;Gaseous&#34;
+            planet_contour (str): Contour of the Planet. Accepted values are &#34;Earth-like&#34;, 
+                                &#34;Mars-like&#34;, &#34;Jupiter-like&#34; or &#34;Neptune-like&#34;
+            init_position (list): Initial Position of the Planet as a list of coordinates (in meters)
+            init_velocity (list): Initial Velocity of the Planet as a list of directional velocities (in meters/second)
+            material_property (dict): Material Properties of the Planet.
+
+        Raises:
+            TypeError: name is not of type string
+            TypeError: mass is not of type float/int
+            TypeError: radius is not of type float/int
+            TypeError: planet_type is not of type string
+            TypeError: planet_contour is not of type string
+            TypeError: init_position is not of type list
+            TypeError: init_velocity is not of type list
+            TypeError: material_property is not of type dictionary
+            ValueError: name is None
+            ValueError: mass is zero or negative
+            ValueError: radius is zero or negative
+            ValueError: planet_type is not &#34;Rocky&#34; or &#34;Gaseous&#34;
+            ValueError: planet_contour is not &#34;Earth-like&#34;, &#34;Mars-like&#34;, &#34;Jupiter-like&#34; or &#34;Neptune-like&#34;
+            ValueError: init_position does not contain 3 coordinates
+            ValueError: init_velocity does not contain 3 directional velocities
+            TypeError: init_position does not contain float/int values
+            TypeError: init_velocity does not contain float/int values
+        &#34;&#34;&#34;
+        try:
+            assert isinstance(name, str)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;name&#39; can only be of type string&#34;)
+        try:
+            assert isinstance(mass, (float, int))
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;mass&#39; can only be of type float/int&#34;)
+        try:
+            assert isinstance(radius, (float, int))
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;radius&#39; can only be of type float/int&#34;)
+        try:
+            assert isinstance(planet_type, str)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;planet_type&#39; can only be of type string&#34;)
+        try:
+            assert isinstance(planet_contour, str)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;planet_contour&#39; can only be of type string&#34;)
+        try:
+            assert isinstance(init_position, list)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;init_position&#39; can only be of type list&#34;)
+        try:
+            assert isinstance(init_velocity, list)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;init_velocity&#39; can only be of type list&#34;)
+        try:
+            assert isinstance(material_property, dict)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;material_property&#39; must be of type dictionary&#34;)
+        try:
+            assert mass&gt;0
+        except AssertionError:
+            raise ValueError(&#34;Planet Property &#39;mass&#39; can not be zero or non-negative&#34;)
+        try:
+            assert radius&gt;0
+        except AssertionError:
+            raise ValueError(&#34;Planet Property &#39;radius&#39; can not be zero or non-negative&#34;)
+        try:
+            assert (name is not None)
+        except AssertionError:
+            raise ValueError(&#34;Planet Property &#39;name&#39; cannot be None&#34;)
+        try:
+            assert (planet_type.lower() == &#34;rocky&#34; or planet_type.lower() == &#34;gaseous&#34;)
+        except AssertionError:
+            raise ValueError(&#34;Planet Property &#39;planet_type&#39; can only be &#39;Rocky&#39; or &#39;Gaseous&#39;&#34;)
+        try:
+            assert (planet_contour.lower() == &#34;earth-like&#34; or planet_contour.lower() == &#34;mars-like&#34; or \
+                    planet_contour.lower() == &#34;jupiter-like&#34; or planet_contour.lower() == &#34;neptune-like&#34;)
+        except AssertionError:
+            raise ValueError(&#34;Planet Property &#39;planet_contour&#39; can only be &#39;Earth-like&#39;, &#39;Mars-like&#39;, &#39;Jupiter-like&#39; or &#39;Neptune-like&#39;&#34;)
+        try:
+            assert len(init_position)==3
+        except AssertionError:
+            raise ValueError(&#34;Planet Property &#39;init_position&#39; must contain 3 coordinates&#34;)
+        try:
+            assert len(init_velocity)==3
+        except AssertionError:
+            raise ValueError(&#34;Planet Property &#39;init_velocity&#39; must contain 3 directional velocities&#34;)
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_position)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;init_position&#39; must contain float/int values&#34;)
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_velocity)
+        except AssertionError:
+            raise TypeError(&#34;Planet Property &#39;init_velocity&#39; must contain float/int values&#34;)
+        self.name = name
+        self.mass = mass
+        self.radius = radius
+        self.planet_type = planet_type
+        self.planet_contour = planet_contour
+        self.init_position = np.array(init_position)
+        self.init_velocity = np.array(init_velocity)
+        self.material_property = material_property
+        self.position = None
+        self.velocity = None
+        self.momentum = None
+        self.trajectory = []
+        self.vel_list = []
+        self.force = np.zeros(3)
+        self.object_type = &#34;planet&#34;
+        if self.planet_type.lower() == &#34;rocky&#34;:
+            if self.planet_contour.lower() == &#34;earth-like&#34;:
+                self.color_myv = (0,0.2,1)
+                self.color = &#34;blue&#34;
+            else:
+                self.color_myv = (1,0,1)
+                self.color = &#34;brown&#34;
+        else:
+            if self.planet_contour.lower() == &#34;jupiter-like&#34;:
+                self.color_myv = (0.5,1,0)
+                self.color = &#34;orange&#34;
+            else:
+                self.color_myv = (0,0,1)
+                self.color = &#34;blue&#34;
+    
+    @property
+    def radius(self):
+        &#34;&#34;&#34;Gets the radius of the planet as a class property
+
+        Returns:
+            float: radius of the planet
+        &#34;&#34;&#34;
+        return self._radius
+    
+    @radius.setter
+    def radius(self, value:Union[float,int]):
+        &#34;&#34;&#34;Sets the radius of the Planet.
+
+        Args:
+            value (float/int): Radius of the Planet
+        &#34;&#34;&#34;
+        self._radius = value
+
+    @property
+    def color(self):
+        &#34;&#34;&#34;Gets the color of the planet as a class property
+
+        Returns:
+            str: Color of the planet
+        &#34;&#34;&#34;
+        return self._color
+    
+    @color.setter
+    def color(self, value:str):
+        &#34;&#34;&#34;Sets the color of the Planet
+
+        Args:
+            value (str): Color of the Planet
+        &#34;&#34;&#34;
+        self._color = value
+    
+    @property
+    def color_myv(self):
+        &#34;&#34;&#34;Gets the color of the planet as a class property as a tuple
+        
+        Returns:
+            tuple: Color of the planet as a tuple
+        &#34;&#34;&#34;
+        return self._color_myv
+    
+    @color_myv.setter
+    def color_myv(self, value:tuple):
+        &#34;&#34;&#34;Sets the color of the Planet as a tuple
+
+        Args:
+            value (tuple): Color of the Planet as a tuple
+        &#34;&#34;&#34;
+        self._color_myv = value
+    
+    @property
+    def mass(self):
+        &#34;&#34;&#34;Gets the mass of the planet as a class property
+
+        Returns:
+            float: mass of the planet
+        &#34;&#34;&#34;
+        return self._mass
+    
+    @mass.setter
+    def mass(self, value:float):
+        &#34;&#34;&#34;Sets the mass of the Planet
+
+        Args:
+            value (float): Mass of the Planet
+        &#34;&#34;&#34;
+        self._mass = value
+    
+    @property
+    def volume(self):
+        &#34;&#34;&#34;Dynamically Calculates the Volume of the Planet as a class property for each update to its radius
+
+        The planet is spherical and calculated using the formula:
+            volume = (4/3) * pi * radius^3
+
+        Returns:
+            float: Volume of the planet
+        &#34;&#34;&#34;
+        return (4/3) * np.pi * np.power(self._radius, 3)
+    
+    @property
+    def density(self):
+        &#34;&#34;&#34;Dynamically Calculates the Density of the Planet as a class property for each update to its mass or radius
+
+        Calculated using the formula: density = mass / volume
+
+        Raises:
+            ValueError: In case the volume (or radius) is set as zero, a value error is raised to prevent division by zero
+
+        Returns:
+            float: Density of the Planet
+        &#34;&#34;&#34;
+        try:
+            assert self.volume!=0, &#34;Volume cannot be Zero. Modify Radius&#34;
+        except AssertionError:
+            raise ValueError
+        return self._mass/self.volume</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="cosmicBallet.CelestialObjects.Planets.color"><code class="name">prop <span class="ident">color</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the color of the planet as a class property</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Color of the planet</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def color(self):
+    &#34;&#34;&#34;Gets the color of the planet as a class property
+
+    Returns:
+        str: Color of the planet
+    &#34;&#34;&#34;
+    return self._color</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Planets.color_myv"><code class="name">prop <span class="ident">color_myv</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the color of the planet as a class property as a tuple</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>Color of the planet as a tuple</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def color_myv(self):
+    &#34;&#34;&#34;Gets the color of the planet as a class property as a tuple
+    
+    Returns:
+        tuple: Color of the planet as a tuple
+    &#34;&#34;&#34;
+    return self._color_myv</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Planets.density"><code class="name">prop <span class="ident">density</span></code></dt>
+<dd>
+<div class="desc"><p>Dynamically Calculates the Density of the Planet as a class property for each update to its mass or radius</p>
+<p>Calculated using the formula: density = mass / volume</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>In case the volume (or radius) is set as zero, a value error is raised to prevent division by zero</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Density of the Planet</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def density(self):
+    &#34;&#34;&#34;Dynamically Calculates the Density of the Planet as a class property for each update to its mass or radius
+
+    Calculated using the formula: density = mass / volume
+
+    Raises:
+        ValueError: In case the volume (or radius) is set as zero, a value error is raised to prevent division by zero
+
+    Returns:
+        float: Density of the Planet
+    &#34;&#34;&#34;
+    try:
+        assert self.volume!=0, &#34;Volume cannot be Zero. Modify Radius&#34;
+    except AssertionError:
+        raise ValueError
+    return self._mass/self.volume</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Planets.mass"><code class="name">prop <span class="ident">mass</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the mass of the planet as a class property</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>mass of the planet</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mass(self):
+    &#34;&#34;&#34;Gets the mass of the planet as a class property
+
+    Returns:
+        float: mass of the planet
+    &#34;&#34;&#34;
+    return self._mass</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Planets.radius"><code class="name">prop <span class="ident">radius</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the radius of the planet as a class property</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>radius of the planet</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def radius(self):
+    &#34;&#34;&#34;Gets the radius of the planet as a class property
+
+    Returns:
+        float: radius of the planet
+    &#34;&#34;&#34;
+    return self._radius</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Planets.volume"><code class="name">prop <span class="ident">volume</span></code></dt>
+<dd>
+<div class="desc"><p>Dynamically Calculates the Volume of the Planet as a class property for each update to its radius</p>
+<p>The planet is spherical and calculated using the formula:
+volume = (4/3) * pi * radius^3</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Volume of the planet</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def volume(self):
+    &#34;&#34;&#34;Dynamically Calculates the Volume of the Planet as a class property for each update to its radius
+
+    The planet is spherical and calculated using the formula:
+        volume = (4/3) * pi * radius^3
+
+    Returns:
+        float: Volume of the planet
+    &#34;&#34;&#34;
+    return (4/3) * np.pi * np.power(self._radius, 3)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Stars"><code class="flex name class">
+<span>class <span class="ident">Stars</span></span>
+<span>(</span><span>name: str, mass: Union[float, int], temperature: Union[float, int], init_position: list, init_velocity: list, radius: Union[float, int] = None, density: float = None, angular_momentum: list = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class that initializes the object Star for the N-Body Simulation and Visualization</p>
+<p>This is the class that creates a template for Stars that will be used in the N-Body Simulation. The initialized Stars are assumed to be
+perfectly spherical for simplified density/volume analysis and collision cases. The class contains information regarding the star for
+simulation, such as the mass and orbital properties, as well as, for visualizations to load the color, size and other relevent visual
+properties of the stars in the animation renders. The class requires either the radius or the density as input (if not both).</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the Star</dd>
+<dt>mass (float/int): Mass of the Star in kilograms</dt>
+<dt>temperature (float/int): Temperature of the Star in kelvin</dt>
+<dt><strong><code>init_position</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial position of the star in space as a list of coordinates in meters</dd>
+<dt><strong><code>init_velocity</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial orbital velocity of the star as a list of directional velocities in meter/second</dd>
+<dt>radius (float/int, optional): Radius of the Star in meters</dt>
+<dt><strong><code>density</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Density of the Star in kilograms/meter^3</dd>
+<dt><strong><code>position</code></strong> :&ensp;<code>array</code></dt>
+<dd>Position of the star in a given time slice.</dd>
+<dt><strong><code>velocity</code></strong> :&ensp;<code>array</code></dt>
+<dd>Velocity of the star in a given time slice.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>array</code></dt>
+<dd>Total Force acting on the Planet in a given time slice.</dd>
+<dt><strong><code>momentum</code></strong> :&ensp;<code>array</code></dt>
+<dd>Momentum of the star in a given time slice.</dd>
+<dt><strong><code>object_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Identifier for type of Celestial Object.</dd>
+<dt><strong><code>star_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of Star based on density</dd>
+<dt><strong><code>star_class</code></strong> :&ensp;<code>str</code></dt>
+<dd>Star Classification based on temperature</dd>
+<dt><strong><code>trajectory</code></strong> :&ensp;<code>list</code></dt>
+<dd>Holds the trajectory of the star as a list of position arrays.</dd>
+<dt><strong><code>color_myv</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>Color of the star for visualization purposes.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>str</code></dt>
+<dd>Color of the star for visualization purposes.</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>radius(): Gets the radius of the star
+radius(value): Sets the radius of the star
+mass(): Gets the mass of the star
+mass(value): Sets the mass of the star
+volume(): Calculates and updates the volume of the star
+density(): Calculates and updates the volume of the star
+star_type(): Determines and updates the type of the star
+star_class(): Determines and updates the class of the star</p>
+<p>Initializes the Star Object</p>
+<p>The class requires either radius or density to be provided. The radius is calculated from the density and mass but for dynamic
+modifications to the star properties only radius updates are accepted.</p>
+<p>The radius is calculated from the density and mass as follows:
+volume = mass / density
+radius = (3 * volume / (4 * pi))**(1/3)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the Star</dd>
+<dt>mass (float/int): Mass of the Star in kilograms</dt>
+<dt>temperature (float/int): Temperature of the Star in kelvin</dt>
+<dt><strong><code>init_position</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial position of the star in space as a list of coordinates in meters</dd>
+<dt><strong><code>init_velocity</code></strong> :&ensp;<code>list</code></dt>
+<dd>Initial orbital velocity of the star as a list of directional velocities in meter/second</dd>
+<dt>radius (float/int, optional): Radius of the Star in meters</dt>
+<dt><strong><code>density</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Density of the Star in kilograms/meter^3</dd>
+<dt><strong><code>angular_momentum</code></strong> :&ensp;<code>list</code>, optional</dt>
+<dd>Angular Momentum of the Star as a list of axial momenta in kilograms*radian/second</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>name is not of type string</dd>
+<dt><code>TypeError</code></dt>
+<dd>mass is not of type float/int</dd>
+<dt><code>TypeError</code></dt>
+<dd>temperature is not of type float/int</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_position is not of type list</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_velocity is not of type list</dd>
+<dt><code>TypeError</code></dt>
+<dd>radius is not of type float/int</dd>
+<dt><code>TypeError</code></dt>
+<dd>density is not of type float</dd>
+<dt><code>TypeError</code></dt>
+<dd>angular_momentum is not of type list (if provided)</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_position does not contain float/int values</dd>
+<dt><code>TypeError</code></dt>
+<dd>init_velocity does not contain float/int values</dd>
+<dt><code>ValueError</code></dt>
+<dd>name is None</dd>
+<dt><code>ValueError</code></dt>
+<dd>mass is zero or negative</dd>
+<dt><code>ValueError</code></dt>
+<dd>radius is zero or negative</dd>
+<dt><code>ValueError</code></dt>
+<dd>temperature is zero or negative</dd>
+<dt><code>ValueError</code></dt>
+<dd>density is zero or negative</dd>
+<dt><code>ValueError</code></dt>
+<dd>init_position does not contain 3 coordinates</dd>
+<dt><code>ValueError</code></dt>
+<dd>init_velocity does not contain 3 directional velocities</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Stars():
+    &#34;&#34;&#34;Class that initializes the object Star for the N-Body Simulation and Visualization
+    
+    This is the class that creates a template for Stars that will be used in the N-Body Simulation. The initialized Stars are assumed to be
+    perfectly spherical for simplified density/volume analysis and collision cases. The class contains information regarding the star for 
+    simulation, such as the mass and orbital properties, as well as, for visualizations to load the color, size and other relevent visual 
+    properties of the stars in the animation renders. The class requires either the radius or the density as input (if not both).
+
+    Attributes:
+        name (str): Name of the Star
+        mass (float/int): Mass of the Star in kilograms
+        temperature (float/int): Temperature of the Star in kelvin
+        init_position (list): Initial position of the star in space as a list of coordinates in meters
+        init_velocity (list): Initial orbital velocity of the star as a list of directional velocities in meter/second
+        radius (float/int, optional): Radius of the Star in meters
+        density (float, optional): Density of the Star in kilograms/meter^3
+        position (array): Position of the star in a given time slice.
+        velocity (array): Velocity of the star in a given time slice.
+        force (array): Total Force acting on the Planet in a given time slice.
+        momentum (array): Momentum of the star in a given time slice.
+        object_type (str): Identifier for type of Celestial Object.
+        star_type (str): Type of Star based on density
+        star_class (str): Star Classification based on temperature
+        trajectory (list): Holds the trajectory of the star as a list of position arrays.
+        color_myv (tuple): Color of the star for visualization purposes.
+        color (str): Color of the star for visualization purposes.
+
+    Methods:
+        radius(): Gets the radius of the star
+        radius(value): Sets the radius of the star
+        mass(): Gets the mass of the star
+        mass(value): Sets the mass of the star
+        volume(): Calculates and updates the volume of the star
+        density(): Calculates and updates the volume of the star
+        star_type(): Determines and updates the type of the star
+        star_class(): Determines and updates the class of the star
+    &#34;&#34;&#34;
+
+    def __init__(self, name:str, mass:Union[float, int], temperature:Union[float,int], init_position:list, init_velocity:list,
+                 radius:Union[float,int]=None, density:float=None, angular_momentum:list=None):
+        &#34;&#34;&#34;Initializes the Star Object
+
+        The class requires either radius or density to be provided. The radius is calculated from the density and mass but for dynamic 
+        modifications to the star properties only radius updates are accepted.
+
+        The radius is calculated from the density and mass as follows:
+            volume = mass / density
+            radius = (3 * volume / (4 * pi))**(1/3)
+
+        Args:
+            name (str): Name of the Star
+            mass (float/int): Mass of the Star in kilograms
+            temperature (float/int): Temperature of the Star in kelvin
+            init_position (list): Initial position of the star in space as a list of coordinates in meters
+            init_velocity (list): Initial orbital velocity of the star as a list of directional velocities in meter/second
+            radius (float/int, optional): Radius of the Star in meters
+            density (float, optional): Density of the Star in kilograms/meter^3
+            angular_momentum (list, optional): Angular Momentum of the Star as a list of axial momenta in kilograms*radian/second
+        
+        Raises:
+            TypeError: name is not of type string
+            TypeError: mass is not of type float/int
+            TypeError: temperature is not of type float/int
+            TypeError: init_position is not of type list
+            TypeError: init_velocity is not of type list
+            TypeError: radius is not of type float/int
+            TypeError: density is not of type float
+            TypeError: angular_momentum is not of type list (if provided)
+            TypeError: init_position does not contain float/int values
+            TypeError: init_velocity does not contain float/int values
+            ValueError: name is None
+            ValueError: mass is zero or negative
+            ValueError: radius is zero or negative
+            ValueError: temperature is zero or negative
+            ValueError: density is zero or negative
+            ValueError: init_position does not contain 3 coordinates
+            ValueError: init_velocity does not contain 3 directional velocities
+        &#34;&#34;&#34;
+        try:
+            assert isinstance(name, str)
+        except AssertionError:
+            raise TypeError(&#34;Star Property &#39;name&#39; can only be of type string&#34;)
+        try:
+            assert isinstance(mass, (float, int))
+        except AssertionError:
+            raise TypeError(&#34;Star Property &#39;mass&#39; can only be of type float/int&#34;)
+        try:
+            assert isinstance(temperature, (float, int))
+        except AssertionError:
+            raise TypeError(&#34;Star Property &#39;temperature&#39; can only be of type float/int&#34;)
+        try:
+            assert isinstance(init_position, list)
+        except AssertionError:
+            raise TypeError(&#34;Star Property &#39;init_position&#39; can only be of type list&#34;)
+        try:
+            assert isinstance(init_velocity, list)
+        except AssertionError:
+            raise TypeError(&#34;Star Property &#39;init_velocity&#39; can only be of type list&#34;)
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_position)
+        except AssertionError:
+            raise TypeError(&#34;Star Property &#39;init_position&#39; can only contain float/int values&#34;)
+        try:
+            assert all(isinstance(i, (float, int)) for i in init_velocity)
+        except AssertionError:
+            raise TypeError(&#34;Star Property &#39;init_velocity&#39; can only contain float/int values&#34;)
+        if radius is not None:
+            try:
+                assert isinstance(radius, (float, int))
+            except AssertionError:
+                raise TypeError(&#34;Star Property &#39;radius&#39; can only be of type float/int&#34;)
+        if density is not None:
+            try:
+                assert isinstance(density, float)
+            except AssertionError:
+                raise TypeError(&#34;Star Property &#39;density&#39; must be of type float&#34;)
+        if angular_momentum is not None:
+            try:
+                assert isinstance(angular_momentum, list)
+            except AssertionError:
+                raise TypeError(&#34;Star Property &#39;angular_momentum&#39; must be of type list&#34;)
+        try:
+            assert mass&gt;0
+        except AssertionError:
+            raise ValueError(&#34;Star Property &#39;mass&#39; must be a positive value&#34;)
+        try:
+            assert temperature&gt;0
+        except AssertionError:
+            raise ValueError(&#34;Star Property &#39;temperature&#39; must be a positive value&#34;)
+        try:
+            assert (name is not None)
+        except AssertionError:
+            raise ValueError(&#34;Star Property &#39;name&#39; cannot be None&#34;)
+        try:
+            assert (radius is not None or density is not None)
+        except AssertionError:
+            raise ValueError(&#34;Star Properties &#39;radius&#39; and &#39;density&#39; cannot be None&#34;)
+        if radius is not None:
+            try:
+                assert radius&gt;0
+            except AssertionError:
+                raise ValueError(&#34;Star Property &#39;radius&#39; must be a positive value&#34;)
+        if density is not None:
+            try:
+                assert density&gt;0
+            except AssertionError:
+                raise ValueError(&#34;Star Property &#39;density&#39; must be a positive value&#34;)
+        if radius is not None and density is not None:
+            vol = (4/3) * np.pi * np.power(radius, 3)
+            calc_density = mass / vol
+            try:
+                assert math.isclose(calc_density, density, abs_tol=1e-3)
+            except AssertionError:
+                raise ValueError(&#34;Provided Density of Star and Calculated Density of Star do not match&#34;)
+        self.name = name
+        self.mass = mass
+        self.temperature = temperature
+        self.init_position = np.array(init_position)
+        self.init_velocity = np.array(init_velocity)
+        if radius is not None:
+            self.radius = radius
+        if density is not None:
+            self.density = density
+            vol = self.mass/self.density
+            self.radius = np.cbrt((3/4) * vol / np.pi)
+        self.position = None
+        self.velocity = None
+        self.momentum = None
+        self.force = np.zeros(3)
+        self.object_type = &#34;star&#34;
+        self.color = &#34;&#34;
+        self.color_myv = (1,1,0)
+        self.star_class
+        self.trajectory = []
+        self.vel_list = []
+        if angular_momentum is not None:
+            self.angular_momentum = np.array(angular_momentum).astype(np.float64)
+        else:
+            self.angular_momentum = np.array([0, 0, 0]).astype(np.float64)
+        
+    @property
+    def radius(self):
+        &#34;&#34;&#34;Gets the radius as a dynamic property of the class
+
+        Returns:
+            float: Radius of the Star
+        &#34;&#34;&#34;
+        return self._radius
+    
+    @property
+    def mass(self):
+        &#34;&#34;&#34;Gets the mass as a dynamic property of the class
+
+        Returns:
+            float: Mass of the Star
+        &#34;&#34;&#34;
+        return self._mass
+    
+    @radius.setter
+    def radius(self, value:Union[float,int]):
+        &#34;&#34;&#34;Sets the radius of the star
+
+        Args:
+            value (float/int): New radius of the star
+        &#34;&#34;&#34;
+        self._radius = value
+
+    @mass.setter
+    def mass(self, value:Union[float,int]):
+        &#34;&#34;&#34;Sets the mass of the star
+
+        Args:
+            value (float/int): New mass of the star
+        &#34;&#34;&#34;
+        self._mass = value
+
+    @property
+    def volume(self):
+        &#34;&#34;&#34;Dynamically updates the volume of the star
+
+        The star is spherical and the volume is calculated using the formula:
+            volume = (4/3) * pi * radius^3
+
+        Returns:
+            float: Volume of the star
+        &#34;&#34;&#34;
+        return (4/3) * np.pi * np.power(self._radius, 3)
+    
+    @property
+    def density(self):
+        &#34;&#34;&#34;Dynamically calculates the density of the star
+
+        Calculated using the formula: density = mass / volume
+
+        Raises:
+            ValueError: In case the volume of the star is zero, in order to prevent division by zero error
+
+        Returns:
+            float: Density of the star
+        &#34;&#34;&#34;
+        try:
+            assert self.volume!=0, &#34;Volume cannot be zero. Modify Radius&#34;
+        except AssertionError:
+            raise ValueError
+        return self._mass/self.volume
+    
+    @property
+    def star_type(self):
+        &#34;&#34;&#34;Determines the type of the star based on its density.
+
+        Classification of the stars follow as (the classification and an example is provided):
+            (i)     The star is considered to be a Giant/Hypergiant if its density is less than 1000 kg/m^3 (or &lt; 1 g/cm^3). 
+                        Example: Stephanson 2-18, density ~ 70.4 kg/m^3, Red Hypergiant (largest known star)
+            (ii)    The star is considered to be a Main Sequence star if its density is between 1000 and 10^8 kg/m^3 (or 1-10^5 g/cm^3)
+                        Example: The Sun, density ~ 1408 kg/m^3, Main Sequence Yellow Star
+            (iii)   The star is considered to be a White Dwarf (remnant of stellar death) is its density is between 10^8 and 10^16 kg/m^3 (or 10^5 - 10^13 g/cm^3)
+                        Example: Sirius B, density ~ 5.7733 * 10^8 kg/m^3, Closest White Dwarf to the Sun
+            (iv)    The star is considered a Neutron star if it&#39;s density exceeds 10^16 kg/m^3 (or 10^13 g/cm^3)
+                        Example: PSR J0952-0607, density ~ 1.1155 * 10^18 kg/m^3, Most massive Neutron Star known as of today.
+        
+        For more information on the examples, search the star example on Wikipedia, or look up star density classification.
+        Infinite Density is not accepted as a star property and the object must be set as a Black Hole! 
+
+        Returns:
+            str: Type of the Star
+        &#34;&#34;&#34;
+        if self.density &gt; 0 and self.density &lt; 1000:
+            return &#34;Giant&#34;
+        elif self.density &gt; 1000 and self.density &lt; 1e8:
+            return &#34;Main Sequence&#34;
+        elif self.density &gt; 1e8 and self.density &lt; 1e16:
+            self.color = &#34;white&#34;
+            self.color_myv = (1,1,1)
+            return &#34;White Dwarf&#34;
+        else:
+            self.color = &#34;white&#34;
+            self.color_myv = (1,1,1)
+            return &#34;Neutron&#34;
+    
+    @property
+    def star_class(self):
+        &#34;&#34;&#34;Determines the Star Classification for visualization (purely a visual aspect for model selection)
+
+        Star Classification based on the Harvard spectral classification of stars based on the effective temperature of the surface
+        of the star. The classification of the stars work as follows (given -&gt; Star Class, Temperature Range, Chromaticity):
+            For Main Sequence Stars:
+                (i)     Class M, if 2300K &lt; Temperature &lt; 3900K, light orangish red
+                (ii)    Class K, if 3900K &lt; Temperature &lt; 5300K, pale yellowish orange
+                (iii)   Class G, if 5300K &lt; Temperature &lt; 6000K, yellowish white
+                (iv)    Class F, if 6000K &lt; Temperature &lt; 7300K, white
+                (v)     Class A, if 7300K &lt; Temperature &lt; 10000K, bluish white
+                (vi)    Class B, if 10000K &lt; Temperature &lt; 33000K, deep bluish white
+                (vii)   Class O, if Temperature &gt;= 33000K, blue
+            For Giants/Hypergiants:
+                (i)     Red, if 3700K &lt; Temperature &lt; 10000K, red giant/hypergiant
+                (ii)    Blue, if Temperature &gt;= 10000K, blue giant/hypergiant
+            White dwarfs and Neutron Stars do not have spectral classification.
+            The color is based on the chromaticity of the star and is used for visualization purposes.
+
+        Raises:
+            ValueError: If the surface temperature of the star is too low for luminosity.
+
+        Returns:
+            str: Classification of star based on luminosity (or effective surface temperature)
+        &#34;&#34;&#34;
+        if self.star_type == &#34;Main Sequence&#34;:
+            if self.temperature &gt; 2300 and self.temperature &lt;= 3900:
+                self.color_myv = (1, 0, 0)
+                self.color = &#34;red&#34;
+                return &#34;M&#34;
+            elif self.temperature &gt; 3900 and self.temperature &lt;= 5300:
+                self.color_myv = (1,0.5,0)
+                self.color = &#34;orange&#34;
+                return &#34;K&#34;
+            elif self.temperature &gt; 5300 and self.temperature &lt;= 6000:
+                self.color_myv = (1,1,0)
+                self.color = &#34;yellow&#34;
+                return &#34;G&#34;
+            elif self.temperature &gt; 6000 and self.temperature &lt;= 7300:
+                self.color_myv = (0.8,0.9,1)
+                self.color = &#34;white&#34;
+                return &#34;F&#34;
+            elif self.temperature &gt; 7300 and self.temperature &lt;= 10000:
+                self.color_myv = (1,1,1)
+                self.color = &#34;white&#34;
+                return &#34;A&#34;
+            elif self.temperature &gt; 10000 and self.temperature &lt;= 33000:
+                self.color_myv = (0,0.3,1)
+                self.color = &#34;purple&#34;
+                return &#34;B&#34;
+            elif self.temperature &gt; 33000:
+                self.color_myv = (0,0,1)
+                self.color = &#34;blue&#34;
+                return &#34;O&#34;
+            else:
+                raise ValueError(&#34;Temperature of Star Too Low and uncharacteristic of Stars. Modification to Temperature needed&#34;)
+        elif self.star_type == &#34;Giant&#34;:
+            if self.temperature &gt; 3700 and self.temperature &lt; 10000:
+                self.color_myv = (1,0,0)
+                self.color = &#34;red&#34;
+                return &#34;Red&#34;
+            elif self.temperature &gt; 10000:
+                self.color_myv = (0,0,1)
+                self.color = &#34;blue&#34;
+                return &#34;Blue&#34;
+            else:
+                raise ValueError(&#34;Temperature of Star Too Low and uncharacteristic of Giants. Modification to Temperature needed&#34;)</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="cosmicBallet.CelestialObjects.Stars.density"><code class="name">prop <span class="ident">density</span></code></dt>
+<dd>
+<div class="desc"><p>Dynamically calculates the density of the star</p>
+<p>Calculated using the formula: density = mass / volume</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>In case the volume of the star is zero, in order to prevent division by zero error</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Density of the star</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def density(self):
+    &#34;&#34;&#34;Dynamically calculates the density of the star
+
+    Calculated using the formula: density = mass / volume
+
+    Raises:
+        ValueError: In case the volume of the star is zero, in order to prevent division by zero error
+
+    Returns:
+        float: Density of the star
+    &#34;&#34;&#34;
+    try:
+        assert self.volume!=0, &#34;Volume cannot be zero. Modify Radius&#34;
+    except AssertionError:
+        raise ValueError
+    return self._mass/self.volume</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Stars.mass"><code class="name">prop <span class="ident">mass</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the mass as a dynamic property of the class</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Mass of the Star</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mass(self):
+    &#34;&#34;&#34;Gets the mass as a dynamic property of the class
+
+    Returns:
+        float: Mass of the Star
+    &#34;&#34;&#34;
+    return self._mass</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Stars.radius"><code class="name">prop <span class="ident">radius</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the radius as a dynamic property of the class</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Radius of the Star</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def radius(self):
+    &#34;&#34;&#34;Gets the radius as a dynamic property of the class
+
+    Returns:
+        float: Radius of the Star
+    &#34;&#34;&#34;
+    return self._radius</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Stars.star_class"><code class="name">prop <span class="ident">star_class</span></code></dt>
+<dd>
+<div class="desc"><p>Determines the Star Classification for visualization (purely a visual aspect for model selection)</p>
+<p>Star Classification based on the Harvard spectral classification of stars based on the effective temperature of the surface
+of the star. The classification of the stars work as follows (given -&gt; Star Class, Temperature Range, Chromaticity):
+For Main Sequence Stars:
+(i)
+Class M, if 2300K &lt; Temperature &lt; 3900K, light orangish red
+(ii)
+Class K, if 3900K &lt; Temperature &lt; 5300K, pale yellowish orange
+(iii)
+Class G, if 5300K &lt; Temperature &lt; 6000K, yellowish white
+(iv)
+Class F, if 6000K &lt; Temperature &lt; 7300K, white
+(v)
+Class A, if 7300K &lt; Temperature &lt; 10000K, bluish white
+(vi)
+Class B, if 10000K &lt; Temperature &lt; 33000K, deep bluish white
+(vii)
+Class O, if Temperature &gt;= 33000K, blue
+For Giants/Hypergiants:
+(i)
+Red, if 3700K &lt; Temperature &lt; 10000K, red giant/hypergiant
+(ii)
+Blue, if Temperature &gt;= 10000K, blue giant/hypergiant
+White dwarfs and Neutron Stars do not have spectral classification.
+The color is based on the chromaticity of the star and is used for visualization purposes.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the surface temperature of the star is too low for luminosity.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Classification of star based on luminosity (or effective surface temperature)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def star_class(self):
+    &#34;&#34;&#34;Determines the Star Classification for visualization (purely a visual aspect for model selection)
+
+    Star Classification based on the Harvard spectral classification of stars based on the effective temperature of the surface
+    of the star. The classification of the stars work as follows (given -&gt; Star Class, Temperature Range, Chromaticity):
+        For Main Sequence Stars:
+            (i)     Class M, if 2300K &lt; Temperature &lt; 3900K, light orangish red
+            (ii)    Class K, if 3900K &lt; Temperature &lt; 5300K, pale yellowish orange
+            (iii)   Class G, if 5300K &lt; Temperature &lt; 6000K, yellowish white
+            (iv)    Class F, if 6000K &lt; Temperature &lt; 7300K, white
+            (v)     Class A, if 7300K &lt; Temperature &lt; 10000K, bluish white
+            (vi)    Class B, if 10000K &lt; Temperature &lt; 33000K, deep bluish white
+            (vii)   Class O, if Temperature &gt;= 33000K, blue
+        For Giants/Hypergiants:
+            (i)     Red, if 3700K &lt; Temperature &lt; 10000K, red giant/hypergiant
+            (ii)    Blue, if Temperature &gt;= 10000K, blue giant/hypergiant
+        White dwarfs and Neutron Stars do not have spectral classification.
+        The color is based on the chromaticity of the star and is used for visualization purposes.
+
+    Raises:
+        ValueError: If the surface temperature of the star is too low for luminosity.
+
+    Returns:
+        str: Classification of star based on luminosity (or effective surface temperature)
+    &#34;&#34;&#34;
+    if self.star_type == &#34;Main Sequence&#34;:
+        if self.temperature &gt; 2300 and self.temperature &lt;= 3900:
+            self.color_myv = (1, 0, 0)
+            self.color = &#34;red&#34;
+            return &#34;M&#34;
+        elif self.temperature &gt; 3900 and self.temperature &lt;= 5300:
+            self.color_myv = (1,0.5,0)
+            self.color = &#34;orange&#34;
+            return &#34;K&#34;
+        elif self.temperature &gt; 5300 and self.temperature &lt;= 6000:
+            self.color_myv = (1,1,0)
+            self.color = &#34;yellow&#34;
+            return &#34;G&#34;
+        elif self.temperature &gt; 6000 and self.temperature &lt;= 7300:
+            self.color_myv = (0.8,0.9,1)
+            self.color = &#34;white&#34;
+            return &#34;F&#34;
+        elif self.temperature &gt; 7300 and self.temperature &lt;= 10000:
+            self.color_myv = (1,1,1)
+            self.color = &#34;white&#34;
+            return &#34;A&#34;
+        elif self.temperature &gt; 10000 and self.temperature &lt;= 33000:
+            self.color_myv = (0,0.3,1)
+            self.color = &#34;purple&#34;
+            return &#34;B&#34;
+        elif self.temperature &gt; 33000:
+            self.color_myv = (0,0,1)
+            self.color = &#34;blue&#34;
+            return &#34;O&#34;
+        else:
+            raise ValueError(&#34;Temperature of Star Too Low and uncharacteristic of Stars. Modification to Temperature needed&#34;)
+    elif self.star_type == &#34;Giant&#34;:
+        if self.temperature &gt; 3700 and self.temperature &lt; 10000:
+            self.color_myv = (1,0,0)
+            self.color = &#34;red&#34;
+            return &#34;Red&#34;
+        elif self.temperature &gt; 10000:
+            self.color_myv = (0,0,1)
+            self.color = &#34;blue&#34;
+            return &#34;Blue&#34;
+        else:
+            raise ValueError(&#34;Temperature of Star Too Low and uncharacteristic of Giants. Modification to Temperature needed&#34;)</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Stars.star_type"><code class="name">prop <span class="ident">star_type</span></code></dt>
+<dd>
+<div class="desc"><p>Determines the type of the star based on its density.</p>
+<p>Classification of the stars follow as (the classification and an example is provided):
+(i)
+The star is considered to be a Giant/Hypergiant if its density is less than 1000 kg/m^3 (or &lt; 1 g/cm^3).
+Example: Stephanson 2-18, density ~ 70.4 kg/m^3, Red Hypergiant (largest known star)
+(ii)
+The star is considered to be a Main Sequence star if its density is between 1000 and 10^8 kg/m^3 (or 1-10^5 g/cm^3)
+Example: The Sun, density ~ 1408 kg/m^3, Main Sequence Yellow Star
+(iii)
+The star is considered to be a White Dwarf (remnant of stellar death) is its density is between 10^8 and 10^16 kg/m^3 (or 10^5 - 10^13 g/cm^3)
+Example: Sirius B, density ~ 5.7733 * 10^8 kg/m^3, Closest White Dwarf to the Sun
+(iv)
+The star is considered a Neutron star if it's density exceeds 10^16 kg/m^3 (or 10^13 g/cm^3)
+Example: PSR J0952-0607, density ~ 1.1155 * 10^18 kg/m^3, Most massive Neutron Star known as of today.</p>
+<p>For more information on the examples, search the star example on Wikipedia, or look up star density classification.
+Infinite Density is not accepted as a star property and the object must be set as a Black Hole! </p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Type of the Star</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def star_type(self):
+    &#34;&#34;&#34;Determines the type of the star based on its density.
+
+    Classification of the stars follow as (the classification and an example is provided):
+        (i)     The star is considered to be a Giant/Hypergiant if its density is less than 1000 kg/m^3 (or &lt; 1 g/cm^3). 
+                    Example: Stephanson 2-18, density ~ 70.4 kg/m^3, Red Hypergiant (largest known star)
+        (ii)    The star is considered to be a Main Sequence star if its density is between 1000 and 10^8 kg/m^3 (or 1-10^5 g/cm^3)
+                    Example: The Sun, density ~ 1408 kg/m^3, Main Sequence Yellow Star
+        (iii)   The star is considered to be a White Dwarf (remnant of stellar death) is its density is between 10^8 and 10^16 kg/m^3 (or 10^5 - 10^13 g/cm^3)
+                    Example: Sirius B, density ~ 5.7733 * 10^8 kg/m^3, Closest White Dwarf to the Sun
+        (iv)    The star is considered a Neutron star if it&#39;s density exceeds 10^16 kg/m^3 (or 10^13 g/cm^3)
+                    Example: PSR J0952-0607, density ~ 1.1155 * 10^18 kg/m^3, Most massive Neutron Star known as of today.
+    
+    For more information on the examples, search the star example on Wikipedia, or look up star density classification.
+    Infinite Density is not accepted as a star property and the object must be set as a Black Hole! 
+
+    Returns:
+        str: Type of the Star
+    &#34;&#34;&#34;
+    if self.density &gt; 0 and self.density &lt; 1000:
+        return &#34;Giant&#34;
+    elif self.density &gt; 1000 and self.density &lt; 1e8:
+        return &#34;Main Sequence&#34;
+    elif self.density &gt; 1e8 and self.density &lt; 1e16:
+        self.color = &#34;white&#34;
+        self.color_myv = (1,1,1)
+        return &#34;White Dwarf&#34;
+    else:
+        self.color = &#34;white&#34;
+        self.color_myv = (1,1,1)
+        return &#34;Neutron&#34;</code></pre>
+</details>
+</dd>
+<dt id="cosmicBallet.CelestialObjects.Stars.volume"><code class="name">prop <span class="ident">volume</span></code></dt>
+<dd>
+<div class="desc"><p>Dynamically updates the volume of the star</p>
+<p>The star is spherical and the volume is calculated using the formula:
+volume = (4/3) * pi * radius^3</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Volume of the star</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def volume(self):
+    &#34;&#34;&#34;Dynamically updates the volume of the star
+
+    The star is spherical and the volume is calculated using the formula:
+        volume = (4/3) * pi * radius^3
+
+    Returns:
+        float: Volume of the star
+    &#34;&#34;&#34;
+    return (4/3) * np.pi * np.power(self._radius, 3)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="cosmicBallet" href="index.html">cosmicBallet</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="cosmicBallet.CelestialObjects.BlackHole" href="#cosmicBallet.CelestialObjects.BlackHole">BlackHole</a></code></h4>
+<ul class="">
+<li><code><a title="cosmicBallet.CelestialObjects.BlackHole.mass" href="#cosmicBallet.CelestialObjects.BlackHole.mass">mass</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.BlackHole.radius" href="#cosmicBallet.CelestialObjects.BlackHole.radius">radius</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.BlackHole.spin" href="#cosmicBallet.CelestialObjects.BlackHole.spin">spin</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="cosmicBallet.CelestialObjects.Fragments" href="#cosmicBallet.CelestialObjects.Fragments">Fragments</a></code></h4>
+</li>
+<li>
+<h4><code><a title="cosmicBallet.CelestialObjects.Planets" href="#cosmicBallet.CelestialObjects.Planets">Planets</a></code></h4>
+<ul class="two-column">
+<li><code><a title="cosmicBallet.CelestialObjects.Planets.color" href="#cosmicBallet.CelestialObjects.Planets.color">color</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Planets.color_myv" href="#cosmicBallet.CelestialObjects.Planets.color_myv">color_myv</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Planets.density" href="#cosmicBallet.CelestialObjects.Planets.density">density</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Planets.mass" href="#cosmicBallet.CelestialObjects.Planets.mass">mass</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Planets.radius" href="#cosmicBallet.CelestialObjects.Planets.radius">radius</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Planets.volume" href="#cosmicBallet.CelestialObjects.Planets.volume">volume</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="cosmicBallet.CelestialObjects.Stars" href="#cosmicBallet.CelestialObjects.Stars">Stars</a></code></h4>
+<ul class="two-column">
+<li><code><a title="cosmicBallet.CelestialObjects.Stars.density" href="#cosmicBallet.CelestialObjects.Stars.density">density</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Stars.mass" href="#cosmicBallet.CelestialObjects.Stars.mass">mass</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Stars.radius" href="#cosmicBallet.CelestialObjects.Stars.radius">radius</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Stars.star_class" href="#cosmicBallet.CelestialObjects.Stars.star_class">star_class</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Stars.star_type" href="#cosmicBallet.CelestialObjects.Stars.star_type">star_type</a></code></li>
+<li><code><a title="cosmicBallet.CelestialObjects.Stars.volume" href="#cosmicBallet.CelestialObjects.Stars.volume">volume</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
+</footer>
+</body>
+</html>
