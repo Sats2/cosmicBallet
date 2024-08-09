@@ -161,8 +161,8 @@ class Simulator():
                 self.simulation_time *= const.MON_TO_SEC
                 self.time_step = const.MON_TO_SEC
             elif self.time_unit == "years":
-                self.simulation_time *= const.YEAR_TO_sEC
-                self.time_unit *= const.YEAR_TO_sEC
+                self.simulation_time *= const.YEAR_TO_SEC
+                self.time_unit *= const.YEAR_TO_SEC
             else:
                 raise ValueError("Time Unit Unrecognized. Select from 'hours/days/months/years'")
 
