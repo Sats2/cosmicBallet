@@ -142,6 +142,7 @@ class Simulator():
         self.removed_object_list = []
         self.time_val = 0.0
         self.fragmentation_occured = False
+        self.time_unit_correction
 
     @property
     def time_unit_correction(self):
