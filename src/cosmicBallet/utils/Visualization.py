@@ -212,9 +212,7 @@ class Visualize():
         """Method of the visualization class that generates the visualization for the trajectories based on the visualization type
 
         Args:
-            animate (bool): Used for scientific visualization and control whether an animation is generated. Defaults to False
-            dense_body_sim (bool): Used for scientific visualization and control whether the visualization is for a 
-                                dense body simulation. Defaults to False
+            animate (bool): Used for scientific visualization and control whether an animation is generated. Defaults to False.
 
         Raises:
             TypeError: When the animate not a boolean value.
