@@ -99,8 +99,17 @@ class Visualize():
             f"ffmpeg -r {15} -i temp/data_%0{zero_padding}d.png "
             f"-vcodec mpeg4 -qscale:v 2 -filter:v 'setpts={1/1}*PTS' -y {self.ani_name}"
         )
-        os.system(ffmpeg_command)
-        shutil.rmtree("temp")
+        if self.save_fig:
+            ffmpeg_command = (
+                            f"ffmpeg -r {15} -i temp/data_%0{zero_padding}d.png "
+                            f"-vcodec mpeg4 -qscale:v 2 -filter:v 'setpts={1/1}*PTS' -y {self.ani_name}"
+                            )
+            try:
+                os.system(ffmpeg_command)
+                shutil.rmtree("temp")
+            except:
+                print(f"Animation Video could not be saved. Check if ffmpeg is installed on your system.
+                      You can create the video manually by using the saved images in the temp folder")
             
     
     def __scientific_plot(self, animate:bool)->None:
