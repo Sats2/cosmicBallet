@@ -562,8 +562,9 @@ class Simulator():
 
         Args:
             simulation_method (str, optional): The formulation of the N-Body Problem the method must follow to perform the
-                                                simulation. Defaults to "Newtonian".
-            solver (str, optional): The integration scheme the method needs to use to perform the simulation. Defaults to "RK4".
+                                                simulation. Defaults to "Hamiltonian".
+            solver (str, optional): The integration scheme the method needs to use to perform the simulation. Defaults to 
+                                    "forest_ruth".
             correction (bool, optional): User input to whether the Post-Newton Correction term is applied or not. This is 
                                         applicable to cases where heavy objects are relatively close to each other. Applied 
                                         only to the Newtonian Formulation. Defaults to False.
