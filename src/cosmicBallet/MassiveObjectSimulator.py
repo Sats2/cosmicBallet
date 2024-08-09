@@ -160,6 +160,17 @@ def _animate_merger(times:np.array, traj:list, radius_list:list)->None:
         mlab.process_ui_events()
         mlab.savefig(f'temp/frame_{i:03d}.png')
 
+    ffmpeg_command = (
+                            f"ffmpeg -r {15} -i temp/frame_%03d.png "
+                            f"-vcodec mpeg4 -qscale:v 2 -filter:v 'setpts={1/1}*PTS' -y merger_animation.mp4"
+                            )
+    try:
+        os.system(ffmpeg_command)
+        shutil.rmtree("temp")
+    except:
+        print(f"Animation Video could not be saved. Check if ffmpeg is installed on your system.
+              You can create the video manually by using the saved images in the temp folder")
+
     mlab.close()
 
 
