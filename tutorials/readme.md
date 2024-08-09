@@ -6,6 +6,6 @@ This folder consists of three tutorials which provide users with the necessary t
 - BlackHole_Merger.ipynb: A simulation of a Binary Black Hole Merger (working purely with black holes).
 - Stellar_Precession.ipynb: A simulation of stars orbiting a Black Hole (working with black holes and stars).
 
-The results of the simulations are stored in the _results_ directory of the repository.
+The results of the simulations are stored in the _results_ directory of the repository (Note: The animation result for the Solar System simulation was speed-up to prevent Large File Storage for git).
 
 **_Have Fun with Simulations!_**
