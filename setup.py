@@ -64,6 +64,7 @@ setup(
     # This should be a valid email address corresponding to the author listed
     # above.
     author_email="sathyamhegde@outlook.com",  # Optional
+    license="MIT", # Optional
     # Classifiers help users find your project by categorizing it.
     #
     # For a list of valid classifiers, see https://pypi.org/classifiers/
@@ -115,7 +116,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/discussions/install-requires-vs-requirements/
-    install_requires=["peppercorn"],  # Optional
+    install_requires=["peppercorn", "numpy", "matplotlib", "mayavi"],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
     # syntax, for example:
