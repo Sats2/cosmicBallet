@@ -68,9 +68,9 @@ Summary: A Python based N-Body Solver
 Home-page: https://github.com/Sats2/cosmicBallet.git
 Author: Sathyamurthy Hegde
 Author-email: sathyamhegde@outlook.com
-License:
-Location: /home/sathya/miniconda3/envs/cosmicBallet/lib/python3.11/site-packages
-Requires: peppercorn
+License: MIT
+Location: /home/user/miniconda3/envs/cb/lib/python3.11/site-packages
+Requires: matplotlib, mayavi, numpy, peppercorn
 Required-by:
 ```
 
